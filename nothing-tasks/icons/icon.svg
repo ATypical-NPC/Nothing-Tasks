@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="112" fill="#000000"/>
+  <!-- dot grid -->
+  <g fill="#2a2a2a">
+    <!-- generated 7x7 grid of faint dots -->
+    <circle cx="120" cy="120" r="10"/><circle cx="186" cy="120" r="10"/><circle cx="252" cy="120" r="10"/><circle cx="318" cy="120" r="10"/><circle cx="384" cy="120" r="10"/>
+    <circle cx="120" cy="186" r="10"/><circle cx="384" cy="186" r="10"/>
+    <circle cx="120" cy="252" r="10"/><circle cx="384" cy="252" r="10"/>
+    <circle cx="120" cy="318" r="10"/><circle cx="384" cy="318" r="10"/>
+    <circle cx="120" cy="384" r="10"/><circle cx="186" cy="384" r="10"/><circle cx="252" cy="384" r="10"/><circle cx="318" cy="384" r="10"/><circle cx="384" cy="384" r="10"/>
+  </g>
+  <!-- accent dot-matrix checkmark -->
+  <g fill="#ff2d2d">
+    <circle cx="186" cy="252" r="13"/>
+    <circle cx="222" cy="288" r="13"/>
+    <circle cx="258" cy="324" r="13"/>
+    <circle cx="300" cy="252" r="13"/>
+    <circle cx="336" cy="216" r="13"/>
+    <circle cx="372" cy="180" r="13"/>
+  </g>
+</svg>
