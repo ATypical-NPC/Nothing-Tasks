@@ -91,12 +91,11 @@ html[data-accent="red"]   .acc-red,
 html[data-accent="blue"]  .acc-blue,
 html[data-accent="green"] .acc-green,
 html[data-accent="yellow"].acc-yellow{border-color:var(--text); transform:scale(1.12)}
-.acc-custom{-webkit-appearance:none; appearance:none; width:20px; height:20px; min-width:20px; border-radius:50%; padding:0;
-  border:2px solid transparent; cursor:pointer; transition:transform .15s, border-color .15s;
-  background:conic-gradient(#ff2d2d,#ffcc00,#19d36b,#2f6bff,#b02fff,#ff2d2d)}
-.acc-custom::-webkit-color-swatch-wrapper{padding:0}
-.acc-custom::-webkit-color-swatch{border:none; opacity:0}
-.acc-custom::-moz-color-swatch{border:none; opacity:0}
+/* real swatch color is a solid background set via JS (state.customAccent) — the native
+   input is invisible and just fills the circle so clicks open the OS picker; this avoids
+   fighting the native color-swatch's own shadow-DOM shape (never renders as a true circle) */
+.acc-custom{display:inline-flex; position:relative; overflow:hidden; cursor:pointer}
+.acc-custom input[type=color]{position:absolute; inset:0; width:100%; height:100%; margin:0; padding:0; border:0; opacity:0; cursor:pointer}
 .acc-custom:hover{transform:scale(1.12)}
 html[data-accent="custom"] .acc-custom{border-color:var(--text); transform:scale(1.12)}
 
@@ -134,7 +133,8 @@ html[data-accent="custom"] .acc-custom{border-color:var(--text); transform:scale
 
 /* ===================== add bar ===================== */
 .addbar{display:flex; flex-direction:column; gap:10px; margin-bottom:14px}
-.addrow{display:grid; grid-template-columns:1fr auto auto auto; gap:8px}
+.addrow{display:grid; grid-template-columns:1fr auto auto auto auto; gap:8px}
+#add-date{min-width:0}
 .addrow2{display:flex; align-items:center; gap:12px; flex-wrap:wrap}
 .addrow2 .label{margin:0}
 .day-chips{display:flex; gap:6px; flex-wrap:wrap}
@@ -219,7 +219,6 @@ html[data-theme="light"] input[type="date"]::-webkit-calendar-picker-indicator:h
 .t-del{width:34px; height:34px; min-width:34px; display:grid; place-items:center; border:0; background:transparent;
   color:var(--faint); border-radius:var(--r); transition:.15s; opacity:0}
 .task:hover .t-del,.task:focus-within .t-del{opacity:1}
-.habit .t-del{opacity:1}
 .t-del:hover{color:var(--red); background:var(--surface-2)}
 .t-del i{width:17px; height:17px}
 .t-drag{width:20px; height:34px; min-width:20px; display:grid; place-items:center; border:0; background:transparent;
@@ -497,12 +496,12 @@ label.btn-line{cursor:pointer}
 @media (max-width:420px){ .noise-viz .vu-ring{width:52px} }
 
 /* ===================== readability (keep dots, clearer small text) ===================== */
-.label,.t-cat,.t-rep,.cal-dow,.d-lab,.dhint,.sp-note,.foot-note,.cal-count,.b-state,.h-dl,.ib-lab,.t-now{font-weight:700}
+.label,.t-cat,.t-rep,.cal-dow,.d-lab,.dhint,.sp-note,.foot-note,.cal-count,.b-state,.ib-lab,.t-now{font-weight:700}
 .label{font-size:12px}
 .t-cat{font-size:11px}
 .dhint,.sp-note,.cal-dow,.foot-note{font-size:11px}
 .s-p,.feature p{font-size:13.5px; font-weight:500; letter-spacing:.4px}
-.t-title,.h-name,.w-next{font-weight:700}
+.t-title,.w-next{font-weight:700}
 
 /* ===================== daily goal ===================== */
 .goal-line{display:inline-flex; align-items:center; gap:8px; margin-top:14px; padding:7px 13px; border:1px dashed var(--line);
@@ -554,19 +553,8 @@ label.btn-line{cursor:pointer}
   padding:12px; color:var(--text); font-family:var(--dot); font-size:13px; letter-spacing:.5px; outline:none; line-height:1.7; font-weight:600}
 .tm-notes:focus{border-color:var(--accent)}
 
-/* ===================== habits ===================== */
-.habit{border:1px solid var(--line); border-radius:var(--r); background:var(--surface); padding:14px 16px; margin-bottom:10px}
-.h-top{display:flex; align-items:center; gap:10px; margin-bottom:12px}
-.h-name{font-size:15px; flex:1}
 .h-streak{display:inline-flex; align-items:center; gap:5px; font-size:12px; color:var(--accent); font-weight:700}
 .h-streak i{width:14px; height:14px; line-height:0}
-.h-grid{display:flex; flex-direction:column; gap:6px}
-.h-labs,.h-cells{display:grid; grid-template-columns:repeat(7,1fr); gap:8px}
-.habit.dragging{position:relative; z-index:5; border-color:var(--accent); background:var(--surface-2)}
-.habit-edit{margin-bottom:12px}
-.habit-hist{padding-bottom:4px}
-.habit-hist .hm-cell{width:9px; height:9px}
-.dchip.wide{width:auto; padding:0 12px}
 
 /* ===================== workouts ===================== */
 .workout-card{margin-bottom:8px}
@@ -575,12 +563,6 @@ label.btn-line{cursor:pointer}
   display:flex; flex-direction:column; gap:10px}
 .workout-edit .day-chips{display:flex; gap:8px; flex-wrap:wrap}
 .workout-edit .tm-notes{min-height:80px}
-.h-dl{text-align:center; font-size:10px; color:var(--dim); letter-spacing:1px}
-.h-dl.tdy{color:var(--accent)}
-.hcell{height:32px; border:1px solid var(--line); border-radius:7px; background:var(--surface-2); transition:.12s}
-.hcell:hover{border-color:var(--text)}
-.hcell.on{background:var(--accent); border-color:var(--accent)}
-.hcell.tdy{box-shadow:0 0 0 1px var(--accent)}
 
 /* ===================== exercise library / templates ===================== */
 .tpl-editor{gap:8px}
@@ -674,6 +656,8 @@ label.btn-line{cursor:pointer}
 @media (max-width:680px){
   .sched-day{flex-wrap:wrap}
   .sched-edit>.lib-sel{max-width:none}
+  .cal-head{flex-wrap:wrap}
+  .cal-range{order:-1; width:100%; text-align:center}
 }
 
 /* ===================== focus-on banner ===================== */
@@ -837,18 +821,17 @@ html::-webkit-scrollbar-thumb:hover{background:var(--dim)}
     <!-- ============ Tabs ============ -->
     <nav class="tabs" id="tabs" role="tablist">
       <button class="tab active" data-tab="today" role="tab"><i data-ic="check"></i><span>Tasks</span></button>
-      <button class="tab" data-tab="schedule" role="tab"><i data-ic="clock"></i><span>Schedule</span></button>
       <button class="tab" data-tab="calendar" role="tab"><i data-ic="calendar"></i><span>Calendar</span></button>
       <button class="tab" data-tab="workouts" role="tab"><i data-ic="dumbbell"></i><span>Workouts</span></button>
       <button class="tab" data-tab="focus" role="tab"><i data-ic="timer"></i><span>Focus</span></button>
-      <button class="tab" data-tab="habits" role="tab"><i data-ic="target"></i><span>Habits</span></button>
     </nav>
 
     <!-- ============ Add bar ============ -->
     <form class="addbar" id="addbar" autocomplete="off">
       <div class="addrow">
-        <input type="text" id="add-input" placeholder="“CALL MOM MON WED FRI 6PM #PERSONAL” · “REVIEW PRS TODAY 6PM”" aria-label="Task title" maxlength="80" />
+        <input type="text" id="add-input" aria-label="Task title" maxlength="80" />
         <input type="time" id="add-time" aria-label="Time" />
+        <input type="date" id="add-date" aria-label="Date" title="Pick a date" />
         <select id="add-cat" aria-label="Category"></select>
         <button type="submit" class="addbtn" aria-label="Add task"><i data-ic="plus"></i></button>
       </div>
@@ -902,7 +885,9 @@ html::-webkit-scrollbar-thumb:hover{background:var(--dim)}
             <button class="acc acc-blue"   data-accent="blue"   role="radio" aria-label="Blue"></button>
             <button class="acc acc-green"  data-accent="green"  role="radio" aria-label="Green"></button>
             <button class="acc acc-yellow" data-accent="yellow" role="radio" aria-label="Yellow"></button>
-            <input type="color" class="acc acc-custom" id="acc-custom" aria-label="Custom colour" title="Pick any colour" />
+            <label class="acc acc-custom" id="acc-custom-swatch" aria-label="Custom colour" title="Pick any colour">
+              <input type="color" id="acc-custom" tabindex="-1" />
+            </label>
           </div>
           <h3 class="s-h">THEME</h3>
           <p class="s-p">Deep black or bright white — both tuned for contrast.</p>
@@ -922,9 +907,9 @@ html::-webkit-scrollbar-thumb:hover{background:var(--dim)}
             <label class="btn-line" for="import-library"><i data-ic="upload"></i> Import library</label>
             <input type="file" id="import-library" accept="application/zip,.zip" hidden />
           </div>
-          <p class="sp-note">Importing tasks replaces your current tasks/habits/karma. Importing a library adds its tracks and playlists into your current one.</p>
+          <p class="sp-note">Importing tasks replaces your current tasks/karma data. Importing a library adds its tracks and playlists into your current one.</p>
           <h3 class="s-h">SYNC — GOOGLE DRIVE</h3>
-          <p class="s-p">Keep this device and your phone in step. Tasks, habits, workouts and settings are stored in a hidden app file in your own Google Drive — newest change wins. Music files stay on each device (move them with Export/Import library). One-time setup steps are in the Guide.</p>
+          <p class="s-p">Keep this device and your phone in step. Tasks, workouts and settings are stored in a hidden app file in your own Google Drive — newest change wins. Music files stay on each device (move them with Export/Import library). One-time setup steps are in the Guide.</p>
           <div class="sp-row"><input type="text" id="sync-cid" class="sp-input" placeholder="PASTE GOOGLE OAUTH CLIENT ID…" autocomplete="off" spellcheck="false" /></div>
           <div class="sp-row">
             <button class="btn-line" id="sync-now"><i data-ic="rotate"></i> Sync now</button>
@@ -982,7 +967,7 @@ html::-webkit-scrollbar-thumb:hover{background:var(--dim)}
 /* =====================================================================
    Nothing-OS Task Tracker
    tasks · recurring · multi-day · NL add · categories · bin · pomodoro ·
-   karma · calendar · habits · widgets · per-task notes · focus music
+   karma · calendar · widgets · per-task notes · focus music
    ===================================================================== */
 
 /* ---------- icons ---------- */
@@ -1039,7 +1024,7 @@ function tMin(t){ return t? parseInt(t.slice(0,2),10)*60+parseInt(t.slice(3),10)
 
 /* ---------- persistence ---------- */
 const LS='nothing-tasks';
-function seedHabit(t,offs){ const o={}; offs.forEach(n=>o[addDays(t,-n)]=true); return o; }
+function seedLog(t,offs){ const o={}; offs.forEach(n=>o[addDays(t,-n)]=true); return o; }
 const EX_CATS=['push','pull','chest','legs','plyometric','core'];
 function builtinExercises(){
   const mk=(id,name,type,category)=>({id:'ex-'+id, name, type, category, builtin:true});
@@ -1071,11 +1056,7 @@ function buildDefaults(){
   return {
     theme:'dark', accent:'red', karma:320, pomodoros:0, day:t, completed, bin:[],
     activeTask:null, dailyGoal:{date:t, text:''}, hourLog:{9:3,10:6,11:4,14:5,16:2,21:3},
-    habits:[
-      {id:'h1', name:'Drink water',     log:seedHabit(t,[0,1,2,3,5,6])},
-      {id:'h2', name:'Read 10 min',     log:seedHabit(t,[1,2,4,6])},
-      {id:'h3', name:'No phone in bed',  log:seedHabit(t,[2,3,4,5])}
-    ],
+    habits:[],
     categories:[
       {id:'work',name:'Work'},{id:'personal',name:'Personal'},{id:'health',name:'Health'},
       {id:'focus',name:'Focus'},{id:'science',name:'Science'}
@@ -1085,13 +1066,13 @@ function buildDefaults(){
     exerciseCats:[],
     workoutSchedule:{0:'rest', 1:'tpl-push', 2:null, 3:'tpl-plyo', 4:null, 5:'tpl-push', 6:null},
     workoutTemplates:[
-      {id:'tpl-push', name:'Push day', notes:'', log:seedHabit(t,[3,4,7,10]), circuits:[], exercises:[
+      {id:'tpl-push', name:'Push day', notes:'', log:seedLog(t,[3,4,7,10]), circuits:[], exercises:[
         {id:'te1', exerciseId:'ex-pushup',   sets:3, reps:12, restSeconds:60, circuitId:null},
         {id:'te2', exerciseId:'ex-dip',      sets:3, reps:8,  restSeconds:90, circuitId:null},
         {id:'te3', exerciseId:'ex-pikepush', sets:3, reps:8,  restSeconds:90, circuitId:null},
         {id:'te4', exerciseId:'ex-plank',    sets:3, seconds:30, restSeconds:45, circuitId:null}
       ]},
-      {id:'tpl-plyo', name:'Plyo circuit', notes:'', log:seedHabit(t,[2,5,9]), circuits:[{id:'cir1', rounds:3, restSeconds:90}], exercises:[
+      {id:'tpl-plyo', name:'Plyo circuit', notes:'', log:seedLog(t,[2,5,9]), circuits:[{id:'cir1', rounds:3, restSeconds:90}], exercises:[
         {id:'te5', exerciseId:'ex-burpee',    reps:10, restSeconds:20, circuitId:'cir1'},
         {id:'te6', exerciseId:'ex-jumpsquat', reps:12, restSeconds:20, circuitId:'cir1'},
         {id:'te7', exerciseId:'ex-mtnclimb',  seconds:30, restSeconds:20, circuitId:'cir1'},
@@ -1208,10 +1189,14 @@ function applyTheme(){ root.setAttribute('data-theme',state.theme); root.setAttr
 document.getElementById('theme-toggle').onclick=()=>{ state.theme=state.theme==='dark'?'light':'dark'; applyTheme(); save(); };
 document.querySelectorAll('.acc:not(.acc-custom)').forEach(b=>b.onclick=()=>{ state.accent=b.dataset.accent; applyTheme(); save(); renderGlyph(); render(); });
 const accCustom=document.getElementById('acc-custom');
+const accCustomSwatch=document.getElementById('acc-custom-swatch');
 if(accCustom){
   accCustom.value=state.customAccent||'#ff2d2d';
-  accCustom.oninput=()=>{ state.accent='custom'; state.customAccent=accCustom.value; applyTheme(); };
-  accCustom.onchange=()=>{ state.accent='custom'; state.customAccent=accCustom.value; applyTheme(); save(); renderGlyph(); render(); };
+  if(accCustomSwatch) accCustomSwatch.style.background=accCustom.value;
+  accCustom.oninput=()=>{ state.accent='custom'; state.customAccent=accCustom.value;
+    if(accCustomSwatch) accCustomSwatch.style.background=accCustom.value; applyTheme(); };
+  accCustom.onchange=()=>{ state.accent='custom'; state.customAccent=accCustom.value;
+    if(accCustomSwatch) accCustomSwatch.style.background=accCustom.value; applyTheme(); save(); renderGlyph(); render(); };
 }
 
 /* ---------- backup / export ---------- */
@@ -1551,14 +1536,15 @@ document.getElementById('addbar').onsubmit=(e)=>{
   const title=p.title||raw;
   const time=p.time || document.getElementById('add-time').value || '';
   const cat=p.cat || (activeCat!=='all'? activeCat : document.getElementById('add-cat').value);
-  let repeat='none', weekdays=[], date=p.date||today();
+  const manualDate=document.getElementById('add-date').value || '';
+  let repeat='none', weekdays=[], date=p.date||manualDate||today();
   const chips=[...selectedDays];
-  if(p.repeat==='daily'){ repeat='daily'; date=today(); }
-  else if(p.repeat==='weekly'){ repeat='weekly'; weekdays=p.weekdays.length?p.weekdays:[wdOf(date)]; date=today(); }
-  else if(chips.length===7){ repeat='daily'; date=today(); }
-  else if(chips.length){ repeat='weekly'; weekdays=chips; date=today(); }
+  if(p.repeat==='daily'){ repeat='daily'; }
+  else if(p.repeat==='weekly'){ repeat='weekly'; weekdays=p.weekdays.length?p.weekdays:[wdOf(date)]; }
+  else if(chips.length===7){ repeat='daily'; }
+  else if(chips.length){ repeat='weekly'; weekdays=chips; }
   addTask({title, time, cat, repeat, weekdays, date});
-  inp.value=''; document.getElementById('add-time').value=''; clearDayChips(); inp.focus();
+  inp.value=''; document.getElementById('add-time').value=''; document.getElementById('add-date').value=''; clearDayChips(); inp.focus();
 };
 
 /* ---------- category bar ---------- */
@@ -1643,7 +1629,7 @@ function render(){
   const ab=document.getElementById('addbar'); if(ab) ab.style.display=taskView?'flex':'none';
   const cb=document.getElementById('catbar'); if(cb) cb.style.display=taskView?'flex':'none';
   view.classList.remove('view-fade'); void view.offsetWidth; view.classList.add('view-fade');
-  ({today:renderToday, schedule:renderSchedule, calendar:renderCalendar, focus:renderFocus, habits:renderHabits, workouts:renderWorkouts}[activeTab]||renderToday)();
+  ({today:renderToday, calendar:renderCalendar, focus:renderFocus, workouts:renderWorkouts}[activeTab]||renderToday)();
   paintIcons(view);
 }
 
@@ -1684,30 +1670,34 @@ function initTaskDrag(){
 }
 
 /* ---- Schedule ---- */
-function renderSchedule(){
-  const tt=tasksForDate(today()).filter(catFilter); const nowH=new Date().getHours(), nowM=new Date().getMinutes();
-  let rows='';
-  for(let h=7;h<=22;h++){
-    const items=tt.filter(t=>t.time && parseInt(t.time.slice(0,2),10)===h);
-    const body=items.map(t=>`<div class="tl-task ${isDone(t,today())?'done':''}">
-      <button class="check tl-check" onclick="toggle(${t.id},'${today()}')" aria-label="${isDone(t,today())?'Mark incomplete':'Mark complete'}"></button>
-      <span class="t-time">${t.time}</span><span class="tl-t">${esc(t.title)}</span></div>`).join('');
-    const now = h===nowH ? `<div class="tl-now" style="top:${(nowM/60*100).toFixed(0)}%"></div>` : '';
-    rows+=`<div class="tl-row"><div class="tl-hour">${String(h).padStart(2,'0')}</div><div class="tl-body">${now}${body}</div></div>`;
-  }
-  view.innerHTML=`<div class="timeline">${rows}</div>`;
-}
-
-/* ---- Calendar ---- */
+/* ---- Calendar (week / month / schedule views) ---- */
 let weekStart=mondayOf(today());
 let selDate=today();
 let calMode='week', monthAnchor=today();
 function firstOfMonth(s){ const d=new Date(s+'T00:00:00'); d.setDate(1); return iso(d); }
 function addMonths(s,n){ const d=new Date(s+'T00:00:00'); d.setDate(1); d.setMonth(d.getMonth()+n); return iso(d); }
 function monthLabel(s){ return new Date(s+'T00:00:00').toLocaleString(undefined,{month:'long',year:'numeric'}).toUpperCase(); }
+function scheduleTimelineHTML(ds){
+  const tt=tasksForDate(ds).filter(catFilter);
+  const isToday=ds===today();
+  const nowH=new Date().getHours(), nowM=new Date().getMinutes();
+  let rows='';
+  for(let h=7;h<=22;h++){
+    const items=tt.filter(t=>t.time && parseInt(t.time.slice(0,2),10)===h);
+    const body=items.map(t=>`<div class="tl-task ${isDone(t,ds)?'done':''}">
+      <button class="check tl-check" onclick="toggle(${t.id},'${ds}')" aria-label="${isDone(t,ds)?'Mark incomplete':'Mark complete'}"></button>
+      <span class="t-time">${t.time}</span><span class="tl-t">${esc(t.title)}</span></div>`).join('');
+    const now = (isToday&&h===nowH) ? `<div class="tl-now" style="top:${(nowM/60*100).toFixed(0)}%"></div>` : '';
+    rows+=`<div class="tl-row"><div class="tl-hour">${String(h).padStart(2,'0')}</div><div class="tl-body">${now}${body}</div></div>`;
+  }
+  return `<div class="timeline">${rows}</div>`;
+}
 function renderCalendar(){
   let body='', range='';
-  if(calMode==='month'){
+  if(calMode==='schedule'){
+    range=dateLabel(selDate);
+    body=scheduleTimelineHTML(selDate);
+  } else if(calMode==='month'){
     const first=firstOfMonth(monthAnchor);
     const dMonth=new Date(first+'T00:00:00').getMonth();
     const last=addDays(addMonths(first,1),-1);
@@ -1735,6 +1725,7 @@ function renderCalendar(){
     range=`${monthShort(weekStart)} ${new Date(weekStart+'T00:00:00').getDate()} – ${new Date(addDays(weekStart,6)+'T00:00:00').getDate()}`;
     body=`<div class="calweek">${cols}</div>`;
   }
+  const showList=calMode!=='schedule';
   const sel=tasksForDate(selDate).filter(catFilter);
   view.innerHTML=`
     <div class="cal-head">
@@ -1743,18 +1734,27 @@ function renderCalendar(){
       <div class="cal-modes">
         <button class="pmode ${calMode==='week'?'active':''}" data-calmode="week">WEEK</button>
         <button class="pmode ${calMode==='month'?'active':''}" data-calmode="month">MONTH</button>
+        <button class="pmode ${calMode==='schedule'?'active':''}" data-calmode="schedule">SCHEDULE</button>
       </div>
       <button class="iconbtn wbtn" id="cal-today">TODAY</button>
       <button class="iconbtn" id="cal-next" aria-label="Next ${calMode}"><i data-ic="chevR"></i></button>
     </div>
     ${body}
-    <div class="group-label"><span class="label">${dateLabel(selDate)} · ${sel.length} TASK${sel.length===1?'':'S'}</span></div>
-    ${sel.length? sel.map(t=>taskRow(t,selDate)).join('') : emptyState()}`;
-  document.getElementById('cal-prev').onclick=()=>{ if(calMode==='month') monthAnchor=addMonths(monthAnchor,-1); else weekStart=addDays(weekStart,-7); render(); };
-  document.getElementById('cal-next').onclick=()=>{ if(calMode==='month') monthAnchor=addMonths(monthAnchor,1); else weekStart=addDays(weekStart,7); render(); };
+    ${showList?`<div class="group-label"><span class="label">${dateLabel(selDate)} · ${sel.length} TASK${sel.length===1?'':'S'}</span></div>
+    ${sel.length? sel.map(t=>taskRow(t,selDate)).join('') : emptyState()}`:''}`;
+  document.getElementById('cal-prev').onclick=()=>{
+    if(calMode==='month') monthAnchor=addMonths(monthAnchor,-1);
+    else if(calMode==='schedule') selDate=addDays(selDate,-1);
+    else weekStart=addDays(weekStart,-7);
+    render(); };
+  document.getElementById('cal-next').onclick=()=>{
+    if(calMode==='month') monthAnchor=addMonths(monthAnchor,1);
+    else if(calMode==='schedule') selDate=addDays(selDate,1);
+    else weekStart=addDays(weekStart,7);
+    render(); };
   document.getElementById('cal-today').onclick=()=>{ weekStart=mondayOf(today()); monthAnchor=today(); selDate=today(); render(); };
   view.querySelectorAll('[data-calmode]').forEach(b=>b.onclick=()=>{ calMode=b.dataset.calmode;
-    if(calMode==='month') monthAnchor=selDate||today(); else weekStart=mondayOf(selDate||today()); render(); });
+    if(calMode==='month') monthAnchor=selDate||today(); else if(calMode==='week') weekStart=mondayOf(selDate||today()); render(); });
   view.querySelectorAll('.calday,.mday').forEach(b=>b.onclick=()=>{ selDate=b.dataset.date; render(); });
 }
 
@@ -1778,94 +1778,6 @@ function renderBin(target){
   target.innerHTML=html;
   paintIcons(target);
   document.getElementById('bin-empty').onclick=()=>{ if((state.bin||[]).length){ state.bin=[]; save(); renderBin(target); } };
-}
-
-/* ---- Habits ---- */
-function habitStreak(h){ let n=0,d=today(); if(!h.log[d]) d=addDays(d,-1); while(h.log[d]){ n++; d=addDays(d,-1);} return n; }
-function addHabit(name){ state.habits.push({id:'h'+Date.now(), name, log:{}}); save(); render(); }
-function toggleHabit(id,ds){ const h=state.habits.find(x=>x.id===id); if(!h)return; if(h.log[ds])delete h.log[ds]; else h.log[ds]=true; save(); render(); }
-function delHabit(id){ state.habits=state.habits.filter(x=>x.id!==id); save(); render(); }
-function habitWeekCount(h,ws){ let n=0; for(let i=0;i<7;i++) if(h.log[addDays(ws,i)]) n++; return n; }
-function habitStreakWeeks(h){
-  const t=h.target||7; let n=0, ws=mondayOf(today());
-  if(habitWeekCount(h,ws)>=t) n++;
-  ws=addDays(ws,-7);
-  for(let guard=0; guard<520; guard++){ if(habitWeekCount(h,ws)>=t){ n++; ws=addDays(ws,-7); } else break; }
-  return n;
-}
-let habitEditId=null;
-function renderHabits(){
-  const days=[]; for(let i=6;i>=0;i--) days.push(addDays(today(),-i));
-  const ws=mondayOf(today());
-  let html=`<form class="addbar" id="habitbar"><div class="addrow">
-    <input type="text" id="habit-input" placeholder="ADD A HABIT…" maxlength="40" />
-    <button type="submit" class="addbtn" aria-label="Add habit"><i data-ic="plus"></i></button></div></form>`;
-  if(!state.habits.length){ html+=emptyState(); }
-  else html+=state.habits.map(h=>{
-    const cells=days.map(d=>`<button class="hcell ${h.log[d]?'on':''} ${d===today()?'tdy':''}" data-h="${h.id}" data-d="${d}" aria-label="${d}"></button>`).join('');
-    const labs=days.map(d=>`<span class="h-dl ${d===today()?'tdy':''}">${DAYLETTER[wdOf(d)]}</span>`).join('');
-    const weekly=h.target&&h.target<7;
-    const editing=habitEditId===h.id;
-    const streakHtml=weekly
-      ?`<span class="h-streak"><i data-ic="flame"></i> ${habitStreakWeeks(h)}W</span><span class="t-subs ${habitWeekCount(h,ws)>=h.target?'all':''}">${habitWeekCount(h,ws)}/${h.target}</span>`
-      :`<span class="h-streak"><i data-ic="flame"></i> ${habitStreak(h)}</span>`;
-    let panel='';
-    if(editing){
-      const chips=`<button type="button" class="dchip wide ${!weekly?'on':''}" data-htarget="7" data-hid="${h.id}">DAILY</button>`
-        +[2,3,4,5,6].map(n=>`<button type="button" class="dchip ${h.target===n?'on':''}" data-htarget="${n}" data-hid="${h.id}">${n}</button>`).join('');
-      const histWeeks=15; let hist='';
-      for(let w=histWeeks-1; w>=0; w--){ const w0=addDays(ws,-7*w); let col='';
-        for(let i=0;i<7;i++){ const d=addDays(w0,i); col+=`<span class="hm-cell ${d>today()?'empty':(h.log[d]?'l4':'')}" title="${d}"></span>`; }
-        hist+=`<div class="hm-col">${col}</div>`; }
-      panel=`<div class="workout-edit habit-edit">
-        <span class="label">TARGET PER WEEK — DAILY = EVERY DAY COUNTS THE STREAK</span>
-        <div class="day-chips">${chips}</div>
-        <span class="label">LAST ${histWeeks} WEEKS</span>
-        <div class="heatmap habit-hist">${hist}</div>
-      </div>`;
-    }
-    return `<div class="habit" data-hid="${h.id}">
-      <div class="h-top">
-        <button class="t-drag h-drag" aria-label="Reorder habit" tabindex="-1"><i data-ic="grip"></i></button>
-        <span class="h-name">${esc(h.name)}</span>
-        ${streakHtml}
-        <button class="t-act ${editing?'on':''}" data-hedit="${h.id}" aria-label="Configure habit"><i data-ic="${editing?'chevL':'edit'}"></i></button>
-        <button class="t-del" onclick="delHabit('${h.id}')" aria-label="Delete habit"><i data-ic="trash"></i></button>
-      </div>
-      ${panel}
-      <div class="h-grid"><div class="h-labs">${labs}</div><div class="h-cells">${cells}</div></div>
-    </div>`;
-  }).join('');
-  view.innerHTML=html;
-  const hi=document.getElementById('habit-input');
-  document.getElementById('habitbar').onsubmit=(e)=>{ e.preventDefault(); const v=hi.value.trim(); if(v){ addHabit(v); } };
-  view.querySelectorAll('.hcell').forEach(b=>b.onclick=()=>toggleHabit(b.dataset.h,b.dataset.d));
-  view.querySelectorAll('[data-hedit]').forEach(b=>b.onclick=()=>{ habitEditId=(habitEditId===b.dataset.hedit)?null:b.dataset.hedit; render(); });
-  view.querySelectorAll('[data-htarget]').forEach(b=>b.onclick=()=>{ const h=state.habits.find(x=>x.id===b.dataset.hid); if(!h) return;
-    const v=+b.dataset.htarget; if(v>=7) delete h.target; else h.target=v; save(); render(); });
-  initHabitDrag();
-}
-function initHabitDrag(){
-  view.querySelectorAll('.h-drag').forEach(handle=>{
-    handle.onpointerdown=(ev)=>{
-      ev.preventDefault();
-      const row=handle.closest('.habit');
-      const others=[...view.querySelectorAll('.habit')].filter(r=>r!==row);
-      const startY=ev.clientY;
-      row.classList.add('dragging'); try{ handle.setPointerCapture(ev.pointerId); }catch(_){}
-      const move=e=>{ row.style.transform=`translateY(${e.clientY-startY}px)`; };
-      const up=e=>{
-        row.style.transform=''; row.classList.remove('dragging');
-        handle.removeEventListener('pointermove',move);
-        let insertAt=others.length;
-        for(let i=0;i<others.length;i++){ const rc=others[i].getBoundingClientRect(); if(e.clientY<rc.top+rc.height/2){ insertAt=i; break; } }
-        const ids=others.map(r=>r.dataset.hid); ids.splice(insertAt,0,row.dataset.hid);
-        state.habits=ids.map(id=>state.habits.find(h=>h.id===id)).filter(Boolean);
-        save(); render();
-      };
-      handle.addEventListener('pointermove',move); handle.addEventListener('pointerup',up,{once:true});
-    };
-  });
 }
 
 /* ---- Workouts: weekly schedule (roadmap 9 chunk 2) ---- */
@@ -2383,7 +2295,7 @@ function startSession(tplId){
   const steps=buildSteps(t);
   if(!steps.length){ toast('ADD EXERCISES TO THIS TEMPLATE FIRST'); return; }
   if(SES) sesClose(false);
-  SES={tplId, name:t.name, steps, i:0, timer:null, left:0, paused:false};
+  SES={tplId, name:t.name, steps, i:0, timer:null, left:0, paused:false, started:false};
   const el=document.createElement('div'); el.id='ses-scrim'; el.className='sheet-scrim center';
   el.innerHTML='<div class="task-modal ses-modal" id="ses-modal"></div>';
   document.body.appendChild(el);
@@ -2391,11 +2303,14 @@ function startSession(tplId){
 }
 function sesEnter(){
   const st=SES.steps[SES.i];
-  clearInterval(SES.timer); SES.timer=null; SES.paused=false;
-  if(st.kind==='rest'||st.type==='duration'){
-    SES.left=st.seconds;
-    SES.timer=setInterval(()=>{ if(!SES||SES.paused) return; SES.left--; if(SES.left<=0) sesNext(); else sesPaint(); },1000);
-  }
+  clearInterval(SES.timer); SES.timer=null; SES.paused=false; SES.started=false;
+  if(st.kind==='rest'||st.type==='duration') SES.left=st.seconds;
+  sesPaint();
+}
+function sesStartTimer(){
+  if(!SES||SES.started) return;
+  SES.started=true; SES.paused=false;
+  SES.timer=setInterval(()=>{ if(!SES||SES.paused) return; SES.left--; if(SES.left<=0) sesNext(); else sesPaint(); },1000);
   sesPaint();
 }
 function sesNext(){ if(!SES) return; if(SES.i>=SES.steps.length-1){ sesFinish(); return; } SES.i++; sesEnter(); }
@@ -2428,16 +2343,20 @@ function sesPaint(){
     body=`<div class="ses-name">${esc(st.name)}</div>${prLine}
       <div class="ses-reps">${st.reps}<span class="ses-reps-lab">REPS</span></div>`;
   }
+  const mainBtn = !timed ? `<button class="pbtn-main" id="ses-done">DONE — NEXT</button>`
+    : !SES.started ? `<button class="pbtn-main" id="ses-start"><i data-ic="play"></i> PLAY</button>`
+    : `<button class="pbtn-main" id="ses-toggle">${SES.paused?'RESUME':'PAUSE'}</button>`;
   el.innerHTML=`<div class="tm-head"><h3>${esc(SES.name)}</h3><button class="iconbtn" id="ses-quit" aria-label="End workout">✕</button></div>
     <div class="label ses-step">STEP ${SES.i+1}/${n} · ${st.sub}</div>
     ${body}
     <div class="pomo-controls ses-controls">
-      ${timed?`<button class="pbtn-main" id="ses-toggle">${SES.paused?'RESUME':'PAUSE'}</button>`:`<button class="pbtn-main" id="ses-done">DONE — NEXT</button>`}
+      ${mainBtn}
       <button class="iconbtn pbtn" id="ses-skip" aria-label="Skip step"><i data-ic="skip"></i></button>
     </div>
     <div class="ses-next label">${next?`NEXT · ${esc(next.name)}`:'LAST STEP'}</div>`;
   paintIcons(el);
   document.getElementById('ses-quit').onclick=()=>sesClose();
+  const sb=document.getElementById('ses-start'); if(sb) sb.onclick=sesStartTimer;
   const tg=document.getElementById('ses-toggle'); if(tg) tg.onclick=()=>{ SES.paused=!SES.paused; sesPaint(); };
   const dn=document.getElementById('ses-done'); if(dn) dn.onclick=sesNext;
   document.getElementById('ses-skip').onclick=sesNext;
@@ -2589,8 +2508,6 @@ function renderStats(target){
   const wkDone=wkDays.reduce((a,d)=>a+(state.completed[d]||0),0);
   const activeDays=wkDays.filter(d=>state.completed[d]&&d<=today()).length;
   let bestDayN=0,bestDay='—'; wkDays.forEach((d,i)=>{ if((state.completed[d]||0)>bestDayN){ bestDayN=state.completed[d]; bestDay=DAYNAMES[(i+1)%7]; } });
-  let habitCells=0; (state.habits||[]).forEach(h=>{ wkDays.forEach(d=>{ if(h.log[d]) habitCells++; }); });
-  const habitPoss=(state.habits||[]).length*7;
   const review=`Completed <b>${wkDone}</b> task${wkDone===1?'':'s'} across <b>${activeDays}</b> active day${activeDays===1?'':'s'}.`+(bestDayN?` Best day <b>${bestDay}</b>.`:'')+` Current streak <b>${streak()}</b>.`;
 
   // year heatmap
@@ -2612,7 +2529,7 @@ function renderStats(target){
   target.innerHTML=`
     <div class="week-card review-card"><h3>This week in review</h3>
       <p class="review">${review}</p>
-      <div class="review-nums"><span><b>${wkDone}</b> DONE</span><span><b>${activeDays}/7</b> ACTIVE</span><span><b>${habitCells}/${habitPoss}</b> HABITS</span><span><b>${state.pomodoros||0}</b> FOCUS</span></div>
+      <div class="review-nums"><span><b>${wkDone}</b> DONE</span><span><b>${activeDays}/7</b> ACTIVE</span><span><b>${state.pomodoros||0}</b> FOCUS</span></div>
     </div>
     ${renderGoalCard()}
     <div class="stat-grid">
@@ -2690,21 +2607,20 @@ document.querySelectorAll('.stab').forEach(b=>b.onclick=()=>{
 function openSettings(tab){ sheet.hidden=false; renderGuide(); if(tab){ const b=document.querySelector('.stab[data-stab="'+tab+'"]'); if(b) b.click(); } }
 function goFocusTab(){ activeTab='focus'; document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab==='focus')); render(); }
 const GUIDE=[
-  ['Quick add (natural language)','Type a task and press +. It reads time (<code>3pm</code>, <code>15:00</code>, <code>at 7am</code>), days (<code>today</code>, <code>tomorrow</code>, <code>fri</code>), repeats (<code>daily</code>, <code>every monday</code>) and <code>#category</code>. Example: <code>Call mom mon wed fri 6pm #personal</code>. Recurring exercise routines belong in the Workouts tab, not Tasks, so they have their own space with day-scheduling and streaks.'],
+  ['Quick add (natural language)','Type a task and press +. It reads time (<code>3pm</code>, <code>15:00</code>, <code>at 7am</code>), days (<code>today</code>, <code>tomorrow</code>, <code>fri</code>), repeats (<code>daily</code>, <code>every monday</code>) and <code>#category</code>. Example: <code>Call mom mon wed fri 6pm #personal</code>. For an exact date the text can’t express (e.g. the 23rd of next month), use the <b>date field</b> next to the time picker instead — it overrides the guessed date. Recurring exercise routines belong in the Workouts tab, not Tasks, so they have their own space with day-scheduling and streaks.'],
   ['Repeat-on day chips','Under the add box, tap weekday chips to repeat a task on those exact days. None = one-off · all 7 = daily.'],
   ['Categories','Every task has a category pill. The chip bar filters — ALL shows everything. Tap + to create your own, or the pencil icon to delete one (its tasks move to the first remaining category). The selected chip becomes the default for new tasks.'],
   ['Widgets','Below the clock: your daily intention, the next task with a countdown, a Day bar (waking hours elapsed) and a Charge battery (today’s completion).'],
   ['Doing a task','Tap the ⚡ on any task to open its sheet — mark it “Doing now”, jump to a focus session on it, add private notes (scratchpad), complete, or delete.'],
-  ['Tasks / Schedule / Calendar','Tasks groups by Morning/Afternoon/Evening — drag the grip on a task to reorder it within its group. Completing a one-off task sends it straight to the Bin (recurring tasks stay put). Schedule is an hourly timeline with its own complete-checkbox per task. Calendar has WEEK and MONTH views — browse with the arrows, tap any day to see its tasks.'],
+  ['Tasks / Calendar','Tasks groups by Morning/Afternoon/Evening — drag the grip on a task to reorder it within its group. Completing a one-off task sends it straight to the Bin (recurring tasks stay put). Calendar has three views: <b>WEEK</b> and <b>MONTH</b> browse with the arrows and a tap on any day shows its tasks below; <b>SCHEDULE</b> swaps that for an hourly timeline of the selected day, with its own complete-checkbox per task — the arrows step one day at a time in this view.'],
   ['Focus timer','25-min focus / 5-min break dot ring — tap "Customize durations" to change either length. +15 karma per session. Focus Music lives right below the timer.'],
-  ['Habits','Track habits on a dotted 7-day grid — tap a dot to mark a day done, drag the grip to reorder. Tap the pencil to set a weekly target (e.g. 3× a week — the streak then counts consecutive weeks that hit the target, shown as <code>4W</code>, with a <code>2/3</code> chip for this week) and to see your last 15 weeks of history. DAILY keeps the classic every-day streak.'],
-  ['Workouts','A Mon–Sun weekly plan. Tap the <b>pencil</b> on any day to pick what happens that day — a workout template, a Rest Day, or <b>+ New template</b>, which opens a popup where you name it and optionally start from a copy of an existing workout. Edit exercises right there: <b>Add exercise</b> opens a popup to pick from the library <i>or</i> create a brand-new exercise on the spot (name, reps/time, category — including a new category). Per exercise: sets × reps or duration (tap the <code>REPS</code>/<code>SECS</code> pill to switch, just for that workout), rest timers, circuits with a rounds count, plus <b>Duplicate</b> and Delete. Tap the <b>eye</b> to preview the exact step order you’ll follow. The <b>2-WEEK</b> button alternates two different weeks (A/B) automatically — edit each week from its chip; “NOW” marks the live one. Today’s row gets a START button (guided session player: reps steps wait for your tap, timed work and rests count down automatically, your PR shows under the exercise) and a check-circle (+10 karma); the flame streak only breaks when a <i>scheduled</i> workout is missed. <b>Workout Music</b> — the full music player — sits below the plan. The exercise moves themselves live in Settings → Exercises.'],
+  ['Workouts','A Mon–Sun weekly plan. Tap the <b>pencil</b> on any day to pick what happens that day — a workout template, a Rest Day, or <b>+ New template</b>, which opens a popup where you name it and optionally start from a copy of an existing workout. Edit exercises right there: <b>Add exercise</b> opens a popup to pick from the library <i>or</i> create a brand-new exercise on the spot (name, reps/time, category — including a new category). Per exercise: sets × reps or duration (tap the <code>REPS</code>/<code>SECS</code> pill to switch, just for that workout), rest timers, circuits with a rounds count, plus <b>Duplicate</b> and Delete. Tap the <b>eye</b> to preview the exact step order you’ll follow. The <b>2-WEEK</b> button alternates two different weeks (A/B) automatically — edit each week from its chip; “NOW” marks the live one. Today’s row gets a START button (guided session player: reps steps wait for your tap; timed work and rests show a PLAY button and only start counting down once you tap it, so nothing runs while you’re getting into position; your PR shows under the exercise) and a check-circle (+10 karma); the flame streak only breaks when a <i>scheduled</i> workout is missed. <b>Workout Music</b> — the full music player — sits below the plan. The exercise moves themselves live in Settings → Exercises.'],
   ['Bin','Deleted tasks group by category & date with DONE/OPEN. Restore or empty.'],
   ['Stats','Completion %, streak, karma, focus sessions, best focus hour, a weekly grid, 30-day momentum, a year heatmap for tasks and another for workouts, and a category breakdown.'],
-  ['Appearance','Pick one of four accent colours — or tap the rainbow swatch to choose any custom colour — and toggle light / dark.'],
+  ['Appearance','Pick one of four accent colours — or tap the fifth swatch to choose any custom colour, which then updates to show exactly what you picked — and toggle light / dark.'],
   ['Music (Focus & Workouts tabs)','The same player lives below the pomodoro (Focus) and below the weekly plan (Workouts). <b>My Files</b> — add your own audio (files or a whole folder); stored on-device, plays fully offline, no limits. <b>Free · Lo-fi</b> — ad-free radio, no account. <b>Noise</b> — white/pink/brown/blue/violet, generated on-device, good for masking distractions. <b>Spotify</b> — embedded player (no Premium/setup; free Spotify = ~30s previews). Any of them can auto-play when a focus session starts. Tap the now-playing chip top-right for a mini-player without leaving your current tab.'],
-  ['Backup','Settings → Appearance → Export tasks downloads your task/habit/karma data as JSON; Import tasks restores it (replaces current data). Export library downloads your My Files tracks and playlists as a .zip; Import library adds a .zip’s tracks and playlists into your current library.'],
-  ['Sync (Google Drive)','Keeps two devices in step via a hidden app file in your own Google Drive — tasks, habits, workouts and settings (not music files). Newest change wins; AUTO-SYNC pushes ~30s after an edit and pulls on app start. <b>One-time setup:</b> 1) go to <code>console.cloud.google.com</code>, create a project. 2) APIs &amp; Services → Library → enable <code>Google Drive API</code>. 3) OAuth consent screen → External → add your own Gmail as a test user. 4) Credentials → Create credentials → OAuth client ID → Web application → under “Authorized JavaScript origins” add the address you open the app from (e.g. <code>https://yourname.github.io</code>). 5) Copy the Client ID, paste it into Settings → Appearance → Sync on <i>every</i> device, tap Sync now and sign in with the same Google account.'],
+  ['Backup','Settings → Appearance → Export tasks downloads your task/karma data as JSON; Import tasks restores it (replaces current data). Export library downloads your My Files tracks and playlists as a .zip; Import library adds a .zip’s tracks and playlists into your current library.'],
+  ['Sync (Google Drive)','Keeps two devices in step via a hidden app file in your own Google Drive — tasks, workouts and settings (not music files). Newest change wins; AUTO-SYNC pushes ~30s after an edit and pulls on app start. <b>One-time setup:</b> 1) go to <code>console.cloud.google.com</code>, create a project. 2) APIs &amp; Services → Library → enable <code>Google Drive API</code>. 3) OAuth consent screen → External → add your own Gmail as a test user. 4) Credentials → Create credentials → OAuth client ID → Web application → under “Authorized JavaScript origins” add the address you open the app from (e.g. <code>https://yourname.github.io</code>). 5) Copy the Client ID, paste it into Settings → Appearance → Sync on <i>every</i> device, tap Sync now and sign in with the same Google account.'],
   ['Task goal','In Stats, set a target task count and a date. A dot-ring tracks how many tasks you complete between now and then.']
 ];
 function renderGuide(){ const g=document.getElementById('guide'); if(!g||g.dataset.done) return;
@@ -3199,7 +3115,7 @@ window.addEventListener('online',setOffline); window.addEventListener('offline',
 if('serviceWorker' in navigator){ window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{})); }
 
 /* expose for inline handlers */
-window.toggle=toggle; window.del=del; window.restore=restore; window.openTask=openTask; window.delHabit=delHabit;
+window.toggle=toggle; window.del=del; window.restore=restore; window.openTask=openTask;
 
 /* ---------- boot ---------- */
 SP.handleRedirect().then(()=>{ if(SP.connected()){ spUpdateNow(); setInterval(()=>{ if(SP.connected()) spUpdateNow(); },15000); } });
