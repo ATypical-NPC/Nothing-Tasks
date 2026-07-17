@@ -91,13 +91,32 @@ html[data-accent="red"]   .acc-red,
 html[data-accent="blue"]  .acc-blue,
 html[data-accent="green"] .acc-green,
 html[data-accent="yellow"].acc-yellow{border-color:var(--text); transform:scale(1.12)}
-/* real swatch color is a solid background set via JS (state.customAccent) — the native
-   input is invisible and just fills the circle so clicks open the OS picker; this avoids
-   fighting the native color-swatch's own shadow-DOM shape (never renders as a true circle) */
-.acc-custom{display:inline-flex; position:relative; overflow:hidden; cursor:pointer}
-.acc-custom input[type=color]{position:absolute; inset:0; width:100%; height:100%; margin:0; padding:0; border:0; opacity:0; cursor:pointer}
+/* swatch color is set via JS from state.customAccent; clicking opens the in-app picker modal */
+.acc-custom{cursor:pointer}
 .acc-custom:hover{transform:scale(1.12)}
 html[data-accent="custom"] .acc-custom{border-color:var(--text); transform:scale(1.12)}
+
+/* ===================== in-app color picker ===================== */
+.cp-sv{position:relative; width:100%; height:170px; border-radius:var(--r); border:1px solid var(--line);
+  cursor:crosshair; touch-action:none; overflow:hidden}
+.cp-sv-white{position:absolute; inset:0; background:linear-gradient(to right,#fff,transparent)}
+.cp-sv-black{position:absolute; inset:0; background:linear-gradient(to top,#000,transparent)}
+.cp-cursor{position:absolute; width:16px; height:16px; border-radius:50%; border:2px solid #fff;
+  box-shadow:0 0 0 1.5px #000; transform:translate(-50%,-50%); pointer-events:none}
+.cp-hue{position:relative; width:100%; height:18px; border-radius:12px; border:1px solid var(--line);
+  touch-action:none; cursor:pointer; background:linear-gradient(to right,#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00)}
+.cp-hue-cur{position:absolute; top:50%; width:20px; height:20px; border-radius:50%; border:2px solid #fff;
+  box-shadow:0 0 0 1.5px #000; transform:translate(-50%,-50%); pointer-events:none}
+.cp-row{align-items:center}
+.cp-preview{width:44px; height:44px; min-width:44px; border-radius:50%; border:1px solid var(--line)}
+.cp-hex{font-family:var(--dot); letter-spacing:1px; text-transform:uppercase}
+
+/* ===================== sleep panel ===================== */
+.sl-cycles{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:6px}
+.sleep-card{margin:16px 0}
+.sl-big{font-family:var(--dot); font-weight:900; font-size:56px; color:var(--accent); line-height:1;
+  margin:6px 0 10px; font-variant-numeric:tabular-nums}
+.sl-lead-row{align-items:center; margin-top:8px}
 
 .iconbtn{width:var(--tap); height:var(--tap); display:grid; place-items:center;
   border:1px solid var(--line); border-radius:var(--r); background:var(--surface)}
@@ -119,6 +138,17 @@ html[data-accent="custom"] .acc-custom{border-color:var(--text); transform:scale
 .streak{display:flex; align-items:center; gap:6px; font-size:11px; letter-spacing:1.5px;
   color:var(--dim); font-weight:600; margin-top:8px}
 .streak i{width:14px; height:14px; color:var(--accent)}
+
+/* ===================== rank chip (hero) ===================== */
+.rank-chip{display:inline-flex; align-items:center; gap:6px; margin-top:8px; padding:0; border:0; background:transparent;
+  cursor:pointer; font-family:inherit; color:var(--dim); font-size:11px; letter-spacing:1.5px; font-weight:600;
+  flex-wrap:wrap; max-width:100%}
+.rank-chip i{width:14px; height:14px; color:var(--accent); flex:none}
+.rank-name{color:var(--text); font-weight:800}
+.rank-xp{color:var(--dim)}
+.rank-bar{display:block; width:56px; height:5px; min-width:56px; border-radius:4px; background:var(--surface-2);
+  overflow:hidden; border:1px solid var(--line)}
+.rank-bar i{display:block; height:100%; width:0; background:var(--accent)}
 
 /* ===================== tabs ===================== */
 .tabs{display:flex; gap:8px; margin-bottom:16px; overflow-x:auto; scrollbar-width:none}
@@ -258,8 +288,8 @@ html[data-theme="light"] input[type="date"]::-webkit-calendar-picker-indicator:h
 .week-card h3{margin:0 0 16px; font-size:12px; letter-spacing:2px; color:var(--dim); font-weight:600; text-transform:uppercase}
 .dotweek{display:flex; gap:18px; justify-content:space-between}
 .dotday{display:flex; flex-direction:column; align-items:center; gap:9px; flex:1}
-.dotcol{display:flex; flex-direction:column-reverse; gap:5px; height:120px; justify-content:flex-start; width:100%; align-items:center}
-.cell{width:14px; height:14px; border-radius:50%; background:var(--line)}
+.dotcol{display:flex; flex-direction:column-reverse; gap:5px; min-height:120px; justify-content:flex-start; width:100%; align-items:center}
+.cell{width:14px; height:14px; min-height:14px; flex:0 0 14px; border-radius:50%; background:var(--line)}
 .cell.on{background:var(--accent)}
 .dotday .d-lab{font-size:11px; color:var(--dim); font-weight:600; letter-spacing:1px}
 .dotday.today .d-lab{color:var(--accent)}
@@ -326,6 +356,7 @@ html[data-theme="light"] input[type="date"]::-webkit-calendar-picker-indicator:h
   font-size:clamp(42px,12vw,58px); letter-spacing:2px; font-variant-numeric:tabular-nums}
 .pomo-controls{display:flex; align-items:center; gap:14px}
 .pbtn i{width:18px; height:18px}
+.pbtn:disabled{opacity:.3; cursor:default}
 .pbtn-main{display:inline-flex; align-items:center; gap:8px; height:var(--tap); padding:0 26px; border:0; border-radius:var(--r);
   background:var(--accent); color:var(--on-accent); font-weight:700; letter-spacing:2px; font-size:14px; transition:filter .15s, transform .1s}
 .pbtn-main:hover{filter:brightness(1.08)} .pbtn-main:active{transform:scale(.96)}
@@ -339,6 +370,13 @@ html[data-theme="light"] input[type="date"]::-webkit-calendar-picker-indicator:h
   color:var(--text); text-align:center; font-family:var(--dot); font-size:16px; outline:none}
 .pomo-durs input:focus{border-color:var(--accent)}
 .focus-task{display:flex; flex-direction:column; gap:8px; align-items:center; margin-top:4px}
+.focus-garden{width:100%; max-width:480px; text-align:left; margin-top:10px; padding-top:22px; border-top:1px dotted var(--line)}
+.garden-live{display:grid; place-items:center; min-height:130px}
+.garden-live svg{display:block}
+.garden-cap{text-align:center; letter-spacing:1.5px; margin:2px 0 12px}
+.garden-grid{display:flex; flex-wrap:wrap; gap:6px; justify-content:flex-start}
+.garden-cell{width:26px; height:34px; display:grid; place-items:center; opacity:.9}
+.garden-total{margin-top:10px; letter-spacing:1.5px}
 .focus-music{width:100%; max-width:480px; text-align:left; margin-top:10px; padding-top:22px; border-top:1px dotted var(--line)}
 .focus-music .s-h:first-child{margin-top:0}
 .focus-task select{height:var(--tap); min-width:240px; border:1px solid var(--line); border-radius:var(--r);
@@ -458,6 +496,8 @@ html[data-theme="light"] input[type="date"]::-webkit-calendar-picker-indicator:h
 .fm-station:hover{border-color:var(--text)}
 .fm-station.on{background:var(--accent); color:var(--on-accent); border-color:var(--accent)}
 .fm-now{font-size:12px; letter-spacing:1px; color:var(--dim)}
+.fm-status{margin:0; line-height:1.5}
+.fm-status.err{color:var(--red); border:1px dashed var(--red); border-radius:var(--r); padding:9px 11px}
 .sp-embed{border-radius:12px; overflow:hidden; min-height:80px}
 .sp-embed iframe{display:block; border:0; border-radius:12px; width:100%}
 .lib-list{display:flex; flex-direction:column; gap:4px; max-height:260px; overflow:auto; margin-top:2px}
@@ -503,14 +543,24 @@ label.btn-line{cursor:pointer}
 .s-p,.feature p{font-size:13.5px; font-weight:500; letter-spacing:.4px}
 .t-title,.w-next{font-weight:700}
 
-/* ===================== daily goal ===================== */
-.goal-line{display:inline-flex; align-items:center; gap:8px; margin-top:14px; padding:7px 13px; border:1px dashed var(--line);
-  border-radius:30px; background:transparent; color:var(--text); cursor:pointer; max-width:100%}
-.goal-line:hover{border-color:var(--accent)}
-#goal-text{font-size:13px; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
-.goal-form{margin-top:14px}
-.goal-input{height:38px; border:1px solid var(--accent); border-radius:30px; background:var(--surface); padding:0 15px;
-  color:var(--text); outline:none; letter-spacing:.5px; width:min(360px,100%); font-weight:600}
+/* ===================== daily planning ritual (#5) ===================== */
+.plan-banner{display:flex; align-items:center; gap:12px; width:100%; padding:13px 16px; margin-bottom:12px;
+  border:1px solid var(--accent); border-radius:var(--r); background:color-mix(in srgb,var(--accent) 8%,var(--surface));
+  color:var(--text); text-align:left; transition:.15s}
+.plan-banner:hover{background:color-mix(in srgb,var(--accent) 14%,var(--surface))}
+.pb-title{font-family:var(--dot); font-weight:900; font-size:14px; letter-spacing:2px; color:var(--accent)}
+.pb-sub{font-size:12px; color:var(--dim); font-weight:600; margin-left:auto}
+.plan-list{display:flex; flex-direction:column; gap:6px; margin-bottom:14px; max-height:44vh; overflow:auto}
+.plan-row{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:9px 11px;
+  border:1px solid var(--line-soft); border-radius:var(--r); background:var(--surface-2)}
+.plan-tt{font-size:13.5px; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.plan-tt .t-time{margin-right:2px}
+.plan-row.deferred .plan-tt{color:var(--faint); text-decoration:line-through}
+.plan-toggle{flex:none; min-width:92px; padding:6px 10px; border:1px solid var(--line); border-radius:20px;
+  background:var(--surface); color:var(--dim); font-size:10px; letter-spacing:1.5px; font-weight:700; transition:.15s}
+.plan-toggle.tdy{border-color:var(--accent); color:var(--accent)}
+.plan-toggle.tmrw{border-color:var(--line); color:var(--faint)}
+.plan-toggle:hover{border-color:var(--text)}
 
 /* ===================== widgets ===================== */
 .widgets{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:18px}
@@ -531,6 +581,8 @@ label.btn-line{cursor:pointer}
 .t-act:hover{border-color:var(--accent); color:var(--accent)}
 .t-act i{width:18px; height:18px; line-height:0}
 .t-now{font-size:10px; letter-spacing:1.5px; font-weight:800; color:var(--on-accent); background:var(--accent); padding:2px 8px; border-radius:20px}
+.t-auto{font-size:9px; letter-spacing:1.5px; font-weight:800; color:var(--dim); border:1px dashed var(--line);
+  border-radius:20px; padding:1px 7px}
 .t-note{display:inline-flex; color:var(--dim)}
 .t-note i{width:13px; height:13px; line-height:0}
 .task.active{border-color:var(--accent); box-shadow:0 0 0 1px var(--accent)}
@@ -541,6 +593,9 @@ label.btn-line{cursor:pointer}
 .task-modal{width:min(440px,94vw); max-height:88vh; overflow:auto; background:var(--bg); border:1px solid var(--stroke-2,var(--line));
   border-radius:14px; padding:20px; animation:fade .2s ease; box-shadow:0 30px 70px -24px #000}
 .tm-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px}
+.tm-head-btns{display:flex; gap:8px}
+.confirm-msg{margin-bottom:16px}
+.confirm-actions{margin-bottom:0}
 .tm-head h3{margin:0; font-size:18px}
 .tm-actions{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:6px}
 .tm-btn{display:inline-flex; align-items:center; gap:8px; justify-content:center; height:46px; border:1px solid var(--line);
@@ -653,6 +708,44 @@ label.btn-line{cursor:pointer}
   display:flex; align-items:baseline; gap:10px; justify-content:center; padding:20px 0}
 .ses-reps-lab{font-size:14px; letter-spacing:2px; color:var(--dim)}
 .ses-next{margin-top:2px}
+/* workout summary card (#17) */
+.sum-big{font-family:var(--dot); font-weight:900; font-size:64px; color:var(--accent); line-height:1;
+  font-variant-numeric:tabular-nums; margin:6px 0 2px}
+.sum-meta{letter-spacing:2px; margin-bottom:8px}
+.sum-list{width:100%; display:flex; flex-direction:column; gap:4px; margin-bottom:14px; text-align:left}
+.sum-row{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:7px 10px;
+  border:1px solid var(--line-soft); border-radius:var(--r); background:var(--surface-2)}
+.sum-ex{font-size:13.5px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.sum-v{font-family:var(--dot); font-size:12px; color:var(--dim); font-weight:700; white-space:nowrap}
+/* per-exercise progress chart (#12) */
+.ex-spark{height:60px; margin:4px 0 6px}
+.ex-prog-foot{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap}
+
+/* ===================== rank / progress panel (#24) ===================== */
+.rank-card{text-align:center; margin-bottom:18px}
+.rank-big{font-size:40px; margin:6px 0 10px}
+.rank-big-lab{font-size:14px; color:var(--dim); letter-spacing:2px; margin-left:4px}
+.rank-progress-bar{margin:0 0 10px}
+.rank-ladder{display:flex; flex-direction:column; gap:6px; margin-bottom:22px}
+.rank-rung{display:flex; align-items:center; gap:12px; padding:9px 12px; border:1px solid var(--line);
+  border-radius:var(--r); background:var(--surface); opacity:.45}
+.rank-rung.reached{opacity:1}
+.rank-rung.current{border-color:var(--accent); box-shadow:0 0 0 1px var(--accent)}
+.rank-rung-dot{width:9px; height:9px; min-width:9px; border-radius:50%; background:var(--line)}
+.rank-rung.reached .rank-rung-dot{background:var(--accent)}
+.rank-rung-name{flex:1; font-weight:800; font-size:13px; letter-spacing:1.5px}
+.rank-rung-xp{font-family:var(--dot); font-size:11px; color:var(--dim); font-weight:700; white-space:nowrap}
+.rank-rung.genesis{border-style:dashed}
+.badge-shelf{display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:10px; margin-bottom:18px}
+.badge-card{border:1px solid var(--line); border-radius:var(--r); background:var(--surface); padding:12px 10px;
+  display:flex; flex-direction:column; align-items:center; text-align:center; gap:6px}
+.badge-card.locked{opacity:.4; border-style:dashed}
+.badge-dot{width:32px; height:32px; min-width:32px; border-radius:50%; display:grid; place-items:center;
+  background:var(--surface-2); border:1px solid var(--line); font-family:var(--dot); font-weight:900; color:var(--dim)}
+.badge-card.earned .badge-dot{background:var(--accent); color:var(--on-accent); border-color:var(--accent)}
+.badge-card.earned .badge-dot i{width:16px; height:16px}
+.badge-name{font-size:11.5px; font-weight:800; letter-spacing:.5px}
+.badge-desc{font-size:10.5px; color:var(--dim); line-height:1.4}
 @media (max-width:680px){
   .sched-day{flex-wrap:wrap}
   .sched-edit>.lib-sel{max-width:none}
@@ -667,6 +760,8 @@ label.btn-line{cursor:pointer}
 /* ===================== stats insights ===================== */
 .spark{display:flex; align-items:flex-end; gap:3px; height:80px}
 .spk{flex:1; background:var(--accent); border-radius:2px 2px 0 0; min-height:6px; opacity:.85}
+.spk.empty{background:var(--line-soft); min-height:2px; align-self:flex-end; opacity:1}
+.spark-cap{margin-bottom:12px}
 .ib{display:flex; flex-direction:column; gap:10px}
 .ib-row{display:flex; align-items:center; gap:12px}
 .ib-lab{width:96px; font-size:11px; letter-spacing:1px; color:var(--dim)}
@@ -787,7 +882,6 @@ html::-webkit-scrollbar-thumb:hover{background:var(--dim)}
         <div class="label">TODAY</div>
         <div class="clock" id="clock">00:00</div>
         <div class="date" id="date">—</div>
-        <button class="goal-line" id="goal-line"><span class="label">INTENTION</span> <span id="goal-text">SET TODAY’S INTENTION →</span></button>
       </div>
 
       <div class="hero-right">
@@ -799,7 +893,11 @@ html::-webkit-scrollbar-thumb:hover{background:var(--dim)}
           <div class="big-num" id="done-count">0</div>
           <div class="label">OF <span id="total-count">0</span> DONE</div>
           <div class="streak"><i data-ic="flame"></i> <span id="streak">0</span> DAY STREAK</div>
-          <div class="streak karma"><i data-ic="star"></i> <span id="karma">0</span> KARMA</div>
+          <button class="rank-chip" id="rank-chip" aria-label="View progress"><i data-ic="star"></i>
+            <span class="rank-name" id="rank-name">DUST</span>
+            <span class="rank-xp"><span id="rank-xp-val">0</span> XP</span>
+            <span class="rank-bar"><i id="rank-bar-fill"></i></span>
+          </button>
         </div>
       </div>
     </section>
@@ -869,10 +967,13 @@ html::-webkit-scrollbar-thumb:hover{background:var(--dim)}
       </div>
       <div class="sheet-tabs">
         <button class="stab active" data-stab="appearance">Appearance</button>
+        <button class="stab" data-stab="progress">Progress</button>
         <button class="stab" data-stab="bin">Bin</button>
         <button class="stab" data-stab="stats">Stats</button>
         <button class="stab" data-stab="exlib">Exercises</button>
+        <button class="stab" data-stab="sleep">Sleep</button>
         <button class="stab" data-stab="guide">Guide</button>
+        <button class="stab" data-stab="debug">Debug</button>
       </div>
       <div class="sheet-body">
 
@@ -885,13 +986,14 @@ html::-webkit-scrollbar-thumb:hover{background:var(--dim)}
             <button class="acc acc-blue"   data-accent="blue"   role="radio" aria-label="Blue"></button>
             <button class="acc acc-green"  data-accent="green"  role="radio" aria-label="Green"></button>
             <button class="acc acc-yellow" data-accent="yellow" role="radio" aria-label="Yellow"></button>
-            <label class="acc acc-custom" id="acc-custom-swatch" aria-label="Custom colour" title="Pick any colour">
-              <input type="color" id="acc-custom" tabindex="-1" />
-            </label>
+            <button type="button" class="acc acc-custom" id="acc-custom-swatch" aria-label="Custom colour" title="Pick any colour"></button>
           </div>
           <h3 class="s-h">THEME</h3>
           <p class="s-p">Deep black or bright white — both tuned for contrast.</p>
           <button class="btn-line" id="theme-toggle"><i data-ic="contrast"></i> <span>Toggle light / dark</span></button>
+          <h3 class="s-h">TASKS</h3>
+          <p class="s-p">Assume a task is done once its deadline passes, so you don’t have to open the app just to tick boxes. Only tasks you gave a <b>time</b> are ever assumed — anything without one still waits for you. Auto-marked tasks show an <b>AUTO</b> tag, and the evening Wrap-up lets you undo any you didn’t actually do.</p>
+          <div class="sp-toggle">ASSUME DONE AT DEADLINE <button class="switch" id="autocomplete-toggle" role="switch" aria-checked="false"></button></div>
           <h3 class="s-h">BREAK NUDGES</h3>
           <p class="s-p">Gentle wellbeing reminders (water, stretch, look away) when a focus session ends.</p>
           <div class="sp-toggle">BREAK NUDGES <button class="switch" id="nudge-toggle" role="switch" aria-checked="true"></button></div>
@@ -916,6 +1018,9 @@ html::-webkit-scrollbar-thumb:hover{background:var(--dim)}
             <div class="sp-toggle sync-toggle">AUTO-SYNC <button class="switch" id="sync-auto-toggle" role="switch" aria-checked="false"></button></div>
           </div>
           <p class="sp-note" id="sync-status">NOT CONNECTED</p>
+          <h3 class="s-h">SNAPSHOTS</h3>
+          <p class="s-p">A safety net kept on this device. One snapshot is saved automatically each day (and before any restore), so you can roll back if something goes wrong.</p>
+          <div id="snap-panel"></div>
         </section>
 
         <!-- Bin -->
@@ -928,6 +1033,12 @@ html::-webkit-scrollbar-thumb:hover{background:var(--dim)}
           <div id="stats-panel"></div>
         </section>
 
+        <!-- Progress (rank ladder + badges) -->
+        <section class="spanel" data-panel="progress" hidden>
+          <h3 class="s-h">PROGRESS</h3>
+          <div id="progress-panel"></div>
+        </section>
+
         <!-- Exercise library -->
         <section class="spanel" data-panel="exlib" hidden>
           <h3 class="s-h">EXERCISE LIBRARY</h3>
@@ -935,10 +1046,22 @@ html::-webkit-scrollbar-thumb:hover{background:var(--dim)}
           <div id="exlib-panel"></div>
         </section>
 
+        <!-- Sleep -->
+        <section class="spanel" data-panel="sleep" hidden>
+          <h3 class="s-h">BEDTIME & SLEEP</h3>
+          <div id="sleep-panel"></div>
+        </section>
+
         <!-- Guide -->
         <section class="spanel" data-panel="guide" hidden>
           <h3 class="s-h">HOW EVERYTHING WORKS</h3>
           <div class="guide" id="guide"></div>
+        </section>
+
+        <!-- Debug -->
+        <section class="spanel" data-panel="debug" hidden>
+          <h3 class="s-h">DEBUG / TESTING</h3>
+          <div id="debug-panel"></div>
         </section>
 
       </div>
@@ -948,7 +1071,13 @@ html::-webkit-scrollbar-thumb:hover{background:var(--dim)}
   <!-- ============ Task action sheet ============ -->
   <div class="sheet-scrim center" id="task-sheet" hidden>
     <div class="task-modal" role="dialog" aria-modal="true" aria-label="Task actions">
-      <div class="tm-head"><h3 id="tm-title">Task</h3><button class="iconbtn" id="tm-close" aria-label="Close">✕</button></div>
+      <div class="tm-head"><h3 id="tm-title">Task</h3>
+        <div class="tm-head-btns">
+          <button class="iconbtn" id="tm-edit" aria-label="Edit task"><i data-ic="edit"></i></button>
+          <button class="iconbtn" id="tm-close" aria-label="Close">✕</button>
+        </div>
+      </div>
+      <div id="tm-edit-panel" class="workout-edit" hidden></div>
       <div class="tm-actions">
         <button class="tm-btn" id="tm-now"><i data-ic="bolt"></i> Doing now</button>
         <button class="tm-btn" id="tm-focus"><i data-ic="timer"></i> Focus on this</button>
@@ -1055,7 +1184,8 @@ function buildDefaults(){
   completed[t]=2;
   return {
     theme:'dark', accent:'red', karma:320, pomodoros:0, day:t, completed, bin:[],
-    activeTask:null, dailyGoal:{date:t, text:''}, hourLog:{9:3,10:6,11:4,14:5,16:2,21:3},
+    activeTask:null, hourLog:{9:3,10:6,11:4,14:5,16:2,21:3},
+    badges:[], badgeStats:freshBadgeStats(completed), rankMeta:{enteredSingularityAt:null},
     habits:[],
     categories:[
       {id:'work',name:'Work'},{id:'personal',name:'Personal'},{id:'health',name:'Health'},
@@ -1091,9 +1221,63 @@ function buildDefaults(){
 }
 let state = load();
 function load(){ try{ const s=JSON.parse(localStorage.getItem(LS));
-  if(s&&s.tasks&&s.categories){ s.habits=s.habits||[]; s.workouts=s.workouts||[]; s.exerciseLibrary=s.exerciseLibrary||builtinExercises(); s.exerciseCats=s.exerciseCats||[]; s.workoutTemplates=s.workoutTemplates||[]; s.workoutTemplates.forEach(t=>{ t.log=t.log||{}; t.circuits=t.circuits||[]; t.exercises=t.exercises||[]; }); s.dailyGoal=s.dailyGoal||{date:'',text:''}; s.hourLog=s.hourLog||{}; s.bin=s.bin||[]; if(s.activeTask===undefined)s.activeTask=null; return s; }
+  if(s&&s.tasks&&s.categories){ s.habits=s.habits||[]; s.workouts=s.workouts||[]; s.exerciseLibrary=s.exerciseLibrary||builtinExercises(); s.exerciseCats=s.exerciseCats||[]; s.workoutTemplates=s.workoutTemplates||[]; s.workoutTemplates.forEach(t=>{ t.log=t.log||{}; t.circuits=t.circuits||[]; t.exercises=t.exercises||[]; }); s.hourLog=s.hourLog||{}; s.bin=s.bin||[]; if(s.activeTask===undefined)s.activeTask=null; s.badges=s.badges||[]; s.badgeStats=s.badgeStats||freshBadgeStats(s.completed); s.rankMeta=s.rankMeta||{enteredSingularityAt:null}; return s; }
 }catch(e){} return buildDefaults(); }
 function save(){ state.updatedAt=Date.now(); try{ localStorage.setItem(LS, JSON.stringify(state)); }catch(e){} queueSync(); }
+
+/* ---------- snapshots (device-local safety net, not synced) ---------- */
+const SNAP_KEY='nt-snapshots', SNAP_MAX=8;
+function loadSnaps(){ try{ return JSON.parse(localStorage.getItem(SNAP_KEY))||[]; }catch(e){ return []; } }
+function saveSnaps(a){ try{ localStorage.setItem(SNAP_KEY, JSON.stringify(a.slice(-SNAP_MAX))); }catch(e){} }
+function pushSnap(label){
+  const cur=localStorage.getItem(LS); if(!cur) return;
+  const a=loadSnaps();
+  a.push({ts:Date.now(), date:today(), label:label||'', data:cur});
+  saveSnaps(a);
+}
+function takeDailySnapshot(){
+  const a=loadSnaps();
+  const last=a[a.length-1];
+  if(!last || last.date!==today()) pushSnap('daily');
+}
+function restoreSnapshot(ts){
+  const snap=loadSnaps().find(s=>s.ts===ts); if(!snap) return;
+  customConfirm('Restore this snapshot? Your current tasks, workouts and settings will be replaced by the saved copy.', ()=>{
+    pushSnap('before-restore');
+    try{ localStorage.setItem(LS, snap.data); }catch(e){}
+    state=load();
+    applyTheme(); renderAddCatOptions(); renderCatbar(); renderGlyph(); render(); updateLive();
+    save();
+    const sp=document.getElementById('snap-panel'); if(sp) renderSnapshots(sp);
+    toast('SNAPSHOT RESTORED');
+  }, {confirmLabel:'Restore'});
+}
+function snapLabel(s){
+  const d=new Date(s.ts);
+  const when=s.date===today()?'TODAY':(s.date===addDays(today(),-1)?'YESTERDAY':dateLabel(s.date));
+  const tm=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  const tag=s.label==='manual'?' · MANUAL':(s.label==='before-restore'?' · PRE-RESTORE':'');
+  return `${when} ${tm}${tag}`;
+}
+function renderSnapshots(target){
+  target=target||document.getElementById('snap-panel'); if(!target) return;
+  const a=loadSnaps().slice().reverse();
+  let html=`<div class="sp-row"><button class="btn-line" id="snap-now"><i data-ic="download"></i> Snapshot now</button></div>`;
+  if(!a.length){ html+=`<p class="sp-note">No snapshots yet. One is saved automatically each day, and before any restore.</p>`; }
+  else{
+    html+=a.map(s=>{
+      let items=0; try{ const d=JSON.parse(s.data); items=(d.tasks||[]).length; }catch(e){}
+      return `<div class="task snap-row">
+        <div class="t-main"><div class="t-title">${snapLabel(s)}</div>
+          <div class="t-sub"><span class="t-cat">${items} TASK${items===1?'':'S'}</span></div></div>
+        <button class="t-restore" data-snaprestore="${s.ts}" aria-label="Restore this snapshot"><i data-ic="rotate"></i></button></div>`;
+    }).join('');
+  }
+  target.innerHTML=html;
+  paintIcons(target);
+  const nb=document.getElementById('snap-now'); if(nb) nb.onclick=()=>{ pushSnap('manual'); renderSnapshots(target); toast('SNAPSHOT SAVED'); };
+  target.querySelectorAll('[data-snaprestore]').forEach(b=>b.onclick=()=>restoreSnapshot(+b.dataset.snaprestore));
+}
 function migrateWorkoutCategory(){
   if(!state.categories.some(c=>c.id==='workout')) return;
   const toMove=state.tasks.filter(t=>t.cat==='workout');
@@ -1188,15 +1372,73 @@ function applyTheme(){ root.setAttribute('data-theme',state.theme); root.setAttr
   document.querySelector('meta[name=theme-color]').setAttribute('content', state.theme==='dark'?'#000000':'#f4f4f4'); }
 document.getElementById('theme-toggle').onclick=()=>{ state.theme=state.theme==='dark'?'light':'dark'; applyTheme(); save(); };
 document.querySelectorAll('.acc:not(.acc-custom)').forEach(b=>b.onclick=()=>{ state.accent=b.dataset.accent; applyTheme(); save(); renderGlyph(); render(); });
-const accCustom=document.getElementById('acc-custom');
 const accCustomSwatch=document.getElementById('acc-custom-swatch');
-if(accCustom){
-  accCustom.value=state.customAccent||'#ff2d2d';
-  if(accCustomSwatch) accCustomSwatch.style.background=accCustom.value;
-  accCustom.oninput=()=>{ state.accent='custom'; state.customAccent=accCustom.value;
-    if(accCustomSwatch) accCustomSwatch.style.background=accCustom.value; applyTheme(); };
-  accCustom.onchange=()=>{ state.accent='custom'; state.customAccent=accCustom.value;
-    if(accCustomSwatch) accCustomSwatch.style.background=accCustom.value; applyTheme(); save(); renderGlyph(); render(); };
+if(accCustomSwatch){
+  accCustomSwatch.style.background=state.customAccent||'#ff2d2d';
+  accCustomSwatch.onclick=()=>openColorPicker();
+}
+/* ---------- custom in-app color picker (no native OS picker) ---------- */
+function hsvToHex(h,s,v){
+  const f=(n)=>{ const k=(n+h/60)%6; const c=v-v*s*Math.max(0,Math.min(k,4-k,1)); return Math.round(c*255); };
+  return '#'+[f(5),f(3),f(1)].map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+function hexToHsv(hex){
+  const [r,g,b]=hexToRgb(hex).map(x=>x/255);
+  const mx=Math.max(r,g,b), mn=Math.min(r,g,b), d=mx-mn;
+  let h=0;
+  if(d){ if(mx===r) h=((g-b)/d)%6; else if(mx===g) h=(b-r)/d+2; else h=(r-g)/d+4; h*=60; if(h<0) h+=360; }
+  return {h, s:mx?d/mx:0, v:mx};
+}
+function openColorPicker(){
+  let {h,s,v}=hexToHsv(state.customAccent||'#ff2d2d');
+  const el=openWkModal(`
+    <div class="tm-head"><h3>Accent colour</h3><button class="iconbtn" data-wkclose aria-label="Close">✕</button></div>
+    <div class="wk-form">
+      <div class="cp-sv" id="cp-sv"><div class="cp-sv-white"></div><div class="cp-sv-black"></div><div class="cp-cursor" id="cp-sv-cur"></div></div>
+      <div class="cp-hue" id="cp-hue"><div class="cp-hue-cur" id="cp-hue-cur"></div></div>
+      <div class="sp-row cp-row">
+        <span class="cp-preview" id="cp-preview"></span>
+        <input type="text" class="sp-input cp-hex" id="cp-hex" maxlength="7" spellcheck="false" autocomplete="off" aria-label="Hex colour" />
+      </div>
+      <button type="button" class="pbtn-main" id="cp-apply">APPLY</button>
+    </div>`);
+  const sv=el.querySelector('#cp-sv'), hue=el.querySelector('#cp-hue');
+  const svCur=el.querySelector('#cp-sv-cur'), hueCur=el.querySelector('#cp-hue-cur');
+  const prev=el.querySelector('#cp-preview'), hexInp=el.querySelector('#cp-hex');
+  const cur=()=>hsvToHex(h,s,v);
+  function paint(){
+    sv.style.backgroundColor=hsvToHex(h,1,1);
+    svCur.style.left=(s*100)+'%'; svCur.style.top=((1-v)*100)+'%';
+    hueCur.style.left=(h/360*100)+'%';
+    const hex=cur();
+    prev.style.background=hex;
+    if(document.activeElement!==hexInp) hexInp.value=hex.toUpperCase();
+  }
+  function drag(surface, fn){
+    surface.onpointerdown=(e)=>{
+      e.preventDefault();
+      try{ surface.setPointerCapture(e.pointerId); }catch(_){}
+      const move=(ev)=>{ const r=surface.getBoundingClientRect();
+        fn(Math.min(1,Math.max(0,(ev.clientX-r.left)/r.width)), Math.min(1,Math.max(0,(ev.clientY-r.top)/r.height)));
+        paint(); };
+      move(e);
+      surface.onpointermove=(ev)=>{ if(ev.buttons) move(ev); };
+      surface.onpointerup=()=>{ surface.onpointermove=null; };
+    };
+  }
+  drag(sv,(x,y)=>{ s=x; v=1-y; });
+  drag(hue,(x)=>{ h=Math.min(359.9, x*360); });
+  hexInp.onchange=()=>{
+    let val=hexInp.value.trim(); if(val&&!val.startsWith('#')) val='#'+val;
+    if(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(val)) ({h,s,v}=hexToHsv(val));
+    hexInp.blur(); paint();
+  };
+  el.querySelector('#cp-apply').onclick=()=>{
+    state.accent='custom'; state.customAccent=cur();
+    accCustomSwatch.style.background=state.customAccent;
+    applyTheme(); save(); renderGlyph(); render(); closeWkModal(); toast('ACCENT UPDATED');
+  };
+  paint();
 }
 
 /* ---------- backup / export ---------- */
@@ -1279,8 +1521,10 @@ function importTasksFile(file){
     try{
       const parsed=JSON.parse(reader.result);
       if(!parsed || !Array.isArray(parsed.tasks) || !Array.isArray(parsed.categories)) throw new Error('bad shape');
-      state=parsed; state.habits=state.habits||[]; state.workouts=state.workouts||[]; state.exerciseLibrary=state.exerciseLibrary||builtinExercises(); state.exerciseCats=state.exerciseCats||[]; state.workoutTemplates=state.workoutTemplates||[]; state.workoutTemplates.forEach(t=>{ t.log=t.log||{}; t.circuits=t.circuits||[]; t.exercises=t.exercises||[]; }); state.dailyGoal=state.dailyGoal||{date:'',text:''};
-      state.hourLog=state.hourLog||{}; state.bin=state.bin||[]; if(state.activeTask===undefined) state.activeTask=null; migrateWorkoutsToSchedule();
+      state=parsed; state.habits=state.habits||[]; state.workouts=state.workouts||[]; state.exerciseLibrary=state.exerciseLibrary||builtinExercises(); state.exerciseCats=state.exerciseCats||[]; state.workoutTemplates=state.workoutTemplates||[]; state.workoutTemplates.forEach(t=>{ t.log=t.log||{}; t.circuits=t.circuits||[]; t.exercises=t.exercises||[]; });
+      state.hourLog=state.hourLog||{}; state.bin=state.bin||[]; if(state.activeTask===undefined) state.activeTask=null;
+      state.badges=state.badges||[]; state.badgeStats=state.badgeStats||freshBadgeStats(state.completed); state.rankMeta=state.rankMeta||{enteredSingularityAt:null};
+      migrateWorkoutsToSchedule();
       save(); applyTheme(); renderAddCatOptions(); renderCatbar(); renderGlyph(); render(); updateLive();
       toast('TASKS IMPORTED');
     }catch(e){ toast('IMPORT FAILED — INVALID FILE'); }
@@ -1440,9 +1684,6 @@ function updateLive(){
   // hero battery = completion
   const done=tt.filter(t=>isDone(t,today())).length, total=tt.length||1, ch=Math.round(done/total*100);
   setW('hero-batt-fill',ch); setTxt('hero-batt-pct',ch+'%');
-  // daily goal
-  const g=(state.dailyGoal&&state.dailyGoal.date===today()&&state.dailyGoal.text)?state.dailyGoal.text:'';
-  setTxt('goal-text', g||'SET TODAY’S INTENTION →');
   // mini focus chip
   const fc=document.getElementById('focus-chip');
   if(fc){ if(pomoInt){ fc.hidden=false; setTxt('focus-chip-t', fmtSec(pomo.left)); } else fc.hidden=true; }
@@ -1450,6 +1691,99 @@ function updateLive(){
   const ac=document.getElementById('active-chip');
   if(ac){ const at=state.activeTask!=null?state.tasks.find(x=>x.id===state.activeTask):null;
     if(at){ ac.hidden=false; setTxt('active-text','NOW: '+at.title); } else ac.hidden=true; }
+  checkSleepReminder();
+  runAutoComplete();
+}
+
+/* =====================================================================
+   Rank / XP / badges — replaces the bare karma number with a lifetime
+   progression system. Internal field stays `state.karma` (zero risk,
+   nobody sees the variable name) but every user-facing label reads XP.
+   ===================================================================== */
+const RANKS=[
+  {name:'DUST',        xp:0},
+  {name:'EMBER',       xp:50},
+  {name:'STAR',        xp:150},
+  {name:'CLUSTER',     xp:350},
+  {name:'NEBULA',      xp:700},
+  {name:'GALAXY',      xp:1300},
+  {name:'QUASAR',      xp:2200},
+  {name:'PULSAR',      xp:3500},
+  {name:'NOVA',        xp:5500},
+  {name:'SUPERNOVA',   xp:8500},
+  {name:'SINGULARITY', xp:13000}
+];
+const GENESIS_DAYS=365;
+function daysBetween(a,b){ return Math.round((new Date(b+'T00:00:00')-new Date(a+'T00:00:00'))/86400000); }
+function rankMeta(){ state.rankMeta=state.rankMeta||{enteredSingularityAt:null}; return state.rankMeta; }
+// Sustained-Singularity clock: resets the instant XP dips back below the top threshold —
+// Genesis has to be one unbroken year at the top, not just "reached it once, eventually."
+function updateRankMeta(){
+  const rm=rankMeta(), atSingularity=(state.karma||0)>=RANKS[RANKS.length-1].xp;
+  if(atSingularity){ if(!rm.enteredSingularityAt) rm.enteredSingularityAt=today(); }
+  else rm.enteredSingularityAt=null;
+}
+function currentRank(){
+  updateRankMeta();
+  const xp=state.karma||0;
+  let idx=0; for(let i=0;i<RANKS.length;i++){ if(xp>=RANKS[i].xp) idx=i; }
+  const atSingularity=idx===RANKS.length-1;
+  const rm=rankMeta();
+  const genesisDays=(atSingularity&&rm.enteredSingularityAt)?daysBetween(rm.enteredSingularityAt,today()):0;
+  const genesis=atSingularity&&genesisDays>=GENESIS_DAYS;
+  const next=RANKS[idx+1]||null;
+  const floor=RANKS[idx].xp, ceil=next?next.xp:floor;
+  const frac = genesis?1 : next?Math.max(0,Math.min(1,(xp-floor)/(ceil-floor))) : Math.max(0,Math.min(1,genesisDays/GENESIS_DAYS));
+  return {name:genesis?'GENESIS':RANKS[idx].name, idx, xp, next, frac, atSingularity, genesis, genesisDays,
+    xpToNext: next?Math.max(0,next.xp-xp):0};
+}
+function hadComeback(){
+  const s=streak(); if(s<3) return false;
+  let d=today(); if(!state.completed[d]) d=addDays(d,-1);
+  while(state.completed[d]) d=addDays(d,-1);
+  let gap=0, probe=d;
+  while(gap<400){ if(state.completed[probe]) return gap>=2; probe=addDays(probe,-1); gap++; }
+  return false;
+}
+const BADGES=[
+  {id:'first_light',   group:'TASKS',    name:'First Light',    desc:'Complete your first task.',                       check:()=>badgeStats().tasksCompleted>=1},
+  {id:'centurion',      group:'TASKS',    name:'Centurion',       desc:'Complete 100 tasks.',                              check:()=>badgeStats().tasksCompleted>=100},
+  {id:'five_hundred',   group:'TASKS',    name:'Five Hundred',    desc:'Complete 500 tasks.',                              check:()=>badgeStats().tasksCompleted>=500},
+  {id:'clean_sweep',    group:'TASKS',    name:'Clean Sweep',     desc:'Finish every task scheduled for a day.',           check:()=>{ const tt=tasksForDate(today()); return tt.length>0 && tt.every(t=>isDone(t,today())); }},
+  {id:'daily_dozen',    group:'TASKS',    name:'Daily Dozen',     desc:'Complete 12+ tasks in a single day.',              check:()=>Math.max(0,...Object.values(state.completed||{}),0)>=12},
+  {id:'week_one',       group:'STREAKS',  name:'Week One',        desc:'Hit a 7-day streak.',                              check:()=>streak()>=7},
+  {id:'monthly',        group:'STREAKS',  name:'Monthly',         desc:'Hit a 30-day streak.',                             check:()=>streak()>=30},
+  {id:'centennial',     group:'STREAKS',  name:'Centennial',      desc:'Hit a 100-day streak.',                            check:()=>streak()>=100},
+  {id:'comeback',       group:'STREAKS',  name:'Comeback',        desc:'Rebuilt a streak after a real break.',             check:hadComeback},
+  {id:'first_rep',      group:'WORKOUTS', name:'First Rep',       desc:'Log your first workout.',                          check:()=>(state.sessionLog||[]).length>=1},
+  {id:'iron_ten',       group:'WORKOUTS', name:'Iron Ten',        desc:'Log 10 workouts.',                                 check:()=>(state.sessionLog||[]).length>=10},
+  {id:'iron_fifty',     group:'WORKOUTS', name:'Iron Fifty',      desc:'Log 50 workouts.',                                 check:()=>(state.sessionLog||[]).length>=50},
+  {id:'record_breaker', group:'WORKOUTS', name:'Record Breaker',  desc:'Set your first personal record.',                  check:()=>(state.exerciseLibrary||[]).some(e=>e.pr)},
+  {id:'green_thumb',    group:'WORKOUTS', name:'Green Thumb',     desc:'Grow 30 plants in the Focus Garden.',              check:()=>(state.garden||[]).length>=30},
+  {id:'night_owl',      group:'HIDDEN',   name:'Night Owl',       desc:'Complete something between midnight and 4am.',    check:()=>!!badgeStats().nightOwl, hidden:true},
+  {id:'early_bird',     group:'HIDDEN',   name:'Early Bird',      desc:'Complete something before 6am.',                   check:()=>!!badgeStats().earlyBird, hidden:true},
+  {id:'speedrunner',    group:'HIDDEN',   name:'Speedrunner',     desc:'Finish a logged workout in under 5 minutes.',      check:()=>(state.sessionLog||[]).some(s=>s.durationSec>0&&s.durationSec<300), hidden:true},
+  {id:'fully_planned',  group:'HIDDEN',   name:'Fully Planned',   desc:'Plan your day and wrap it up, same day.',          check:()=>planningState().plannedDate===today()&&planningState().reviewedDate===today(), hidden:true}
+];
+// Debug freeze: badges re-qualify from live state (streak, counters), so clearing them is a no-op
+// unless auto-earning is paused too — otherwise the next render instantly re-awards them.
+function badgesFrozen(){ return localStorage.getItem('debug_freeze_badges')==='1'; }
+function checkBadges(){
+  state.badges=state.badges||[];
+  if(badgesFrozen()) return;
+  let changed=false;
+  BADGES.forEach(b=>{ if(!state.badges.includes(b.id) && b.check()){ state.badges.push(b.id); changed=true; } });
+  if(changed) save(); // silent by design — no toast, the badge shelf just lights up next time you look
+}
+function renderRankChip(){
+  const chip=document.getElementById('rank-chip'); if(!chip) return;
+  const r=currentRank();
+  setTxt('rank-name', r.name);
+  setTxt('rank-xp-val', r.xp);
+  const fill=document.getElementById('rank-bar-fill'); if(fill) fill.style.width=(r.frac*100)+'%';
+  chip.title = r.genesis ? 'GENESIS — an unbroken year at Singularity'
+    : r.atSingularity ? `${r.genesisDays}/${GENESIS_DAYS} days toward GENESIS`
+    : `${r.xpToNext} XP to ${r.next.name}`;
 }
 
 /* ---------- hero glyph ---------- */
@@ -1459,7 +1793,8 @@ function renderGlyph(){
   const total=tt.length||1, done=tt.filter(t=>isDone(t,today())).length;
   const pct=Math.round((done/total)*100);
   setW('hero-batt-fill',pct); setTxt('hero-batt-pct',pct+'%');
-  setTxt('done-count',done); setTxt('total-count',tt.length); setTxt('streak',streak()); setTxt('karma',state.karma||0);
+  setTxt('done-count',done); setTxt('total-count',tt.length); setTxt('streak',streak());
+  checkBadges(); renderRankChip();
   if(pct===100 && lastPct>=0 && lastPct<100 && tt.length){ const b=document.querySelector('.hbatt');
     if(b){ b.classList.remove('full'); void b.offsetWidth; b.classList.add('full'); } }
   lastPct=pct;
@@ -1467,12 +1802,56 @@ function renderGlyph(){
 function streak(){ let n=0,d=today(); if(!state.completed[d]) d=addDays(d,-1); while(state.completed[d]){ n++; d=addDays(d,-1);} return n; }
 
 /* ---------- task ops ---------- */
+/* ---------- badge stat bookkeeping (lifetime count + time-of-completion flags) ---------- */
+// Seeded from the historical `completed` map the first time it's created — otherwise a user with
+// months of history opens Progress and sees "First Light: complete your first task" still locked.
+function sumCompleted(c){ return Object.values(c||{}).reduce((a,b)=>a+(+b||0),0); }
+function freshBadgeStats(c){ return {tasksCompleted:sumCompleted(c), nightOwl:false, earlyBird:false}; }
+function badgeStats(){ state.badgeStats=state.badgeStats||freshBadgeStats(state.completed); return state.badgeStats; }
+function bumpTasksCompleted(delta){ const bs=badgeStats(); bs.tasksCompleted=Math.max(0,(bs.tasksCompleted||0)+delta);
+  if(delta>0){ const hr=new Date().getHours(); if(hr<4) bs.nightOwl=true; else if(hr<6) bs.earlyBird=true; } }
+/* ---------- auto-complete by deadline ---------- */
+function autoOn(){ return !!state.autoComplete; }
+function isAutoDone(t,ds){ return (t.autoDates||[]).includes(ds); }
+function clearAuto(t,ds){ if(t.autoDates){ const i=t.autoDates.indexOf(ds); if(i>=0) t.autoDates.splice(i,1); } }
+// "I said no" marker — without it the 1s tick would instantly re-complete anything you unchecked,
+// because its deadline is still in the past. Set on any manual uncheck; cleared on manual complete.
+function isAutoSkipped(t,ds){ return (t.autoSkip||[]).includes(ds); }
+function setAutoSkip(t,ds,on){
+  t.autoSkip=t.autoSkip||[];
+  const i=t.autoSkip.indexOf(ds);
+  if(on && i<0) t.autoSkip.push(ds);
+  if(!on && i>=0) t.autoSkip.splice(i,1);
+}
+function autoDoneToday(){ return state.tasks.filter(t=>applies(t,today()) && isAutoDone(t,today()) && isDone(t,today())); }
+// Only ever assumes TODAY's tasks, and only ones you gave a time (the deadline is the opt-in).
+// Deliberately never backfills days you weren't here for — that would fabricate history.
+function runAutoComplete(){
+  if(!autoOn()) return;
+  const ds=today(), now=nowMin(); let changed=false;
+  state.tasks.forEach(t=>{
+    if(!t.time || !applies(t,ds) || isDone(t,ds) || isAutoSkipped(t,ds)) return;
+    if(tMin(t.time)>now) return;
+    setDone(t,ds,true);
+    t.autoDates=t.autoDates||[]; if(!t.autoDates.includes(ds)) t.autoDates.push(ds);
+    (t.subs||[]).forEach(s=>s.done=true);
+    state.completed[ds]=(state.completed[ds]||0)+1;
+    state.karma=(state.karma||0)+10;
+    bumpTasksCompleted(1);
+    const h=new Date().getHours(); state.hourLog[h]=(state.hourLog[h]||0)+1;
+    changed=true;
+  });
+  if(changed){ save(); renderGlyph(); if(activeTab==='today'||activeTab==='calendar') render(); }
+}
 function toggle(id, dateStr){
   const t=state.tasks.find(x=>x.id===id); if(!t) return;
   const v=!isDone(t,dateStr); setDone(t,dateStr,v);
+  if(!v) clearAuto(t,dateStr);
+  setAutoSkip(t,dateStr,!v); // unchecking = "I didn't do this", so the tick must not re-complete it
   state.completed[dateStr]=(state.completed[dateStr]||0)+(v?1:-1);
   if(state.completed[dateStr]<=0) delete state.completed[dateStr];
   state.karma=Math.max(0,(state.karma||0)+(v?10:-10));
+  bumpTasksCompleted(v?1:-1);
   if(v){ const h=new Date().getHours(); state.hourLog[h]=(state.hourLog[h]||0)+1; }
   if(v && t.repeat==='none'){
     const i=state.tasks.findIndex(x=>x.id===id);
@@ -1570,15 +1949,16 @@ function renderCatbar(){
   document.getElementById('cat-edit').onclick=()=>{ catEditMode=!catEditMode; renderCatbar(); };
 }
 function delCategory(id){
-  if(!confirm('Delete this category? Its tasks move to the first remaining category.')) return;
   const remaining=state.categories.filter(c=>c.id!==id);
   if(!remaining.length){ toast('KEEP AT LEAST ONE CATEGORY'); return; }
-  const fallback=remaining[0].id;
-  state.tasks.forEach(t=>{ if(t.cat===id) t.cat=fallback; });
-  (state.bin||[]).forEach(t=>{ if(t.cat===id) t.cat=fallback; });
-  state.categories=remaining;
-  if(activeCat===id) activeCat='all';
-  save(); renderCatbar(); renderAddCatOptions(); render();
+  customConfirm('Delete this category? Its tasks move to the first remaining category.', ()=>{
+    const fallback=remaining[0].id;
+    state.tasks.forEach(t=>{ if(t.cat===id) t.cat=fallback; });
+    (state.bin||[]).forEach(t=>{ if(t.cat===id) t.cat=fallback; });
+    state.categories=remaining;
+    if(activeCat===id) activeCat='all';
+    save(); renderCatbar(); renderAddCatOptions(); render();
+  });
 }
 function showAddCat(){
   const el=document.getElementById('catbar');
@@ -1609,13 +1989,14 @@ function taskRow(t, dateStr, draggable){
   const noteDot = (t.notes&&t.notes.trim()) ? `<span class="t-note" title="Has notes"><i data-ic="note"></i></span>` : '';
   const sp=subProgress(t); const subTag = sp.total ? `<span class="t-subs ${sp.done===sp.total?'all':''}">${sp.done}/${sp.total}</span>` : '';
   const nowTag = active ? `<span class="t-now">NOW</span>` : '';
+  const autoTag = (done && isAutoDone(t,dateStr)) ? `<span class="t-auto" title="Assumed done at its deadline — tap the circle if you didn’t">AUTO</span>` : '';
   const grip = draggable ? `<button class="t-drag" aria-label="Reorder" tabindex="-1"><i data-ic="grip"></i></button>` : '';
   return `<div class="task ${done?'done':''} ${active?'active':''}" data-id="${t.id}" data-period="${periodOf(t.time)}">
     ${grip}
     <button class="check" onclick="toggle(${t.id},'${dateStr}')" aria-label="${done?'Mark incomplete':'Mark complete'}"></button>
     <div class="t-main">
       <div class="t-title">${esc(t.title)}</div>
-      <div class="t-sub">${t.time?`<span class="t-time">${t.time}</span>`:''}<span class="t-cat">${esc(catName(t.cat))}</span>${rep}${subTag}${noteDot}${nowTag}</div>
+      <div class="t-sub">${t.time?`<span class="t-time">${t.time}</span>`:''}<span class="t-cat">${esc(catName(t.cat))}</span>${rep}${subTag}${noteDot}${nowTag}${autoTag}</div>
     </div>
     <button class="t-act" onclick="openTask(${t.id},'${dateStr}')" aria-label="Task actions"><i data-ic="bolt"></i></button>
     <button class="t-del" onclick="del(${t.id})" aria-label="Delete task"><i data-ic="trash"></i></button>
@@ -1634,15 +2015,118 @@ function render(){
 }
 
 /* ---- Today ---- */
+function planningState(){ state.planning=state.planning||{plannedDate:'', reviewedDate:''}; return state.planning; }
+function planBanner(){
+  const pl=planningState(), hr=new Date().getHours();
+  if(hr<17 && pl.plannedDate!==today())
+    return `<button class="plan-banner" id="plan-open"><span class="pb-title">◗ PLAN TODAY</span><span class="pb-sub">Set up your day →</span></button>`;
+  if(hr>=17 && pl.reviewedDate!==today())
+    return `<button class="plan-banner" id="review-open"><span class="pb-title">◗ WRAP UP TODAY</span><span class="pb-sub">Review &amp; carry forward →</span></button>`;
+  return '';
+}
+function bindPlanBanner(){
+  const p=document.getElementById('plan-open'); if(p) p.onclick=openPlanModal;
+  const r=document.getElementById('review-open'); if(r) r.onclick=openReviewModal;
+}
 function renderToday(){
   const tt=tasksForDate(today()).filter(catFilter);
-  if(!tt.length){ view.innerHTML=emptyState(); return; }
+  const banner=planBanner();
+  if(!tt.length){ view.innerHTML=banner+emptyState(); bindPlanBanner(); return; }
   const order=['morning','afternoon','evening','anytime'], lab={morning:'MORNING',afternoon:'AFTERNOON',evening:'EVENING',anytime:'ANYTIME'};
-  let html='';
+  let html=banner;
   order.forEach(p=>{ const items=tt.filter(t=>periodOf(t.time)===p).sort((a,b)=>(a.order??0)-(b.order??0)); if(!items.length) return;
     html+=`<div class="group-label"><span class="label">${lab[p]}</span></div>`+items.map(t=>taskRow(t,today(),true)).join(''); });
   view.innerHTML=html;
+  bindPlanBanner();
   initTaskDrag();
+}
+function planRowHTML(t){
+  const tmrw=t.repeat==='none' && t.date===addDays(today(),1);
+  const toggle = t.repeat!=='none'
+    ? '<span class="dhint">REPEATS</span>'
+    : `<button type="button" class="plan-toggle ${tmrw?'tmrw':'tdy'}" data-planday="${t.id}">${tmrw?'TOMORROW':'TODAY'}</button>`;
+  return `<div class="plan-row ${tmrw?'deferred':''}" data-planrow="${t.id}">
+      <span class="plan-tt">${t.time?`<span class="t-time">${t.time}</span> `:''}${esc(t.title)}</span>
+      ${toggle}
+    </div>`;
+}
+function openPlanModal(){
+  // include tasks kept today AND any one-off tasks pushed to tomorrow during this planning pass
+  const todays=tasksForDate(today());
+  const pushed=state.tasks.filter(t=>t.repeat==='none' && t.date===addDays(today(),1) && !todays.includes(t));
+  const list=todays.concat(pushed);
+  const rows=list.length?list.map(planRowHTML).join(''):'<p class="s-p">Nothing scheduled today yet — add tasks and they’ll show here.</p>';
+  const el=openWkModal(`
+    <div class="tm-head"><h3>Plan today</h3><button class="iconbtn" data-wkclose aria-label="Close">✕</button></div>
+    <p class="s-p">Tap a task’s <b>TODAY</b> tag to push it to <b>TOMORROW</b> (tap again to keep it) — it stays listed here so you can change your mind. Then start your day.</p>
+    <div class="plan-list" id="plan-list">${rows}</div>
+    <button class="pbtn-main" id="plan-start">START THE DAY</button>`);
+  el.querySelector('#plan-list').onclick=(ev)=>{
+    const b=ev.target.closest('[data-planday]'); if(!b) return;
+    const t=state.tasks.find(x=>x.id===+b.dataset.planday); if(!t) return;
+    const tmrw=t.date===addDays(today(),1);
+    t.date = tmrw ? today() : addDays(today(),1);
+    if(!tmrw && state.activeTask===t.id) state.activeTask=null;
+    save(); renderGlyph(); render(); updateLive();
+    const row=el.querySelector(`[data-planrow="${t.id}"]`); if(row) row.outerHTML=planRowHTML(t);
+  };
+  el.querySelector('#plan-start').onclick=()=>{ planningState().plannedDate=today(); save(); closeWkModal(); render(); toast('DAY PLANNED — GO'); };
+}
+function openReviewModal(){
+  const tt=tasksForDate(today());
+  const done=tt.filter(t=>isDone(t,today())).length;
+  const carry=state.tasks.filter(t=>t.repeat==='none' && t.date===today() && !t.done);
+  const auto=autoDoneToday();
+  const autoRows=auto.map(t=>`<div class="plan-row" data-autorow="${t.id}">
+      <span class="plan-tt">${t.time?`<span class="t-time">${t.time}</span> `:''}${esc(t.title)}</span>
+      <button type="button" class="plan-toggle tdy" data-autoundo="${t.id}">DID IT</button>
+    </div>`).join('');
+  const el=openWkModal(`
+    <div class="tm-head"><h3>Wrap up today</h3><button class="iconbtn" data-wkclose aria-label="Close">✕</button></div>
+    <div class="sum-big">${done}/${tt.length}</div>
+    <div class="label sum-meta">TASKS DONE · STREAK ${streak()}</div>
+    ${auto.length?`<span class="label">ASSUMED DONE AT THEIR DEADLINE — TAP ANY YOU DIDN’T ACTUALLY DO</span>
+    <div class="plan-list" id="auto-list">${autoRows}</div>`:''}
+    <p class="s-p">${carry.length?`${carry.length} unfinished one-off task${carry.length===1?'':'s'} — carry ${carry.length===1?'it':'them'} to tomorrow so nothing slips.`:'Everything’s handled or scheduled. Nice.'}</p>
+    ${carry.length?`<button class="btn-line" id="review-carry"><i data-ic="chevR"></i> Carry ${carry.length} to tomorrow</button>`:''}
+    <button class="pbtn-main" id="review-finish">FINISH THE DAY</button>`);
+  const al=document.getElementById('auto-list');
+  if(al) al.onclick=(ev)=>{
+    const b=ev.target.closest('[data-autoundo]'); if(!b) return;
+    const t=state.tasks.find(x=>x.id===+b.dataset.autoundo); if(!t) return;
+    const undone=b.classList.contains('tmrw');
+    if(undone){ // re-confirm it as done
+      setDone(t,today(),true); setAutoSkip(t,today(),false);
+      t.autoDates=t.autoDates||[]; if(!t.autoDates.includes(today())) t.autoDates.push(today());
+      state.completed[today()]=(state.completed[today()]||0)+1; state.karma=(state.karma||0)+10;
+      bumpTasksCompleted(1);
+      b.classList.remove('tmrw'); b.classList.add('tdy'); b.textContent='DID IT';
+      b.closest('.plan-row').classList.remove('deferred');
+    } else { // I didn't actually do this
+      setDone(t,today(),false); clearAuto(t,today()); setAutoSkip(t,today(),true);
+      (t.subs||[]).forEach(s=>s.done=false);
+      bumpTasksCompleted(-1);
+      state.completed[today()]=Math.max(0,(state.completed[today()]||0)-1);
+      if(!state.completed[today()]) delete state.completed[today()];
+      state.karma=Math.max(0,(state.karma||0)-10);
+      b.classList.remove('tdy'); b.classList.add('tmrw'); b.textContent='DIDN’T';
+      b.closest('.plan-row').classList.add('deferred');
+    }
+    save(); renderGlyph(); render(); updateLive();
+  };
+  const cb=document.getElementById('review-carry');
+  if(cb) cb.onclick=()=>{ carry.forEach(t=>{ t.date=addDays(today(),1); }); save(); renderGlyph(); render(); updateLive();
+    closeWkModal(); openReviewModal(); toast(`CARRIED ${carry.length} FORWARD`); };
+  document.getElementById('review-finish').onclick=()=>{
+    // auto-completed one-off tasks aren't binned on the spot (so they stay correctable) — bin them now
+    state.tasks.filter(t=>t.repeat==='none' && t.date===today() && t.done && isAutoDone(t,today())).forEach(t=>{
+      const i=state.tasks.findIndex(x=>x.id===t.id); if(i<0) return;
+      state.bin=state.bin||[];
+      state.bin.push({...t, binId:Date.now()+Math.floor(Math.random()*1000), binnedAt:today(), wasDone:true});
+      if(state.activeTask===t.id) state.activeTask=null;
+      state.tasks.splice(i,1);
+    });
+    planningState().reviewedDate=today(); save(); renderGlyph(); closeWkModal(); render(); updateLive(); toast('DAY WRAPPED — REST WELL'); };
 }
 function initTaskDrag(){
   view.querySelectorAll('.t-drag').forEach(handle=>{
@@ -1822,9 +2306,33 @@ function schedDayEditor(wd,val,t){
     ${t?tplEditor(t):''}
     ${t?`<div class="sp-row">
       <button class="btn-line" data-tpldup="${t.id}" data-wd="${wd}"><i data-ic="copy"></i> Duplicate</button>
+      <button class="btn-line" data-tplcopy="${t.id}"><i data-ic="copy"></i> Copy to…</button>
       <button class="btn-line danger" data-tpldelx="${t.id}"><i data-ic="trash"></i> Delete this template</button>
     </div>`:''}
   </div>`;
+}
+function openCopyToDaysModal(tplId){
+  const t=schedTemplate(tplId); if(!t) return;
+  const sched=viewedSched()||{};
+  const chips=[1,2,3,4,5,6,0].map(wd=>{
+    const already=sched[wd]===tplId;
+    return `<button type="button" class="dchip ${already?'on':''}" data-cpwd="${wd}" ${already?'disabled':''}>${DAYLETTER[wd]}</button>`;
+  }).join('');
+  const el=openWkModal(`
+    <div class="tm-head"><h3>Copy “${esc(t.name)}” to…</h3><button class="iconbtn" data-wkclose aria-label="Close">✕</button></div>
+    <p class="s-p">Pick the days that should use this exact workout — days already using it are dimmed.</p>
+    <div class="day-chips">${chips}</div>
+    <p class="sp-note">Editing this workout later updates it everywhere it’s assigned. Use Duplicate instead if you want an independent copy to customize.</p>
+    <button class="pbtn-main" id="cpdays-apply">COPY</button>`);
+  const picked=new Set();
+  el.querySelectorAll('[data-cpwd]:not([disabled])').forEach(b=>b.onclick=()=>{ const wd=+b.dataset.cpwd;
+    if(picked.has(wd)){ picked.delete(wd); b.classList.remove('on'); } else { picked.add(wd); b.classList.add('on'); } });
+  el.querySelector('#cpdays-apply').onclick=()=>{
+    if(!picked.size){ toast('PICK AT LEAST ONE DAY'); return; }
+    picked.forEach(wd=>{ viewedSched()[wd]=tplId; });
+    save(); closeWkModal(); renderWorkouts();
+    toast(`COPIED TO ${picked.size} DAY${picked.size===1?'':'S'}`);
+  };
 }
 function schedPreview(t){
   const steps=buildSteps(t);
@@ -1892,6 +2400,7 @@ function bindSchedule(){
     if(sel.value==='__new'){ renderWorkouts(); openNewTemplateModal(wd); return; }
     viewedSched()[wd]=sel.value||null;
     save(); renderWorkouts(); });
+  view.querySelectorAll('[data-tplcopy]').forEach(b=>b.onclick=()=>openCopyToDaysModal(b.dataset.tplcopy));
   view.querySelectorAll('[data-tpldup]').forEach(b=>b.onclick=()=>{
     const t=schedTemplate(b.dataset.tpldup); if(!t) return;
     const wd=+b.dataset.wd;
@@ -1906,23 +2415,25 @@ function bindSchedule(){
     if(ni){ ni.focus(); ni.select(); }
     toast('DUPLICATED — THIS DAY NOW USES THE COPY'); });
   view.querySelectorAll('[data-tpldelx]').forEach(b=>b.onclick=()=>{
-    if(!confirm('Delete this template? It will be removed from every day that uses it.')) return;
     const id=b.dataset.tpldelx;
-    state.workoutTemplates=state.workoutTemplates.filter(x=>x.id!==id);
-    [state.workoutSchedule, state.workoutScheduleB].forEach(s=>{ if(s) Object.keys(s).forEach(k=>{ if(s[k]===id) s[k]=null; }); });
-    save(); renderWorkouts(); });
+    customConfirm('Delete this template? It will be removed from every day that uses it.', ()=>{
+      state.workoutTemplates=state.workoutTemplates.filter(x=>x.id!==id);
+      [state.workoutSchedule, state.workoutScheduleB].forEach(s=>{ if(s) Object.keys(s).forEach(k=>{ if(s[k]===id) s[k]=null; }); });
+      save(); renderWorkouts(); }); });
   const rotBtn=document.getElementById('sched-rot');
   if(rotBtn) rotBtn.onclick=()=>{
     if(rotationOn()){
-      if(!confirm('Turn off 2-week rotation? Week B will be removed and week A becomes every week.')) return;
-      delete state.workoutScheduleB; delete state.schedAnchor; schedViewWeek=null;
+      customConfirm('Turn off 2-week rotation? Week B will be removed and week A becomes every week.', ()=>{
+        delete state.workoutScheduleB; delete state.schedAnchor; schedViewWeek=null;
+        schedEditWd=null; schedViewWd=null; save(); renderWorkouts(); });
     } else {
       state.workoutScheduleB={...state.workoutSchedule};
       state.schedAnchor=mondayOf(today());
       schedViewWeek=1;
       toast('WEEK B CREATED — EDIT IT, WEEKS ALTERNATE AUTOMATICALLY');
+      schedEditWd=null; schedViewWd=null; save(); renderWorkouts();
     }
-    schedEditWd=null; schedViewWd=null; save(); renderWorkouts(); };
+  };
   view.querySelectorAll('[data-schedweek]').forEach(b=>b.onclick=()=>{
     schedViewWeek=+b.dataset.schedweek; schedEditWd=null; schedViewWd=null; renderWorkouts(); });
   bindTplEditor();
@@ -1940,6 +2451,27 @@ function exerciseUsed(id){ return (state.workoutTemplates||[]).some(t=>(t.exerci
 let libFilter='all', libEditId=null;
 function curVariation(e){ const v=e.variations||[]; const i=e.curVar??-1; return (i>=0&&v[i])?v[i]:null; }
 function exDisplayName(e){ const cv=curVariation(e); return cv?`${e.name} · ${cv}`:e.name; }
+function exSeries(exId){
+  const out=[];
+  (state.sessionLog||[]).forEach(s=>{ (s.exercises||[]).forEach(x=>{ if(x.exId===exId) out.push({date:s.date, ts:s.ts, volume:x.volume, sets:x.sets, type:x.type}); }); });
+  return out.slice(-24);
+}
+function exProgressHTML(e){
+  const ser=exSeries(e.id);
+  if(!ser.length) return `<span class="label">PROGRESS</span><p class="dhint">COMPLETE A WORKOUT WITH THIS MOVE TO START TRACKING VOLUME OVER TIME.</p>`;
+  const mx=Math.max(...ser.map(s=>s.volume))||1;
+  const unit=e.type==='duration'?'S':'';
+  const bars=ser.map(s=>{
+    const h=Math.max(6, Math.round(s.volume/mx*100));
+    return `<span class="spk" style="height:${h}%" title="${s.date} · ${s.volume}${unit}"></span>`;
+  }).join('');
+  const last=ser[ser.length-1], first=ser[0];
+  const delta=last.volume-first.volume;
+  const trend=ser.length>1?`<span class="dhint">${delta>0?'▲ +'+delta:(delta<0?'▼ '+delta:'— FLAT')}${unit} SINCE FIRST</span>`:'';
+  return `<span class="label">PROGRESS · VOLUME PER SESSION (${ser.length})</span>
+    <div class="spark ex-spark">${bars}</div>
+    <div class="ex-prog-foot"><span class="dhint">LATEST ${last.volume}${unit} · ${last.sets} SET${last.sets===1?'':'S'}</span>${trend}</div>`;
+}
 let exCatAddMode=false;
 function exLibraryHTML(){
   const lib=state.exerciseLibrary||[];
@@ -1991,6 +2523,7 @@ function exLibraryHTML(){
           ${e.pr?`<span class="dhint">SET ${dateLabel(e.pr.date)||''}</span>
           <button type="button" class="tctl tctl-del" data-prclear="${e.id}" aria-label="Clear PR">✕</button>`:''}
         </div>
+        ${exProgressHTML(e)}
       </div>`:''}
       </div>`;
     }).join('');
@@ -2028,16 +2561,16 @@ function bindExLibrary(target){
     ev.stopPropagation();
     const id=x.dataset.excatdel;
     if((state.exerciseLibrary||[]).some(e=>e.category===id)){ toast('CATEGORY STILL HAS EXERCISES'); return; }
-    if(!confirm('Delete this category?')) return;
-    state.exerciseCats=(state.exerciseCats||[]).filter(c=>c.id!==id);
-    if(libFilter===id) libFilter='all';
-    save(); rerender(); });
+    customConfirm('Delete this category?', ()=>{
+      state.exerciseCats=(state.exerciseCats||[]).filter(c=>c.id!==id);
+      if(libFilter===id) libFilter='all';
+      save(); rerender(); }); });
   target.querySelectorAll('[data-exedit]').forEach(b=>b.onclick=()=>{ libEditId=(libEditId===b.dataset.exedit)?null:b.dataset.exedit; rerender(); });
   target.querySelectorAll('[data-exdel]').forEach(b=>b.onclick=()=>{
     const id=b.dataset.exdel;
     if(exerciseUsed(id)){ toast('IN USE BY A TEMPLATE'); return; }
-    if(!confirm('Delete this exercise?')) return;
-    state.exerciseLibrary=state.exerciseLibrary.filter(e=>e.id!==id); save(); rerender(); });
+    customConfirm('Delete this exercise?', ()=>{
+      state.exerciseLibrary=state.exerciseLibrary.filter(e=>e.id!==id); save(); rerender(); }); });
   target.querySelectorAll('[data-varsel]').forEach(b=>b.onclick=(ev)=>{
     if(ev.target.closest('.cat-del')) return;
     const e=exById(b.dataset.varsel); if(!e) return;
@@ -2109,6 +2642,7 @@ function tplEditor(t){
   return `<div class="workout-edit tpl-editor">
     <span class="label">WORKOUT NAME</span>
     <input type="text" class="sp-input tpl-name" data-tplname="${t.id}" value="${esc(t.name)}" maxlength="40" placeholder="WORKOUT NAME…" aria-label="Workout name" />
+    <div class="sp-toggle"><span>WARM-UP SET <span class="dhint">EASE INTO THE FIRST EXERCISE</span></span><button class="switch ${t.warmup?'on':''}" data-tplwarm="${t.id}" role="switch" aria-checked="${!!t.warmup}"></button></div>
     ${t.exercises.length?tplEditorItems(t):'<p class="s-p">No exercises yet — tap ADD EXERCISE below.</p>'}
     <button type="button" class="btn-line tpl-addbtn" data-apx="${t.id}"><i data-ic="plus"></i> Add exercise</button>
   </div>`;
@@ -2132,6 +2666,8 @@ function bindTplEditor(){
       renderWorkouts(); };
     inp.onkeydown=(e)=>{ if(e.key==='Enter'){ e.preventDefault(); inp.blur(); } };
   });
+  view.querySelectorAll('[data-tplwarm]').forEach(b=>b.onclick=()=>{ const t=state.workoutTemplates.find(x=>x.id===b.dataset.tplwarm); if(!t) return;
+    t.warmup=!t.warmup; save(); renderWorkouts(); });
   view.querySelectorAll('[data-tef]').forEach(inp=>inp.onchange=()=>{ const t=tplOf(inp); if(!t) return;
     const x=t.exercises.find(e=>e.id===inp.dataset.te); if(!x) return;
     x[inp.dataset.tef]=clampNum(inp); save(); });
@@ -2154,10 +2690,10 @@ function bindTplEditor(){
       t.circuits=(t.circuits||[]).filter(c=>c.id!==x.circuitId);
     save(); renderWorkouts(); });
   view.querySelectorAll('[data-cirdel]').forEach(b=>b.onclick=()=>{ const t=tplOf(b); if(!t) return;
-    if(!confirm('Ungroup this circuit? Its exercises become straight sets.')) return;
-    t.exercises.forEach(x=>{ if(x.circuitId===b.dataset.cirdel){ x.circuitId=null; x.sets=x.sets||3; } });
-    t.circuits=(t.circuits||[]).filter(c=>c.id!==b.dataset.cirdel);
-    save(); renderWorkouts(); });
+    customConfirm('Ungroup this circuit? Its exercises become straight sets.', ()=>{
+      t.exercises.forEach(x=>{ if(x.circuitId===b.dataset.cirdel){ x.circuitId=null; x.sets=x.sets||3; } });
+      t.circuits=(t.circuits||[]).filter(c=>c.id!==b.dataset.cirdel);
+      save(); renderWorkouts(); }); });
   view.querySelectorAll('[data-apx]').forEach(b=>b.onclick=()=>openExPicker(b.dataset.apx));
 }
 
@@ -2172,6 +2708,20 @@ function openWkModal(html){
   return el;
 }
 function closeWkModal(){ const el=document.getElementById('wk-modal-scrim'); if(el) el.remove(); }
+function customConfirm(message, onYes, opts={}){
+  const danger=opts.danger!==false;
+  const confirmLabel=opts.confirmLabel||'Delete';
+  const cancelLabel=opts.cancelLabel||'Cancel';
+  const el=openWkModal(`
+    <div class="tm-head"><h3>Are you sure?</h3><button class="iconbtn" data-wkclose aria-label="Close">✕</button></div>
+    <p class="s-p confirm-msg">${esc(message)}</p>
+    <div class="tm-actions confirm-actions">
+      <button class="tm-btn" id="cf-cancel">${esc(cancelLabel)}</button>
+      <button class="tm-btn ${danger?'danger':'on'}" id="cf-yes">${esc(confirmLabel)}</button>
+    </div>`);
+  el.querySelector('#cf-cancel').onclick=closeWkModal;
+  el.querySelector('#cf-yes').onclick=()=>{ closeWkModal(); onYes(); };
+}
 function addEntryToTemplate(t, exId, target){
   const ex=exById(exId); if(!ex) return false;
   let circuitId=null;
@@ -2265,6 +2815,17 @@ function openNewTemplateModal(wd){
 let SES=null;
 function buildSteps(t){
   const steps=[]; const seenCirc=new Set();
+  if(t.warmup && (t.exercises||[]).length){
+    const first=(t.exercises||[]).find(x=>exById(x.exerciseId));
+    if(first){ const e=exById(first.exerciseId), mode=entryMode(first,e);
+      if(mode==='duration'){
+        steps.push({kind:'work', name:exDisplayName(e), exId:e.id, type:'duration', seconds:Math.max(10,Math.round((first.seconds||30)*0.5)), sub:'WARM-UP', warmup:true});
+      } else {
+        [0.4,0.7].forEach((f,i)=>steps.push({kind:'work', name:exDisplayName(e), exId:e.id, type:'reps', reps:Math.max(4,Math.round((first.reps||10)*f)), sub:`WARM-UP ${i+1}/2`, warmup:true}));
+      }
+      steps.push({kind:'rest', seconds:30, sub:'WARM-UP DONE', warmup:true});
+    }
+  }
   (t.exercises||[]).forEach(x=>{
     const e=exById(x.exerciseId); if(!e) return;
     if(x.circuitId){
@@ -2295,7 +2856,7 @@ function startSession(tplId){
   const steps=buildSteps(t);
   if(!steps.length){ toast('ADD EXERCISES TO THIS TEMPLATE FIRST'); return; }
   if(SES) sesClose(false);
-  SES={tplId, name:t.name, steps, i:0, timer:null, left:0, paused:false, started:false};
+  SES={tplId, name:t.name, steps, i:0, timer:null, left:0, paused:false, started:false, startedAt:Date.now()};
   const el=document.createElement('div'); el.id='ses-scrim'; el.className='sheet-scrim center';
   el.innerHTML='<div class="task-modal ses-modal" id="ses-modal"></div>';
   document.body.appendChild(el);
@@ -2304,6 +2865,9 @@ function startSession(tplId){
 function sesEnter(){
   const st=SES.steps[SES.i];
   clearInterval(SES.timer); SES.timer=null; SES.paused=false; SES.started=false;
+  // Debug fast mode: EVERY step (reps included) becomes a 1s auto-advancing step and skips the
+  // PLAY gate — otherwise "fast" only shortened rests and you still tapped through every set.
+  if(debugFast()){ SES.left=1; sesPaint(); sesStartTimer(); return; }
   if(st.kind==='rest'||st.type==='duration') SES.left=st.seconds;
   sesPaint();
 }
@@ -2314,16 +2878,60 @@ function sesStartTimer(){
   sesPaint();
 }
 function sesNext(){ if(!SES) return; if(SES.i>=SES.steps.length-1){ sesFinish(); return; } SES.i++; sesEnter(); }
+function sesPrev(){ if(!SES||SES.i<=0) return; SES.i--; sesEnter(); }
+function sessionVolume(t){
+  const map={};
+  buildSteps(t).forEach(s=>{
+    if(s.kind!=='work' || !s.exId || s.warmup) return;
+    const e=exById(s.exId); if(!e) return;
+    const m=map[s.exId]||(map[s.exId]={exId:s.exId, name:e.name, type:s.type, sets:0, reps:0, seconds:0, volume:0});
+    m.sets++;
+    if(s.type==='duration'){ m.seconds+=s.seconds; m.volume+=s.seconds; }
+    else { m.reps+=s.reps; m.volume+=s.reps; }
+  });
+  return Object.values(map);
+}
+function recordSession(t, durationSec){
+  const ex=sessionVolume(t);
+  const totalSets=ex.reduce((a,e)=>a+e.sets,0);
+  state.sessionLog=state.sessionLog||[];
+  state.sessionLog.push({ts:Date.now(), date:today(), tplId:t.id, name:t.name, durationSec, totalSets, exercises:ex});
+  if(state.sessionLog.length>250) state.sessionLog=state.sessionLog.slice(-250);
+}
 function sesFinish(){
   const t=schedTemplate(SES.tplId);
-  sesClose(false);
-  if(t){ t.log=t.log||{}; }
-  if(t&&!t.log[today()]){ t.log[today()]=true; state.karma=(state.karma||0)+10; save(); renderGlyph(); }
-  toast('WORKOUT COMPLETE · +10 KARMA');
-  if(activeTab==='workouts') renderWorkouts();
+  clearInterval(SES.timer); SES.timer=null;
+  const durationSec=Math.max(0, Math.round((Date.now()-(SES.startedAt||Date.now()))/1000));
+  let firstToday=false;
+  if(t){ t.log=t.log||{};
+    recordSession(t, durationSec);
+    if(!t.log[today()]){ t.log[today()]=true; state.karma=(state.karma||0)+10; firstToday=true; }
+    save(); renderGlyph();
+  }
+  showSessionSummary(t, durationSec, firstToday);
+}
+function showSessionSummary(t, durationSec, firstToday){
+  const el=document.getElementById('ses-modal'); if(!el){ sesCloseNow(); return; }
+  const mins=Math.floor(durationSec/60), secs=durationSec%60;
+  const ex=t?sessionVolume(t):[];
+  const totalSets=ex.reduce((a,e)=>a+e.sets,0);
+  const rows=ex.map(e=>`<div class="sum-row"><span class="sum-ex">${esc(e.name)}</span><span class="sum-v">${e.sets}× · ${e.type==='duration'?e.seconds+'S':e.reps+' REPS'}</span></div>`).join('') || '<p class="s-p">No exercises logged.</p>';
+  el.innerHTML=`
+    <div class="tm-head"><h3>Workout complete</h3><button class="iconbtn" id="ses-sumclose" aria-label="Close">✕</button></div>
+    <div class="sum-big">${mins}:${String(secs).padStart(2,'0')}</div>
+    <div class="label sum-meta">DURATION · ${totalSets} SET${totalSets===1?'':'S'}${firstToday?' · +10 XP':''}</div>
+    <div class="sum-list">${rows}</div>
+    <button class="pbtn-main" id="ses-sumdone">DONE</button>`;
+  paintIcons(el);
+  const close=()=>{ SES=null; const s=document.getElementById('ses-scrim'); if(s) s.remove(); if(activeTab==='workouts') renderWorkouts(); };
+  document.getElementById('ses-sumdone').onclick=close;
+  document.getElementById('ses-sumclose').onclick=close;
 }
 function sesClose(ask=true){
-  if(ask && !confirm('End this workout?')) return;
+  if(ask){ customConfirm('End this workout?', sesCloseNow, {confirmLabel:'End workout'}); return; }
+  sesCloseNow();
+}
+function sesCloseNow(){
   if(SES){ clearInterval(SES.timer); SES=null; }
   const el=document.getElementById('ses-scrim'); if(el) el.remove();
 }
@@ -2350,12 +2958,14 @@ function sesPaint(){
     <div class="label ses-step">STEP ${SES.i+1}/${n} · ${st.sub}</div>
     ${body}
     <div class="pomo-controls ses-controls">
+      <button class="iconbtn pbtn" id="ses-back" aria-label="Previous step" ${SES.i===0?'disabled':''}><i data-ic="chevL"></i></button>
       ${mainBtn}
       <button class="iconbtn pbtn" id="ses-skip" aria-label="Skip step"><i data-ic="skip"></i></button>
     </div>
     <div class="ses-next label">${next?`NEXT · ${esc(next.name)}`:'LAST STEP'}</div>`;
   paintIcons(el);
   document.getElementById('ses-quit').onclick=()=>sesClose();
+  document.getElementById('ses-back').onclick=sesPrev;
   const sb=document.getElementById('ses-start'); if(sb) sb.onclick=sesStartTimer;
   const tg=document.getElementById('ses-toggle'); if(tg) tg.onclick=()=>{ SES.paused=!SES.paused; sesPaint(); };
   const dn=document.getElementById('ses-done'); if(dn) dn.onclick=sesNext;
@@ -2384,15 +2994,59 @@ function pomoPaint(){
   const tog=document.getElementById('pomo-toggle'); if(tog) tog.innerHTML=(pomoInt?iconHTML('pause')+' PAUSE':iconHTML('play')+' START');
   document.querySelectorAll('.pmode').forEach(b=>b.classList.toggle('active',b.dataset.mode===pomo.mode));
   const ses=document.getElementById('pomo-sessions'); if(ses) ses.textContent=state.pomodoros||0;
+  updateGardenLive();
 }
 function pomoStart(){ if(pomoInt) return; pomoInt=setInterval(()=>{ pomo.left--; if(pomo.left<=0) pomoDone(); pomoPaint(); updateLive(); },1000); if(pomo.mode==='focus') musicFocusStart(); pomoPaint(); updateLive(); }
 function pomoPause(){ clearInterval(pomoInt); pomoInt=null; musicFocusStop(); pomoPaint(); updateLive(); }
-function pomoReset(){ pomoPause(); pomo.left=pomoDur(pomo.mode); pomoPaint(); }
+function pomoReset(){ const wilted=pomo.mode==='focus' && pomoInt && pomo.left<pomoDur('focus'); pomoPause(); pomo.left=pomoDur(pomo.mode); pomoPaint();
+  if(wilted && nudgesOn()) toast('SEEDLING WILTED — START AGAIN'); }
 function pomoMode(m){ pomoPause(); pomo.mode=m; pomo.left=pomoDur(m); pomoPaint(); }
 function pomoDone(){ clearInterval(pomoInt); pomoInt=null;
-  if(pomo.mode==='focus'){ state.pomodoros=(state.pomodoros||0)+1; state.karma=(state.karma||0)+15; save(); renderGlyph();
-    pomoMode('break'); breakNudge(); }
+  if(pomo.mode==='focus'){ state.pomodoros=(state.pomodoros||0)+1; state.karma=(state.karma||0)+15;
+    gardenState().push({date:today(), ts:Date.now()}); if(state.garden.length>400) state.garden=state.garden.slice(-400);
+    save(); renderGlyph();
+    const gw=document.getElementById('garden-grid-wrap'); if(gw){ gw.innerHTML=gardenGridHTML(); }
+    pomoMode('break'); breakNudge(); if(nudgesOn()) toast('PLANT GROWN · +15 XP'); }
   else { pomoMode('focus'); if(nudgesOn()) toast('BREAK OVER · BACK TO IT'); } }
+
+/* ---- focus garden (#18) ---- */
+function gardenState(){ state.garden=state.garden||[]; return state.garden; }
+function plantSVG(g, size){
+  g=Math.max(0,Math.min(1,g));
+  const acc=getComputedStyle(root).getPropertyValue('--accent').trim()||'#ff2d2d';
+  const soft=getComputedStyle(root).getPropertyValue('--line-soft').trim()||'#e8e8e8';
+  const W=64,H=84,cx=32; let dots='';
+  for(let i=0;i<5;i++){ dots+=`<circle cx="${18+i*7}" cy="79" r="2" fill="${soft}"/>`; }
+  const stemTopY=76-g*54;
+  for(let y=76; y>=stemTopY; y-=6){ dots+=`<circle cx="${cx}" cy="${y.toFixed(1)}" r="2.4" fill="${acc}"/>`; }
+  if(g>0.35){ const ly=76-g*54*0.5;
+    dots+=`<circle cx="${cx-8}" cy="${ly.toFixed(1)}" r="2.4" fill="${acc}"/><circle cx="${cx-14}" cy="${(ly-4).toFixed(1)}" r="2.1" fill="${acc}"/>`;
+    dots+=`<circle cx="${cx+8}" cy="${(ly+3).toFixed(1)}" r="2.4" fill="${acc}"/><circle cx="${cx+14}" cy="${(ly-1).toFixed(1)}" r="2.1" fill="${acc}"/>`; }
+  if(g>0.55){ const b=(g-0.55)/0.45; const r0=(3+b*2).toFixed(1);
+    [[0,0,r0],[0,-6,2.6],[5,-3,2.6],[5,3,2.6],[0,6,2.6],[-5,3,2.6],[-5,-3,2.6]].forEach(([dx,dy,r],i)=>{ if(i>3&&b<0.5) return;
+      dots+=`<circle cx="${cx+dx}" cy="${(stemTopY-4+dy).toFixed(1)}" r="${r}" fill="${acc}"/>`; });
+  } else { dots+=`<circle cx="${cx}" cy="${(stemTopY-3).toFixed(1)}" r="3" fill="${g>0.1?acc:soft}"/>`; }
+  const s=size||64;
+  return `<svg viewBox="0 0 ${W} ${H}" width="${s}" height="${(s*H/W).toFixed(0)}">${dots}</svg>`;
+}
+function gardenGridHTML(){
+  const g=gardenState();
+  const byDate={}; g.forEach(p=>{ byDate[p.date]=(byDate[p.date]||0)+1; });
+  const recent=g.slice(-28).reverse();
+  const grid=recent.length?recent.map(p=>`<span class="garden-cell" title="${p.date}">${plantSVG(1,26)}</span>`).join('')
+    :'<span class="dhint">NO PLANTS YET — FINISH A FOCUS SESSION TO GROW YOUR FIRST.</span>';
+  return `<div class="garden-grid">${grid}</div>
+    <p class="dhint garden-total">${g.length} PLANT${g.length===1?'':'S'} GROWN · ${byDate[today()]||0} TODAY</p>`;
+}
+function updateGardenLive(){
+  const el=document.getElementById('garden-plant'); if(!el) return;
+  let g, cap;
+  if(pomo.mode==='focus'){ g=1-pomo.left/pomoDur('focus');
+    cap=pomoInt?`GROWING… ${Math.round(g*100)}%`:(g>0?`PAUSED · ${Math.round(g*100)}%`:'START FOCUSING TO GROW A PLANT'); }
+  else { g=0; cap='ON A BREAK — LAST PLANT BANKED'; }
+  el.innerHTML=plantSVG(g,120);
+  const cp=document.getElementById('garden-caption'); if(cp) cp.textContent=cap;
+}
 function renderFocus(){
   const at=state.activeTask!=null?state.tasks.find(x=>x.id===state.activeTask):null;
   const open=tasksForDate(today()).filter(t=>!isDone(t,today()));
@@ -2408,7 +3062,7 @@ function renderFocus(){
       <button class="pbtn-main" id="pomo-toggle"><i data-ic="play"></i> START</button>
       <button class="iconbtn pbtn" id="pomo-skip" aria-label="Skip"><i data-ic="skip"></i></button>
     </div>
-    <div class="pomo-foot"><span class="label">SESSIONS TODAY · <span id="pomo-sessions">0</span> &nbsp;·&nbsp; +15 KARMA / FOCUS</span></div>
+    <div class="pomo-foot"><span class="label">SESSIONS TODAY · <span id="pomo-sessions">0</span> &nbsp;·&nbsp; +15 XP / FOCUS</span></div>
     <button class="btn-line dur-toggle" id="dur-toggle" type="button">Customize durations</button>
     <div class="pomo-durs" id="pomo-durs" hidden>
       <label>Focus<input type="number" id="dur-focus" min="1" max="180" value="${pomoDur('focus')/60}"></label>
@@ -2416,6 +3070,12 @@ function renderFocus(){
     </div>
     ${open.length?`<label class="focus-task"><span class="label">FOCUS ON</span>
       <select id="focus-sel">${open.map(t=>`<option value="${t.id}" ${at&&at.id===t.id?'selected':''}>${esc(t.title)}</option>`).join('')}</select></label>`:''}
+    <div class="focus-garden">
+      <h3 class="s-h">FOCUS GARDEN</h3>
+      <div class="garden-live" id="garden-plant"></div>
+      <p class="dhint garden-cap" id="garden-caption"></p>
+      <div id="garden-grid-wrap">${gardenGridHTML()}</div>
+    </div>
     <div class="focus-music">
       <h3 class="s-h">FOCUS MUSIC</h3>
       <div id="music-panel"></div>
@@ -2498,10 +3158,12 @@ function renderStats(target){
   let bestH=null, bestV=0; Object.entries(state.hourLog||{}).forEach(([h,v])=>{ if(v>bestV){ bestV=v; bestH=+h; } });
   const bestHour = bestH!=null ? String(bestH).padStart(2,'0')+':00' : '—';
 
-  // insight: 30-day momentum sparkline
+  // insight: 30-day momentum sparkline — one bar per day, tasks completed that day
   let spark=''; let smax=1; const sd=[];
-  for(let i=29;i>=0;i--){ const d=addDays(today(),-i); const v=state.completed[d]||0; sd.push(v); if(v>smax)smax=v; }
-  spark=sd.map(v=>`<span class="spk" style="height:${Math.max(8,Math.round(v/smax*100))}%"></span>`).join('');
+  for(let i=29;i>=0;i--){ const d=addDays(today(),-i); const v=state.completed[d]||0; sd.push({d,v}); if(v>smax)smax=v; }
+  const spkTotal=sd.reduce((a,x)=>a+x.v,0), spkActive=sd.filter(x=>x.v>0).length, spkBest=smax;
+  spark=sd.map(x=>{ const h=x.v?Math.max(12,Math.round(x.v/smax*100)):0;
+    return `<span class="spk ${x.v?'':'empty'}" style="height:${h}%" title="${x.d} · ${x.v} done"></span>`; }).join('');
 
   // weekly review
   const wkDays=[]; for(let i=0;i<7;i++) wkDays.push(addDays(wkStart,i));
@@ -2536,12 +3198,16 @@ function renderStats(target){
       <div class="stat"><div class="s-num acc">${pct}%</div><div class="label">TODAY COMPLETE</div></div>
       <div class="stat"><div class="s-num">${done}/${total}</div><div class="label">TASKS DONE</div></div>
       <div class="stat"><div class="s-num acc">${streak()}</div><div class="label">DAY STREAK</div></div>
-      <div class="stat"><div class="s-num">${state.karma||0}</div><div class="label">KARMA</div></div>
+      <div class="stat"><div class="s-num">${state.karma||0}</div><div class="label">XP · ${currentRank().name}</div></div>
       <div class="stat"><div class="s-num">${state.pomodoros||0}</div><div class="label">FOCUS SESSIONS</div></div>
       <div class="stat"><div class="s-num acc">${bestHour}</div><div class="label">BEST FOCUS HOUR</div></div>
     </div>
     <div class="week-card"><h3>This week · completed per day</h3><div class="dotweek">${cols}</div></div>
-    <div class="week-card"><h3>30-day momentum</h3><div class="spark">${spark}</div></div>
+    <div class="week-card"><h3>30-day momentum</h3>
+      <p class="s-p spark-cap">Tasks you completed each day over the last 30 days — one bar per day, tallest is your busiest.</p>
+      <div class="spark">${spark}</div>
+      <div class="review-nums"><span><b>${spkTotal}</b> DONE</span><span><b>${spkActive}/30</b> ACTIVE DAYS</span><span><b>${spkBest}</b> BEST DAY</span></div>
+    </div>
     <div class="week-card"><h3>Activity · past year</h3><div class="heatmap">${hm}</div></div>
     <div class="week-card"><h3>Workouts · past year</h3><div class="heatmap">${whm}</div></div>
     <div class="week-card"><h3>By category</h3><div class="ib">${catBars}</div></div>`;
@@ -2552,7 +3218,7 @@ function renderStats(target){
 /* =====================================================================
    Task action sheet (doing-now / focus / notes)
    ===================================================================== */
-let sheetTaskId=null, sheetDate=null;
+let sheetTaskId=null, sheetDate=null, taskEditMode=false;
 function openTask(id, dateStr){
   const t=state.tasks.find(x=>x.id===id); if(!t) return;
   sheetTaskId=id; sheetDate=dateStr;
@@ -2560,9 +3226,67 @@ function openTask(id, dateStr){
   const nt=document.getElementById('tm-notes'); nt.value=t.notes||'';
   document.getElementById('tm-now').classList.toggle('on', state.activeTask===id);
   renderSubs(t);
+  taskEditMode=false;
+  renderTaskEditPanel();
   document.getElementById('task-sheet').hidden=false;
 }
-function closeTask(){ document.getElementById('task-sheet').hidden=true; sheetTaskId=null; }
+function closeTask(){ document.getElementById('task-sheet').hidden=true; sheetTaskId=null; taskEditMode=false; }
+function renderTaskEditPanel(){
+  const panel=document.getElementById('tm-edit-panel'); if(!panel) return;
+  const t=state.tasks.find(x=>x.id===sheetTaskId);
+  document.getElementById('tm-edit').classList.toggle('on', taskEditMode);
+  if(!taskEditMode || !t){ panel.hidden=true; panel.innerHTML=''; return; }
+  panel.hidden=false;
+  const catOpts=state.categories.map(c=>`<option value="${c.id}" ${t.cat===c.id?'selected':''}>${esc(c.name)}</option>`).join('');
+  const wds=new Set(t.weekdays||[]);
+  const chips=[1,2,3,4,5,6,0].map(wd=>`<button type="button" class="dchip ${wds.has(wd)?'on':''}" data-ewd="${wd}">${DAYLETTER[wd]}</button>`).join('');
+  const dateVal = t.repeat==='none' ? t.date : (t.date||today());
+  panel.innerHTML=`
+    <span class="label">EDIT TASK</span>
+    <input type="text" class="sp-input" id="te-title" maxlength="80" value="${esc(t.title)}" placeholder="TASK TITLE…" />
+    <div class="sp-row">
+      <input type="time" id="te-time" value="${t.time||''}" aria-label="Time" />
+      <input type="date" id="te-date" value="${dateVal}" aria-label="Date" />
+      <select id="te-cat" class="apx-grow" aria-label="Category">${catOpts}</select>
+    </div>
+    <div class="sp-row">
+      <select id="te-repeat" aria-label="Repeat">
+        <option value="none" ${t.repeat==='none'?'selected':''}>ONE-OFF</option>
+        <option value="daily" ${t.repeat==='daily'?'selected':''}>DAILY</option>
+        <option value="weekly" ${t.repeat==='weekly'?'selected':''}>WEEKLY</option>
+      </select>
+    </div>
+    <div class="day-chips" id="te-chips" ${t.repeat==='weekly'?'':'hidden'}>${chips}</div>
+    <button type="button" class="pbtn-main" id="te-save">SAVE CHANGES</button>`;
+  paintIcons(panel);
+  const editWds=new Set(t.weekdays||[]);
+  panel.querySelectorAll('[data-ewd]').forEach(b=>b.onclick=()=>{ const wd=+b.dataset.ewd;
+    if(editWds.has(wd)){ editWds.delete(wd); b.classList.remove('on'); } else { editWds.add(wd); b.classList.add('on'); } });
+  const repSel=document.getElementById('te-repeat');
+  repSel.onchange=()=>{ document.getElementById('te-chips').hidden = repSel.value!=='weekly'; };
+  document.getElementById('te-save').onclick=()=>{
+    const title=document.getElementById('te-title').value.trim();
+    if(!title){ toast('TITLE CAN’T BE EMPTY'); return; }
+    const newRepeat=repSel.value;
+    const newDate=document.getElementById('te-date').value || today();
+    t.title=title;
+    t.time=document.getElementById('te-time').value||'';
+    t.cat=document.getElementById('te-cat').value;
+    if(newRepeat==='weekly') t.weekdays=editWds.size?[...editWds]:[wdOf(newDate)];
+    else t.weekdays=[];
+    if(newRepeat!==t.repeat){
+      if(newRepeat==='none'){ t.done=(t.doneDates||[]).includes(newDate); t.doneDates=[]; }
+      else { t.doneDates = t.done?[newDate]:(t.doneDates||[]); t.done=false; }
+    }
+    t.repeat=newRepeat; t.date=newDate;
+    save(); renderGlyph(); render(); updateLive();
+    taskEditMode=false;
+    setTxt('tm-title', t.title);
+    renderTaskEditPanel();
+    toast('TASK UPDATED');
+  };
+}
+document.getElementById('tm-edit').onclick=()=>{ taskEditMode=!taskEditMode; renderTaskEditPanel(); };
 document.getElementById('tm-close').onclick=closeTask;
 document.getElementById('task-sheet').onclick=(e)=>{ if(e.target.id==='task-sheet') closeTask(); };
 document.getElementById('tm-now').onclick=()=>{ if(sheetTaskId==null)return; state.activeTask=(state.activeTask===sheetTaskId?null:sheetTaskId); save();
@@ -2575,26 +3299,10 @@ document.getElementById('tm-notes').oninput=(e)=>{ const t=state.tasks.find(x=>x
 document.getElementById('tm-sub-form').onsubmit=(e)=>{ e.preventDefault(); const inp=document.getElementById('tm-sub-input'); const v=inp.value.trim(); if(v&&sheetTaskId!=null){ addSub(sheetTaskId,v); inp.value=''; inp.focus(); } };
 
 /* =====================================================================
-   Daily goal (editable line in hero)
-   ===================================================================== */
-document.getElementById('goal-line').onclick=()=>{
-  const cur=(state.dailyGoal&&state.dailyGoal.date===today())?state.dailyGoal.text:'';
-  const wrap=document.getElementById('goal-line');
-  wrap.innerHTML=`<form id="goal-form" class="goal-form"><input id="goal-input" class="goal-input" maxlength="60" placeholder="TODAY’S INTENTION…" value="${esc(cur)}" /></form>`;
-  const inp=document.getElementById('goal-input'); inp.focus();
-  const finish=()=>{ state.dailyGoal={date:today(), text:inp.value.trim()}; save(); restoreGoalLine(); updateLive(); };
-  document.getElementById('goal-form').onsubmit=(e)=>{ e.preventDefault(); finish(); };
-  inp.onblur=finish;
-};
-function restoreGoalLine(){ const wrap=document.getElementById('goal-line');
-  wrap.innerHTML=`<span class="label">INTENTION</span> <span id="goal-text">—</span>`; updateLive(); wrap.onclick=goalClick; }
-function goalClick(){ document.getElementById('goal-line').onclick(); }
-
-/* =====================================================================
    Settings sheet + Guide
    ===================================================================== */
 const sheet=document.getElementById('settings');
-document.getElementById('open-settings').onclick=()=>openSettings();
+document.getElementById('open-settings').onclick=()=>{ openSettings(); const sp=document.getElementById('snap-panel'); if(sp) renderSnapshots(sp); };
 document.getElementById('settings-close').onclick=()=>{ sheet.hidden=true; };
 sheet.onclick=(e)=>{ if(e.target===sheet) sheet.hidden=true; };
 document.querySelectorAll('.stab').forEach(b=>b.onclick=()=>{
@@ -2603,23 +3311,222 @@ document.querySelectorAll('.stab').forEach(b=>b.onclick=()=>{
   if(b.dataset.stab==='bin') renderBin();
   else if(b.dataset.stab==='stats') renderStats();
   else if(b.dataset.stab==='exlib') renderExLibrary();
+  else if(b.dataset.stab==='sleep') renderSleep();
+  else if(b.dataset.stab==='debug') renderDebug();
+  else if(b.dataset.stab==='progress') renderProgress();
 });
+document.getElementById('rank-chip').onclick=()=>openSettings('progress');
+function renderProgress(target){
+  target=target||document.getElementById('progress-panel'); if(!target) return;
+  checkBadges();
+  const r=currentRank();
+  const rungs=RANKS.map((rk,i)=>{
+    const reached=r.idx>=i || (r.genesis);
+    const cur=i===r.idx && !r.genesis;
+    return `<div class="rank-rung ${reached?'reached':''} ${cur?'current':''}">
+      <span class="rank-rung-dot"></span>
+      <span class="rank-rung-name">${rk.name}</span>
+      <span class="rank-rung-xp">${rk.xp.toLocaleString()} XP</span>
+    </div>`;
+  }).join('');
+  const genesisRow=`<div class="rank-rung genesis ${r.genesis?'reached current':''}">
+      <span class="rank-rung-dot"></span>
+      <span class="rank-rung-name">GENESIS</span>
+      <span class="rank-rung-xp">${r.atSingularity?`${Math.min(r.genesisDays,GENESIS_DAYS)}/${GENESIS_DAYS} DAYS`:'365 DAYS AT SINGULARITY'}</span>
+    </div>`;
+  const groups=['TASKS','STREAKS','WORKOUTS','HIDDEN'];
+  const shelf=groups.map(g=>{
+    const items=BADGES.filter(b=>b.group===g);
+    const cards=items.map(b=>{
+      const earned=state.badges&&state.badges.includes(b.id);
+      const showHidden=b.hidden&&!earned;
+      return `<div class="badge-card ${earned?'earned':'locked'}">
+        <div class="badge-dot">${earned?'<i data-ic="star"></i>':'?'}</div>
+        <div class="badge-name">${showHidden?'???':esc(b.name)}</div>
+        <div class="badge-desc">${showHidden?'Hidden — find out by playing.':esc(b.desc)}</div>
+      </div>`;
+    }).join('');
+    return `<div class="group-label"><span class="label">${g}</span></div><div class="badge-shelf">${cards}</div>`;
+  }).join('');
+  const earnedCount=(state.badges||[]).length;
+  target.innerHTML=`
+    <p class="s-p">One quiet number for everything you've done — XP never resets, and this panel is the only place it makes a fuss about itself.</p>
+    <div class="week-card rank-card">
+      <h3>${r.name}</h3>
+      <div class="sl-big rank-big">${r.xp.toLocaleString()} <span class="rank-big-lab">XP</span></div>
+      <div class="w-bar rank-progress-bar"><i style="width:${(r.frac*100).toFixed(1)}%"></i></div>
+      <p class="s-p">${r.genesis?'An unbroken year at Singularity. There is nowhere higher.':
+        r.atSingularity?`${GENESIS_DAYS-r.genesisDays} day${GENESIS_DAYS-r.genesisDays===1?'':'s'} of unbroken Singularity until GENESIS.`:
+        `${r.xpToNext.toLocaleString()} XP to ${r.next.name}.`}</p>
+    </div>
+    <span class="label">RANK LADDER</span>
+    <div class="rank-ladder">${rungs}${genesisRow}</div>
+    <span class="label">BADGES · ${earnedCount}/${BADGES.length}</span>
+    ${shelf}`;
+  paintIcons(target);
+}
+function debugFast(){ return localStorage.getItem('debug_fast')==='1'; }
+function renderDebug(target){
+  target=target||document.getElementById('debug-panel'); if(!target) return;
+  const tpls=state.workoutTemplates||[];
+  target.innerHTML=`
+    <p class="s-p">Testing shortcuts — trigger things instantly instead of waiting. Not needed for normal use.</p>
+    <h3 class="s-h">FOCUS GARDEN</h3>
+    <div class="sp-row">
+      <button class="btn-line" id="dbg-grow1">Grow 1 plant</button>
+      <button class="btn-line" id="dbg-grow7">Grow 7 (last week)</button>
+      <button class="btn-line danger" id="dbg-gardenclear">Clear garden</button>
+    </div>
+    <p class="sp-note">Garden: ${(state.garden||[]).length} plant${(state.garden||[]).length===1?'':'s'}.</p>
+    <h3 class="s-h">WORKOUTS</h3>
+    <div class="sp-toggle">FAST WORKOUTS · AUTO-PLAY 1s/STEP <button class="switch ${debugFast()?'on':''}" id="dbg-fast" role="switch" aria-checked="${debugFast()}"></button></div>
+    <div class="sp-row">
+      <select class="lib-sel apx-grow" id="dbg-tpl">${tpls.map(t=>`<option value="${t.id}">${esc(t.name)}</option>`).join('')||'<option value="">— none —</option>'}</select>
+    </div>
+    <div class="sp-row">
+      <button class="btn-line" id="dbg-complete">Complete now</button>
+      <button class="btn-line" id="dbg-sample">+5 sample sessions</button>
+    </div>
+    <p class="sp-note">Logged sessions: ${(state.sessionLog||[]).length}. “Fast workouts” auto-plays the real session player at 1 second per step — no tapping, the whole workout runs itself to the summary card. “Complete now” skips the player entirely and just logs a session.</p>
+    <h3 class="s-h">XP / RANK</h3>
+    <div class="sp-row">
+      <button class="btn-line" id="dbg-kplus">+50 XP</button>
+      <button class="btn-line" id="dbg-kminus">−50 XP</button>
+      <button class="btn-line" id="dbg-singularity">Jump to Singularity</button>
+      <button class="btn-line" id="dbg-genesis">−365d Singularity clock (Genesis)</button>
+    </div>
+    <p class="sp-note">XP: ${state.karma||0} · Rank: ${currentRank().name} · Badges: ${(state.badges||[]).length}/${BADGES.length}.</p>
+    <div class="sp-toggle">FREEZE BADGE CHECKS <button class="switch ${badgesFrozen()?'on':''}" id="dbg-freeze" role="switch" aria-checked="${badgesFrozen()}"></button></div>
+    <div class="sp-row">
+      <button class="btn-line" id="dbg-badgeall">Unlock all badges</button>
+      <button class="btn-line danger" id="dbg-badgeclear">Clear badges</button>
+    </div>
+    <p class="sp-note">Badges re-earn themselves from your live stats, so clearing only sticks while checks are frozen — clearing turns the freeze on for you. Unfreeze to watch them re-earn.</p>
+    <h3 class="s-h">OTHER</h3>
+    <div class="sp-row">
+      <button class="btn-line" id="dbg-sleepfire">Fire bedtime reminder</button>
+      <button class="btn-line" id="dbg-snap">Snapshot now</button>
+    </div>`;
+  paintIcons(target);
+  const re=()=>{ renderDebug(target); if(activeTab==='focus') renderFocus(); };
+  const selTpl=()=>schedTemplate(document.getElementById('dbg-tpl').value);
+  document.getElementById('dbg-grow1').onclick=()=>{ gardenState().push({date:today(),ts:Date.now()}); save(); toast('PLANT GROWN'); re(); };
+  document.getElementById('dbg-grow7').onclick=()=>{ for(let i=0;i<7;i++) gardenState().push({date:addDays(today(),-i),ts:Date.now()+i}); save(); toast('7 PLANTS GROWN'); re(); };
+  document.getElementById('dbg-gardenclear').onclick=()=>customConfirm('Clear the whole focus garden?',()=>{ state.garden=[]; save(); toast('GARDEN CLEARED'); re(); });
+  document.getElementById('dbg-fast').onclick=()=>{ localStorage.setItem('debug_fast', debugFast()?'0':'1'); renderDebug(target); toast(debugFast()?'FAST WORKOUTS ON':'FAST WORKOUTS OFF'); };
+  document.getElementById('dbg-complete').onclick=()=>{ const t=selTpl(); if(!t){ toast('NO TEMPLATE'); return; }
+    t.log=t.log||{}; recordSession(t, 120+Math.floor(Math.random()*480));
+    if(!t.log[today()]){ t.log[today()]=true; state.karma=(state.karma||0)+10; }
+    save(); renderGlyph(); toast('WORKOUT LOGGED'); re(); };
+  document.getElementById('dbg-sample').onclick=()=>{ const t=selTpl(); if(!t){ toast('NO TEMPLATE'); return; }
+    state.sessionLog=state.sessionLog||[];
+    for(let i=5;i>=1;i--){ const f=0.76+(5-i)*0.06;
+      const ex=sessionVolume(t).map(e=>({...e, reps:Math.round(e.reps*f), seconds:Math.round(e.seconds*f), volume:Math.round(e.volume*f)}));
+      state.sessionLog.push({ts:Date.now()-i*172800000, date:addDays(today(),-i*2), tplId:t.id, name:t.name, durationSec:600, totalSets:ex.reduce((a,e)=>a+e.sets,0), exercises:ex}); }
+    save(); toast('5 SAMPLE SESSIONS ADDED'); re(); };
+  document.getElementById('dbg-kplus').onclick=()=>{ state.karma=(state.karma||0)+50; save(); renderGlyph(); re(); };
+  document.getElementById('dbg-kminus').onclick=()=>{ state.karma=Math.max(0,(state.karma||0)-50); save(); renderGlyph(); re(); };
+  document.getElementById('dbg-singularity').onclick=()=>{ state.karma=RANKS[RANKS.length-1].xp; save(); renderGlyph(); toast('XP SET TO SINGULARITY THRESHOLD'); re(); };
+  document.getElementById('dbg-genesis').onclick=()=>{
+    if((state.karma||0)<RANKS[RANKS.length-1].xp){ toast('NOT AT SINGULARITY YET'); return; }
+    updateRankMeta(); rankMeta().enteredSingularityAt=addDays(today(),-GENESIS_DAYS);
+    save(); renderGlyph(); toast('SINGULARITY CLOCK BACKDATED 365 DAYS'); re(); };
+  document.getElementById('dbg-freeze').onclick=()=>{ localStorage.setItem('debug_freeze_badges', badgesFrozen()?'0':'1');
+    renderGlyph(); toast(badgesFrozen()?'BADGE CHECKS FROZEN':'BADGE CHECKS LIVE — RE-EARNING'); re(); };
+  document.getElementById('dbg-badgeall').onclick=()=>{ state.badges=BADGES.map(b=>b.id); save(); toast('ALL BADGES UNLOCKED'); re(); };
+  document.getElementById('dbg-badgeclear').onclick=()=>customConfirm('Clear all earned badges? (XP and rank untouched. Badge checks will be frozen so they stay cleared.)',()=>{
+    state.badges=[]; localStorage.setItem('debug_freeze_badges','1');
+    save(); renderGlyph(); toast('BADGES CLEARED · CHECKS FROZEN'); re(); });
+  document.getElementById('dbg-sleepfire').onclick=()=>{ const lead=(state.sleep&&state.sleep.lead)||30;
+    toast(`BEDTIME IN ${lead} MIN — START WINDING DOWN`);
+    try{ if(window.Notification&&Notification.permission==='granted') new Notification('Nothing Tasks',{body:`Bedtime in ${lead} minutes — start winding down.`}); }catch(_){} };
+  document.getElementById('dbg-snap').onclick=()=>{ pushSnap('manual'); toast('SNAPSHOT SAVED'); };
+}
+
+/* =====================================================================
+   Sleep — bedtime schedule, reminder, recommendations
+   ===================================================================== */
+function sleepCfg(){ state.sleep=state.sleep||{wake:'07:00', cycles:5, remind:false, lead:30}; return state.sleep; }
+function bedtimeFor(wake, cycles){
+  const [H,M]=(wake||'07:00').split(':').map(Number);
+  let mins=H*60+M-(cycles*90+15); // 90-min cycles + ~15 min to fall asleep
+  mins=((mins%1440)+1440)%1440;
+  return String(Math.floor(mins/60)).padStart(2,'0')+':'+String(mins%60).padStart(2,'0');
+}
+function checkSleepReminder(){
+  const c=state.sleep; if(!c||!c.remind) return;
+  const target=(tMin(bedtimeFor(c.wake,c.cycles))-(c.lead||30)+1440)%1440;
+  const key=today()+':'+target;
+  if(nowMin()===target && localStorage.getItem('sleep_reminded')!==key){
+    localStorage.setItem('sleep_reminded', key);
+    toast(`BEDTIME IN ${c.lead||30} MIN — START WINDING DOWN`);
+    try{ if(window.Notification&&Notification.permission==='granted')
+      new Notification('Nothing Tasks',{body:`Bedtime in ${c.lead||30} minutes — start winding down.`}); }catch(_){}
+  }
+}
+const SLEEP_TIPS=[
+  ['Same wake time, every day','Consistency beats duration — a fixed wake-up time (weekends too) anchors your whole cycle. That’s why the maths here starts from when you get up.'],
+  ['Wind down, screens down','Use the reminder window to dim lights and drop the phone. Blue light and doomscrolling both push your sleep pressure back.'],
+  ['Cut caffeine ~8h before bed','Caffeine has a long half-life — an afternoon coffee is still in your system at midnight.'],
+  ['Cool, dark room','Around 18°C with blackout-level darkness is the sweet spot for deep sleep.'],
+  ['Morning light','Daylight within ~30 minutes of waking sets tomorrow night’s sleepiness clock better than anything else.']
+];
+function renderSleep(target){
+  target=target||document.getElementById('sleep-panel'); if(!target) return;
+  const c=sleepCfg();
+  const cyc=[6,5,4,3];
+  const chips=cyc.map(n=>`<button type="button" class="catchip ${c.cycles===n?'on':''}" data-slcyc="${n}">${n} CYCLES · ${n*1.5}H</button>`).join('');
+  const bt=bedtimeFor(c.wake,c.cycles);
+  const alts=cyc.filter(n=>n!==c.cycles).map(n=>`<span class="sc-tag">${bedtimeFor(c.wake,n)} → ${n*1.5}H</span>`).join('');
+  const tips=SLEEP_TIPS.map(t=>`<div class="feature"><h4><span class="fdot"></span>${t[0]}</h4><p>${t[1]}</p></div>`).join('');
+  target.innerHTML=`
+    <p class="s-p">Sleep runs in ~90-minute cycles — waking at the end of one feels far better than mid-cycle. Set your wake-up time and a target; the app works back to tonight’s bedtime (including ~15 min to fall asleep).</p>
+    <span class="label">I WAKE UP AT</span>
+    <div class="sp-row"><input type="time" id="sl-wake" value="${c.wake}" aria-label="Wake-up time" /></div>
+    <span class="label">SLEEP TARGET</span>
+    <div class="sl-cycles">${chips}</div>
+    <div class="week-card sleep-card">
+      <h3>Tonight’s bedtime</h3>
+      <div class="sl-big">${bt}</div>
+      <p class="s-p">Lights out <b>${bt}</b> → ${c.cycles} cycles (${c.cycles*1.5}h) → up at ${c.wake}. Other options:</p>
+      <div class="sc-tags">${alts}</div>
+    </div>
+    <div class="sp-toggle">BEDTIME REMINDER <button class="switch ${c.remind?'on':''}" id="sl-remind" role="switch" aria-checked="${!!c.remind}"></button></div>
+    <div class="sp-row sl-lead-row"><span class="label">REMIND ME</span>
+      <select class="lib-sel" id="sl-lead" aria-label="Reminder lead time">
+        ${[15,30,45,60].map(m=>`<option value="${m}" ${(c.lead||30)===m?'selected':''}>${m} MIN BEFORE</option>`).join('')}
+      </select></div>
+    <p class="sp-note">The reminder pops up in the app (and as a notification if you allow it) while the app is open or installed. Your sleep settings sync between devices.</p>
+    <h3 class="s-h">RECOMMENDATIONS</h3>
+    <div class="guide">${tips}</div>`;
+  target.querySelector('#sl-wake').onchange=(e)=>{ c.wake=e.target.value||'07:00'; save(); renderSleep(target); };
+  target.querySelectorAll('[data-slcyc]').forEach(b=>b.onclick=()=>{ c.cycles=+b.dataset.slcyc; save(); renderSleep(target); });
+  target.querySelector('#sl-remind').onclick=()=>{
+    c.remind=!c.remind;
+    if(c.remind){ try{ if(window.Notification&&Notification.permission==='default') Notification.requestPermission(); }catch(_){} }
+    save(); renderSleep(target); };
+  target.querySelector('#sl-lead').onchange=(e)=>{ c.lead=+e.target.value; save(); };
+}
 function openSettings(tab){ sheet.hidden=false; renderGuide(); if(tab){ const b=document.querySelector('.stab[data-stab="'+tab+'"]'); if(b) b.click(); } }
 function goFocusTab(){ activeTab='focus'; document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab==='focus')); render(); }
 const GUIDE=[
   ['Quick add (natural language)','Type a task and press +. It reads time (<code>3pm</code>, <code>15:00</code>, <code>at 7am</code>), days (<code>today</code>, <code>tomorrow</code>, <code>fri</code>), repeats (<code>daily</code>, <code>every monday</code>) and <code>#category</code>. Example: <code>Call mom mon wed fri 6pm #personal</code>. For an exact date the text can’t express (e.g. the 23rd of next month), use the <b>date field</b> next to the time picker instead — it overrides the guessed date. Recurring exercise routines belong in the Workouts tab, not Tasks, so they have their own space with day-scheduling and streaks.'],
   ['Repeat-on day chips','Under the add box, tap weekday chips to repeat a task on those exact days. None = one-off · all 7 = daily.'],
   ['Categories','Every task has a category pill. The chip bar filters — ALL shows everything. Tap + to create your own, or the pencil icon to delete one (its tasks move to the first remaining category). The selected chip becomes the default for new tasks.'],
-  ['Widgets','Below the clock: your daily intention, the next task with a countdown, a Day bar (waking hours elapsed) and a Charge battery (today’s completion).'],
-  ['Doing a task','Tap the ⚡ on any task to open its sheet — mark it “Doing now”, jump to a focus session on it, add private notes (scratchpad), complete, or delete.'],
+  ['Widgets','Below the clock: the next task with a countdown, a Day bar (waking hours elapsed) and a Charge battery (today’s completion).'],
+  ['Doing a task','Tap the ⚡ on any task to open its sheet — mark it “Doing now”, jump to a focus session on it, add private notes (scratchpad), complete, or delete. Tap the <b>pencil</b> in that sheet to edit anything about the task: title, time, date, category, and repeat (one-off / daily / weekly with day chips).'],
   ['Tasks / Calendar','Tasks groups by Morning/Afternoon/Evening — drag the grip on a task to reorder it within its group. Completing a one-off task sends it straight to the Bin (recurring tasks stay put). Calendar has three views: <b>WEEK</b> and <b>MONTH</b> browse with the arrows and a tap on any day shows its tasks below; <b>SCHEDULE</b> swaps that for an hourly timeline of the selected day, with its own complete-checkbox per task — the arrows step one day at a time in this view.'],
-  ['Focus timer','25-min focus / 5-min break dot ring — tap "Customize durations" to change either length. +15 karma per session. Focus Music lives right below the timer.'],
-  ['Workouts','A Mon–Sun weekly plan. Tap the <b>pencil</b> on any day to pick what happens that day — a workout template, a Rest Day, or <b>+ New template</b>, which opens a popup where you name it and optionally start from a copy of an existing workout. Edit exercises right there: <b>Add exercise</b> opens a popup to pick from the library <i>or</i> create a brand-new exercise on the spot (name, reps/time, category — including a new category). Per exercise: sets × reps or duration (tap the <code>REPS</code>/<code>SECS</code> pill to switch, just for that workout), rest timers, circuits with a rounds count, plus <b>Duplicate</b> and Delete. Tap the <b>eye</b> to preview the exact step order you’ll follow. The <b>2-WEEK</b> button alternates two different weeks (A/B) automatically — edit each week from its chip; “NOW” marks the live one. Today’s row gets a START button (guided session player: reps steps wait for your tap; timed work and rests show a PLAY button and only start counting down once you tap it, so nothing runs while you’re getting into position; your PR shows under the exercise) and a check-circle (+10 karma); the flame streak only breaks when a <i>scheduled</i> workout is missed. <b>Workout Music</b> — the full music player — sits below the plan. The exercise moves themselves live in Settings → Exercises.'],
+  ['Daily planning','On the Tasks tab, a banner appears in the morning to <b>Plan today</b> (tap a task’s TODAY tag to push it to TOMORROW — it stays listed so you can change your mind — then start the day) and in the evening to <b>Wrap up</b> (see how many you finished, undo anything that was auto-assumed, and carry unfinished one-off tasks forward in one tap so nothing silently slips).'],
+  ['Assume done at deadline','Settings → Appearance → TASKS. Turn this on and any task you gave a <b>time</b> is marked done automatically once that time passes — so you never have to open the app just to tick a box (and never get pulled into your phone for it). Tasks without a time are never assumed; they still wait for you. Auto-marked tasks carry an <b>AUTO</b> tag, and the evening Wrap-up lists them all so you can undo any you didn’t really do (which takes the karma back too). It only ever assumes <i>today’s</i> tasks while the app is open — it will never invent history for days you weren’t here.'],
+  ['Focus timer','25-min focus / 5-min break dot ring — tap "Customize durations" to change either length. +15 XP per session. Every completed focus session grows a plant in your <b>Focus Garden</b> below the timer — quit early and the seedling wilts (nothing banked). Focus Music sits under the garden.'],
+  ['Workouts','A Mon–Sun weekly plan. Tap the <b>pencil</b> on any day to pick what happens that day — a workout template, a Rest Day, or <b>+ New template</b>, which opens a popup where you name it and optionally start from a copy of an existing workout. Edit exercises right there: <b>Add exercise</b> opens a popup to pick from the library <i>or</i> create a brand-new exercise on the spot (name, reps/time, category — including a new category). Per exercise: sets × reps or duration (tap the <code>REPS</code>/<code>SECS</code> pill to switch, just for that workout), rest timers, circuits with a rounds count, plus <b>Duplicate</b> (an independent copy to customize separately), <b>Copy to…</b> (assign this exact workout to more days at once — edit it later and every day using it updates together) and Delete. Tap the <b>eye</b> to preview the exact step order you’ll follow. The <b>2-WEEK</b> button alternates two different weeks (A/B) automatically — edit each week from its chip; “NOW” marks the live one. Flip <b>WARM-UP SET</b> on a workout to auto-add a couple of lighter build-up sets of the first exercise before the real work. Today’s row gets a START button (guided session player: reps steps wait for your tap; timed work and rests show a PLAY button and only start counting down once you tap it, so nothing runs while you’re getting into position; the ◀ arrow steps back to redo or re-check a previous exercise; your PR shows under the exercise) and a check-circle (+10 karma). Finishing shows a <b>summary card</b> — total time and the sets you did — and logs the session, which feeds each exercise’s <b>progress chart</b> (volume per session over time) in Settings → Exercises. The flame streak only breaks when a <i>scheduled</i> workout is missed. <b>Workout Music</b> sits below the plan. The exercise moves themselves live in Settings → Exercises.'],
   ['Bin','Deleted tasks group by category & date with DONE/OPEN. Restore or empty.'],
-  ['Stats','Completion %, streak, karma, focus sessions, best focus hour, a weekly grid, 30-day momentum, a year heatmap for tasks and another for workouts, and a category breakdown.'],
-  ['Appearance','Pick one of four accent colours — or tap the fifth swatch to choose any custom colour, which then updates to show exactly what you picked — and toggle light / dark.'],
-  ['Music (Focus & Workouts tabs)','The same player lives below the pomodoro (Focus) and below the weekly plan (Workouts). <b>My Files</b> — add your own audio (files or a whole folder); stored on-device, plays fully offline, no limits. <b>Free · Lo-fi</b> — ad-free radio, no account. <b>Noise</b> — white/pink/brown/blue/violet, generated on-device, good for masking distractions. <b>Spotify</b> — embedded player (no Premium/setup; free Spotify = ~30s previews). Any of them can auto-play when a focus session starts. Tap the now-playing chip top-right for a mini-player without leaving your current tab.'],
-  ['Backup','Settings → Appearance → Export tasks downloads your task/karma data as JSON; Import tasks restores it (replaces current data). Export library downloads your My Files tracks and playlists as a .zip; Import library adds a .zip’s tracks and playlists into your current library.'],
+  ['Stats','Completion %, streak, XP, focus sessions, best focus hour, a weekly grid, 30-day momentum, a year heatmap for tasks and another for workouts, and a category breakdown.'],
+  ['Appearance','Pick one of four accent colours — or tap the fifth swatch to open the in-app colour picker: drag the shade pad and hue strip (or type a hex code), hit APPLY, and the swatch remembers exactly what you picked. Plus the light / dark toggle.'],
+  ['Sleep','Settings → Sleep: set your wake-up time and a sleep target in 90-minute cycles — the app works back to tonight’s ideal bedtime (plus ~15 min to fall asleep) and shows the alternatives. Turn on the bedtime reminder for a nudge 15–60 minutes before lights-out (a system notification too, if you allow it). Your sleep settings sync between devices.'],
+  ['Music (Focus & Workouts tabs)','The same player lives below the pomodoro (Focus) and below the weekly plan (Workouts). <b>My Files</b> — add your own audio (files or a whole folder); stored on-device, plays fully offline, no limits. <b>Free · Lo-fi</b> — one built-in station (Nightwave Plaza), kept deliberately small to only offer streams that actually connect reliably; paste your own direct stream link for more, and a status line tells you plainly if a stream fails instead of just going silent. <b>Noise</b> — white/pink/brown/blue/violet, generated on-device, good for masking distractions. <b>Spotify</b> — embedded player (no Premium/setup; free Spotify = ~30s previews). Any of them can auto-play when a focus session starts. Tap the now-playing chip top-right for a mini-player without leaving your current tab.'],
+  ['Backup & snapshots','Settings → Appearance → Export tasks downloads your task/XP data as JSON; Import tasks restores it (replaces current data). Export library downloads your My Files tracks and playlists as a .zip; Import library adds a .zip’s tracks and playlists into your current library. <b>Snapshots</b> (same section) are an automatic on-device safety net — one is saved each day and before any restore, so you can roll back with one tap if an edit or sync goes wrong.'],
+  ['Rank & badges','Tap your rank chip in the hero (or Settings → Progress) for the full picture. <b>XP</b> is a lifetime total — it only grows from real effort (tasks, focus sessions, workouts) and only drops if you undo one of those. Eleven ranks run DUST → SINGULARITY; reach the top and hold it for an unbroken year to earn the one-of-a-kind <b>GENESIS</b> title — dipping back below the threshold resets that clock. Badges cover tasks, streaks, workouts and a few hidden ones you’ll stumble into. Nothing here interrupts you — no popups, no toasts, it just quietly updates whenever you check.'],
   ['Sync (Google Drive)','Keeps two devices in step via a hidden app file in your own Google Drive — tasks, workouts and settings (not music files). Newest change wins; AUTO-SYNC pushes ~30s after an edit and pulls on app start. <b>One-time setup:</b> 1) go to <code>console.cloud.google.com</code>, create a project. 2) APIs &amp; Services → Library → enable <code>Google Drive API</code>. 3) OAuth consent screen → External → add your own Gmail as a test user. 4) Credentials → Create credentials → OAuth client ID → Web application → under “Authorized JavaScript origins” add the address you open the app from (e.g. <code>https://yourname.github.io</code>). 5) Copy the Client ID, paste it into Settings → Appearance → Sync on <i>every</i> device, tap Sync now and sign in with the same Google account.'],
   ['Task goal','In Stats, set a target task count and a date. A dot-ring tracks how many tasks you complete between now and then.']
 ];
@@ -2722,24 +3629,30 @@ function startViz(containerId, getAnalyser){
 }
 
 let spPlaying=false;
+// Built-in station list, kept deliberately short: only streams actually verified to connect fast
+// and reliably. SomaFM was dropped entirely — every station, every mirror, blocked this app outright
+// (403, with and without CORS). Radio Paradise is reachable but its buffering time swung from ~1s to
+// 15s+ to a full timeout across repeated tests, which isn't a "just works" experience. Nightwave
+// Plaza started in ~1.6s on every attempt. Paste-your-own below covers anyone who wants more variety.
 const FM_STATIONS=[
-  {id:'fluid',        name:'Lo-Fi Beats',  url:'https://ice1.somafm.com/fluid-128-mp3'},
-  {id:'groovesalad',  name:'Chill Ambient',url:'https://ice1.somafm.com/groovesalad-128-mp3'},
-  {id:'dronezone',    name:'Deep Space',   url:'https://ice1.somafm.com/dronezone-128-mp3'},
-  {id:'beatblender',  name:'Downtempo',    url:'https://ice1.somafm.com/beatblender-128-mp3'},
-  {id:'sonicuniverse',name:'Jazz',         url:'https://ice1.somafm.com/sonicuniverse-128-mp3'}
+  {id:'nightwave', name:'Nightwave Plaza', url:'https://radio.plaza.one/mp3'}
 ];
 function musicProvider(){ return localStorage.getItem('music_provider')||'free'; }
 function setMusicProvider(p){ localStorage.setItem('music_provider',p); }
 const FM={
   AUD:null, STK:'fm_station', VK:'fm_vol', CK:'fm_custom',
+  err:null, loading:false,
   audio(){ if(!this.AUD){ const a=new Audio(); a.preload='none'; a.volume=this.vol();
-    a.addEventListener('playing',()=>{ updateNpChip(this.name()+' · LO-FI'); refreshFreeBtn(); });
+    a.addEventListener('playing',()=>{ this.err=null; this.loading=false; updateNpChip(this.name()+' · LO-FI'); refreshFreeBtn(); refreshFmStatus(); });
     a.addEventListener('pause',()=>{ if(musicProvider()==='free') updateNpChip(null); refreshFreeBtn(); });
+    // Failures used to be swallowed silently — the Play button just did nothing, forever.
+    a.addEventListener('error',()=>this.onFail());
+    a.addEventListener('stalled',()=>{ if(this.loading) this.onFail(); });
     document.body.appendChild(a); this.AUD=a; } return this.AUD; },
-  station(){ return localStorage.getItem(this.STK)||'fluid'; }, setStation(id){ localStorage.setItem(this.STK,id); },
+  station(){ return localStorage.getItem(this.STK)||FM_STATIONS[0].id; }, setStation(id){ localStorage.setItem(this.STK,id); },
   vol(){ const v=localStorage.getItem(this.VK); return v!=null?+v:0.7; }, setVol(v){ localStorage.setItem(this.VK,v); if(this.AUD) this.AUD.volume=+v; },
-  url(){ const id=this.station(); if(id==='custom') return localStorage.getItem(this.CK)||''; const s=FM_STATIONS.find(x=>x.id===id); return s?s.url:FM_STATIONS[0].url; },
+  url(){ const id=this.station(); if(id==='custom') return localStorage.getItem(this.CK)||'';
+    const s=FM_STATIONS.find(x=>x.id===id)||FM_STATIONS[0]; return s.url; },
   name(){ const id=this.station(); if(id==='custom') return 'Custom stream'; const s=FM_STATIONS.find(x=>x.id===id); return s?s.name:'Lo-fi'; },
   playing(){ return this.AUD && !this.AUD.paused && !this.AUD.ended; },
   ensureAnalyser(a){ if(this.analyser) return; try{
@@ -2747,11 +3660,36 @@ const FM={
       const src=this.ctx.createMediaElementSource(a); this.analyser=this.ctx.createAnalyser(); this.analyser.fftSize=256;
       src.connect(this.analyser); this.analyser.connect(this.ctx.destination);
     }catch(e){} },
-  play(){ try{LIB.pause();}catch(e){} const a=this.audio(); const u=this.url(); if(!u) return;
-    a.crossOrigin=(this.station()!=='custom')?'anonymous':null; if(a.src!==u) a.src=u; a.volume=this.vol(); a.play().catch(()=>{}); this.ensureAnalyser(a); },
-  pause(){ if(this.AUD) this.AUD.pause(); }, toggle(){ this.playing()? this.pause(): this.play(); },
-  select(id){ this.setStation(id); if(this.playing()){ this.AUD.crossOrigin=(id!=='custom')?'anonymous':null; this.AUD.src=this.url(); this.AUD.play().catch(()=>{}); } }
+  onFail(){
+    if(!this.loading) return;
+    this.loading=false;
+    this.err = this.station()==='custom'
+      ? 'That stream URL wouldn’t play. Check the address, or that it isn’t HTTP-only.'
+      : 'This stream didn’t respond. It may be down right now — Noise and My Files are unaffected.';
+    refreshFreeBtn(); refreshFmStatus();
+  },
+  start(){ const a=this.audio(), u=this.url(); if(!u){ this.err='No stream URL set.'; refreshFmStatus(); return; }
+    this.loading=true; a.crossOrigin=(this.station()!=='custom')?'anonymous':null;
+    a.src=u; a.volume=this.vol();
+    a.play().then(()=>{ this.ensureAnalyser(a); }).catch(()=>this.onFail());
+    refreshFmStatus(); },
+  play(){ try{LIB.pause();}catch(e){} this.err=null; this.start(); },
+  pause(){ this.loading=false; if(this.AUD) this.AUD.pause(); }, toggle(){ this.playing()? this.pause(): this.play(); },
+  select(id){ this.setStation(id); this.err=null; if(this.playing()||this.loading) this.start(); }
 };
+// Pasting a Spotify/YouTube *page* link here can never work — an <audio> element needs a direct
+// stream, not an HTML page. Catch it at entry instead of failing mysteriously later.
+function fmUrlProblem(u){
+  if(!/^https?:\/\//i.test(u)) return 'That needs to be a full URL starting with https://';
+  if(/^http:\/\//i.test(u) && location.protocol==='https:') return 'HTTP streams won’t play on an HTTPS page. Find an https:// version.';
+  const m=u.match(/(spotify\.com|youtube\.com|youtu\.be|soundcloud\.com|music\.apple\.com|deezer\.com|tidal\.com)/i);
+  if(m) return `That’s a ${m[1].split('.')[0]} web page, not an audio stream — this box needs a direct .mp3/.aac stream link. ${/spotify/i.test(m[1])?'For Spotify, use the Spotify tab instead.':''}`.trim();
+  return null;
+}
+function refreshFmStatus(){ const el=document.getElementById('fm-status'); if(!el) return;
+  el.hidden=!(FM.err||FM.loading);
+  el.className='sp-note fm-status'+(FM.err?' err':'');
+  el.textContent = FM.err ? '⚠ '+FM.err : (FM.loading?'CONNECTING…':''); }
 function refreshFreeBtn(){ const b=document.getElementById('fm-toggle'); if(b) b.innerHTML=(FM.playing()?iconHTML('pause')+' Pause':iconHTML('play')+' Play'); }
 
 /* ---- noise generator (Web Audio API; white/pink/brown/blue/violet) ---- */
@@ -2980,7 +3918,7 @@ function renderLibrary(){
   const fi=document.getElementById('lib-file'); if(fi) fi.onchange=async()=>{ if(fi.files&&fi.files.length){ await LIB.add(fi.files); renderLibrary(); } };
   const fo=document.getElementById('lib-folder'); if(fo) fo.onchange=async()=>{ if(fo.files&&fo.files.length){ await LIB.add(fo.files); renderLibrary(); } };
   const pe=document.getElementById('pl-edit'); if(pe) pe.onclick=()=>{ libEdit=!libEdit; renderLibrary(); };
-  const pd=document.getElementById('pl-del'); if(pd) pd.onclick=()=>{ if(confirm('Delete this playlist? Your audio files stay in the library.')){ delPlaylist(libView); renderLibrary(); } };
+  const pd=document.getElementById('pl-del'); if(pd) pd.onclick=()=>{ customConfirm('Delete this playlist? Your audio files stay in the library.', ()=>{ delPlaylist(libView); renderLibrary(); }); };
   const tg=document.getElementById('lib-toggle'); if(tg) tg.onclick=()=>{ LIB.toggle(); setTimeout(renderLibrary,150); };
   const pv=document.getElementById('lib-prev'); if(pv) pv.onclick=()=>{ LIB.prev(); setTimeout(renderLibrary,150); };
   const nx=document.getElementById('lib-next'); if(nx) nx.onclick=()=>{ LIB.next(); setTimeout(renderLibrary,150); };
@@ -3009,10 +3947,11 @@ function renderFree(){
   const el=document.getElementById('prov-panel'); if(!el) return;
   const cur=FM.station(), playing=FM.playing();
   el.innerHTML=`<div class="sp-block">
-    <p class="s-p">Free lo-fi & ambient radio — no account, plays in the background while you focus. Powered by SomaFM (listener-supported).</p>
+    <p class="s-p">Free lo-fi radio — no account, plays in the background while you focus. Only one built-in station is offered on purpose: it's the one that's actually proven reliable. Paste your own stream link below for more.</p>
     <div class="fm-stations">${FM_STATIONS.map(s=>`<button class="fm-station ${cur===s.id?'on':''}" data-st="${s.id}">${s.name}</button>`).join('')}</div>
     <div class="sp-row"><input class="sp-input" id="fm-custom" placeholder="OR PASTE A STREAM URL (.mp3 / .aac)" value="${esc(localStorage.getItem('fm_custom')||'')}" /><button class="btn-line" id="fm-custom-save">Use</button></div>
     <div class="sp-transport"><button class="pbtn-main" id="fm-toggle"><i data-ic="${playing?'pause':'play'}"></i> ${playing?'Pause':'Play'}</button><span class="fm-now">${esc(FM.name())}</span></div>
+    <p class="sp-note fm-status" id="fm-status" hidden></p>
     <div id="fm-viz" class="noise-viz"></div>
     <div class="sp-row"><span class="label">VOLUME</span><input type="range" min="0" max="1" step="0.01" value="${FM.vol()}" id="fm-vol" class="fm-vol" aria-label="Volume"></div>
     <div class="sp-toggle">AUTO-PLAY DURING FOCUS <button class="switch ${SP.autoplay()?'on':''}" id="fm-auto" role="switch" aria-checked="${SP.autoplay()}"></button></div>
@@ -3020,10 +3959,14 @@ function renderFree(){
   </div>`;
   paintIcons(el);
   el.querySelectorAll('.fm-station').forEach(b=>b.onclick=()=>{ FM.select(b.dataset.st); renderFree(); });
-  document.getElementById('fm-custom-save').onclick=()=>{ const u=document.getElementById('fm-custom').value.trim(); if(u){ localStorage.setItem('fm_custom',u); FM.select('custom'); renderFree(); } };
+  document.getElementById('fm-custom-save').onclick=()=>{ const u=document.getElementById('fm-custom').value.trim(); if(!u) return;
+    const bad=fmUrlProblem(u);
+    if(bad){ FM.err=bad; FM.loading=false; refreshFmStatus(); return; }
+    localStorage.setItem('fm_custom',u); FM.err=null; FM.select('custom'); renderFree(); };
   document.getElementById('fm-toggle').onclick=()=>{ FM.toggle(); setTimeout(renderFree,200); };
   document.getElementById('fm-vol').oninput=(e)=>FM.setVol(+e.target.value);
   document.getElementById('fm-auto').onclick=(e)=>{ const on=!SP.autoplay(); SP.setAutoplay(on); e.target.classList.toggle('on',on); e.target.setAttribute('aria-checked',on); };
+  refreshFmStatus();
   startViz('fm-viz', ()=>FM.analyser);
 }
 let spController=null;
@@ -3104,9 +4047,13 @@ function musicFocusStop(){ if(!SP.autoplay()) return; const p=musicProvider(); i
 /* ---------- chips / misc bindings ---------- */
 document.getElementById('focus-chip').onclick=()=>{ activeTab='focus'; document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab==='focus')); render(); };
 document.getElementById('active-chip').onclick=()=>{ if(state.activeTask!=null) openTask(state.activeTask, today()); };
-document.getElementById('goal-line').onclick=goalClick;
 (function initNudgeToggle(){ const b=document.getElementById('nudge-toggle'); if(!b) return; const on=nudgesOn(); b.classList.toggle('on',on); b.setAttribute('aria-checked',on);
   b.onclick=()=>{ const v=!nudgesOn(); localStorage.setItem('nudges', v?'1':'0'); b.classList.toggle('on',v); b.setAttribute('aria-checked',v); }; })();
+(function initAutoToggle(){ const b=document.getElementById('autocomplete-toggle'); if(!b) return;
+  const paint=()=>{ b.classList.toggle('on',autoOn()); b.setAttribute('aria-checked',autoOn()?'true':'false'); };
+  b.onclick=()=>{ state.autoComplete=!autoOn(); save(); paint();
+    if(autoOn()){ runAutoComplete(); toast('TASKS WILL AUTO-COMPLETE AT THEIR DEADLINE'); } else toast('AUTO-COMPLETE OFF'); };
+  paint(); })();
 setInterval(()=>{ if(nudgesOn() && !pomoInt) toast(NUDGES[Math.floor(Math.random()*NUDGES.length)]); }, 50*60*1000);
 
 /* ---------- PWA ---------- */
@@ -3121,6 +4068,7 @@ window.toggle=toggle; window.del=del; window.restore=restore; window.openTask=op
 SP.handleRedirect().then(()=>{ if(SP.connected()){ spUpdateNow(); setInterval(()=>{ if(SP.connected()) spUpdateNow(); },15000); } });
 migrateWorkoutCategory();
 migrateWorkoutsToSchedule();
+takeDailySnapshot();
 applyTheme(); paintIcons(document);
 renderAddCatOptions(); renderCatbar(); renderGlyph(); render(); updateLive(); setInterval(updateLive,1000); setOffline();
 LIB.load();
