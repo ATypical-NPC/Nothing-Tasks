@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#000000" />
   <link rel="manifest" href="./manifest.webmanifest" />
-  <link rel="icon" type="image/svg+xml" href="./icons/icon.svg" />
-  <link rel="apple-touch-icon" href="./icons/icon.svg" />
+  <link rel="icon" type="image/png" sizes="512x512" href="./icons/icon-512.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Doto:wght@400;500;700;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -276,23 +277,8 @@ html[data-theme="light"] input[type="date"]::-webkit-calendar-picker-indicator:h
 .tl-now{position:absolute; left:0; right:0; height:2px; background:var(--accent); z-index:2}
 .tl-now::before{content:""; position:absolute; left:-3px; top:-3px; width:8px; height:8px; border-radius:50%; background:var(--accent)}
 
-/* ===================== stats ===================== */
-.stat-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:var(--gap); margin-bottom:22px}
-.stat{border:1px solid var(--line); border-radius:var(--r); background:var(--surface); padding:18px}
-.stat .s-num{font-family:var(--dot); font-weight:900; font-size:40px; line-height:1; color:var(--text);
-  font-variant-numeric:tabular-nums}
-.stat .s-num.acc{color:var(--accent)}
-.stat .label{margin-top:18px}
-
 .week-card{border:1px solid var(--line); border-radius:var(--r); background:var(--surface); padding:20px}
 .week-card h3{margin:0 0 16px; font-size:12px; letter-spacing:2px; color:var(--dim); font-weight:600; text-transform:uppercase}
-.dotweek{display:flex; gap:18px; justify-content:space-between}
-.dotday{display:flex; flex-direction:column; align-items:center; gap:9px; flex:1}
-.dotcol{display:flex; flex-direction:column-reverse; gap:5px; min-height:120px; justify-content:flex-start; width:100%; align-items:center}
-.cell{width:14px; height:14px; min-height:14px; flex:0 0 14px; border-radius:50%; background:var(--line)}
-.cell.on{background:var(--accent)}
-.dotday .d-lab{font-size:11px; color:var(--dim); font-weight:600; letter-spacing:1px}
-.dotday.today .d-lab{color:var(--accent)}
 
 /* ===================== footer ===================== */
 .foot{display:flex; align-items:center; justify-content:flex-end; gap:12px; min-height:18px; margin-top:18px}
@@ -496,6 +482,13 @@ html[data-theme="light"] input[type="date"]::-webkit-calendar-picker-indicator:h
 .fm-station:hover{border-color:var(--text)}
 .fm-station.on{background:var(--accent); color:var(--on-accent); border-color:var(--accent)}
 .fm-now{font-size:12px; letter-spacing:1px; color:var(--dim)}
+.storage-meter{margin:14px 0 4px; padding:12px; border:1px solid var(--line); border-radius:var(--r); background:var(--surface)}
+.storage-meter:empty{display:none}
+.sm-line{display:flex; justify-content:space-between; align-items:baseline; gap:10px; font-size:12px; font-weight:700; letter-spacing:.5px; margin-bottom:8px}
+.sm-line .label{color:var(--dim)}
+.sm-val{font-variant-numeric:tabular-nums; white-space:nowrap}
+.sm-sub{font-size:11px; color:var(--dim); font-weight:600; letter-spacing:.5px; margin-top:8px}
+.sm-sub.warn{color:var(--accent)}
 .fm-status{margin:0; line-height:1.5}
 .fm-status.err{color:var(--red); border:1px dashed var(--red); border-radius:var(--r); padding:9px 11px}
 .sp-embed{border-radius:12px; overflow:hidden; min-height:80px}
@@ -536,7 +529,7 @@ label.btn-line{cursor:pointer}
 @media (max-width:420px){ .noise-viz .vu-ring{width:52px} }
 
 /* ===================== readability (keep dots, clearer small text) ===================== */
-.label,.t-cat,.t-rep,.cal-dow,.d-lab,.dhint,.sp-note,.foot-note,.cal-count,.b-state,.ib-lab,.t-now{font-weight:700}
+.label,.t-cat,.t-rep,.cal-dow,.dhint,.sp-note,.foot-note,.cal-count,.b-state,.t-now{font-weight:700}
 .label{font-size:12px}
 .t-cat{font-size:11px}
 .dhint,.sp-note,.cal-dow,.foot-note{font-size:11px}
@@ -692,6 +685,91 @@ label.btn-line{cursor:pointer}
 .wk-form .group-label{margin:8px 0 0}
 .tpl-addbtn{align-self:flex-start}
 
+/* ===================== in-app task composer ===================== */
+.new-task-btn{width:100%; height:var(--tap); display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  border:1px solid var(--accent); border-radius:var(--r); background:var(--accent); color:var(--on-accent);
+  font-family:var(--dot); font-weight:800; letter-spacing:2px; font-size:14px; cursor:pointer}
+.new-task-btn:hover{filter:brightness(1.08)} .new-task-btn:active{transform:scale(.99)}
+.new-task-btn i{width:18px; height:18px}
+.tc-root{display:flex; flex-direction:column; gap:0}
+.tc-body{display:flex; flex-direction:column; gap:8px; text-align:left}
+.tc-lab{margin:8px 0 -2px}
+.tc-quick{border-style:dashed !important; border-color:var(--accent) !important}
+.tc-when{display:flex; gap:8px}
+.tc-field{flex:1; min-width:0; display:inline-flex; align-items:center; justify-content:center; gap:6px; height:var(--tap);
+  border:1px solid var(--line); border-radius:var(--r); background:var(--surface); color:var(--text);
+  font-weight:700; letter-spacing:1px; font-size:12px; cursor:pointer; white-space:nowrap; overflow:hidden}
+.tc-field i{width:15px; height:15px; flex:none}
+.tc-field:hover{border-color:var(--text)}
+.tc-field.on{border-color:var(--accent); box-shadow:0 0 0 1px var(--accent)}
+.tcp{border:1px solid var(--line); border-radius:var(--r); background:var(--surface); padding:10px; display:flex; flex-direction:column; gap:8px}
+.tcp-head{display:flex; align-items:center; justify-content:space-between}
+.tcp-mlabel{font-family:var(--dot); font-weight:700; letter-spacing:1px; font-size:13px}
+.tcp-quick{display:flex; gap:6px; flex-wrap:wrap}
+.tcp-dow{display:grid; grid-template-columns:repeat(7,1fr); gap:4px}
+.tcp-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:4px}
+.tcp-day{aspect-ratio:1; display:flex; align-items:center; justify-content:center; border:1px solid var(--line);
+  border-radius:var(--r); background:var(--bg); color:var(--text); font-family:var(--dot); font-weight:700;
+  font-size:13px; font-variant-numeric:tabular-nums; cursor:pointer}
+.tcp-day:hover{border-color:var(--text)}
+.tcp-day.out{opacity:.32}
+.tcp-day.today{color:var(--accent)}
+.tcp-day.sel{border-color:var(--accent); box-shadow:0 0 0 1px var(--accent); background:var(--accent); color:var(--on-accent)}
+.tct-row{display:flex; align-items:center; justify-content:center; gap:10px}
+.tct-step{display:flex; flex-direction:column; align-items:center; gap:4px}
+.tct-step button{width:44px; height:26px; border:1px solid var(--line); border-radius:var(--r); background:var(--bg); color:var(--text); cursor:pointer; font-size:11px}
+.tct-step button:hover{border-color:var(--accent); color:var(--accent)}
+.tct-val{font-family:var(--dot); font-weight:800; font-size:24px; font-variant-numeric:tabular-nums; min-width:34px; text-align:center}
+.tct-colon{font-family:var(--dot); font-weight:800; font-size:22px}
+.tct-ampm{margin-left:6px; padding:0 14px; height:38px; border:1px solid var(--accent); border-radius:var(--r);
+  background:var(--surface); color:var(--text); font-family:var(--dot); font-weight:800; letter-spacing:1px; cursor:pointer}
+.tct-ampm:hover{background:var(--accent); color:var(--on-accent)}
+.tc-cats{display:flex; flex-wrap:wrap; gap:6px; align-items:center}
+.tc-catform{display:flex; gap:6px; align-items:center}
+.tc-catform .catname{width:120px}
+.tc-seg{display:flex; gap:0; border:1px solid var(--line); border-radius:var(--r); overflow:hidden}
+.tc-seg-btn{flex:1; height:38px; border:0; border-right:1px solid var(--line); background:var(--surface); color:var(--text);
+  font-weight:700; letter-spacing:1px; font-size:12px; cursor:pointer}
+.tc-seg-btn:last-child{border-right:0}
+.tc-seg-btn:hover{background:var(--surface-2)}
+.tc-seg-btn.on{background:var(--accent); color:var(--on-accent)}
+.tc-days{margin-top:2px}
+.tc-subs{display:flex; flex-direction:column; gap:6px}
+.cal-add-row{display:flex; align-items:center; justify-content:space-between; gap:10px}
+/* borderless date jumps (TODAY / TOMORROW) */
+.tcp-jumps{display:flex; gap:16px; justify-content:center}
+.tcp-jump{border:0; background:none; color:var(--accent); font-family:var(--dot); font-weight:800;
+  letter-spacing:1.5px; font-size:12px; cursor:pointer; padding:2px 4px}
+.tcp-jump:hover{filter:brightness(1.15); text-decoration:underline}
+/* no-time chip = ban glyph only */
+.tct-none{display:inline-flex; align-items:center; justify-content:center; padding:0 12px}
+.tct-none i{width:16px; height:16px}
+/* standalone time-picker popup */
+.tp-solo{align-items:center}
+#tp-root{display:flex; flex-direction:column; gap:14px}
+#tp-root .tp-done{align-self:stretch; justify-content:center}
+
+/* ===================== in-app custom dropdown (replaces native <select>) ===================== */
+.ias{display:inline-flex; align-items:center; justify-content:space-between; gap:8px; height:38px; min-width:0;
+  padding:0 10px 0 12px; border:1px solid var(--line); border-radius:var(--r); background:var(--surface); color:var(--text);
+  font-weight:700; letter-spacing:.5px; font-size:13px; cursor:pointer; text-align:left}
+.ias:hover{border-color:var(--text)}
+.ias.on{border-color:var(--accent); box-shadow:0 0 0 1px var(--accent)}
+.ias .ias-lab{overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1}
+.ias i{width:14px; height:14px; flex:none; opacity:.65}
+.focus-task .ias{width:100%; min-width:240px; height:var(--tap)}
+.sl-lead-row .ias{min-width:150px}
+.ias-pop{position:fixed; z-index:200; background:var(--bg); border:1px solid var(--accent); border-radius:var(--r);
+  padding:4px; overflow-y:auto; box-shadow:0 10px 30px rgba(0,0,0,.45); display:flex; flex-direction:column; gap:2px;
+  scrollbar-width:thin; scrollbar-color:var(--line) transparent}
+.ias-pop::-webkit-scrollbar{width:6px}
+.ias-pop::-webkit-scrollbar-thumb{background:var(--line); border-radius:6px}
+.ias-group{font-size:10px; letter-spacing:1px; color:var(--dim); font-weight:700; padding:7px 8px 2px}
+.ias-opt{display:block; width:100%; text-align:left; padding:9px 10px; border:0; border-radius:calc(var(--r) - 2px);
+  background:none; color:var(--text); font-weight:600; font-size:13px; letter-spacing:.5px; cursor:pointer; white-space:nowrap}
+.ias-opt:hover{background:var(--surface-2)}
+.ias-opt.on{background:var(--accent); color:var(--on-accent)}
+
 /* ===================== workout session player ===================== */
 .ses-modal{display:flex; flex-direction:column; gap:14px; align-items:center; text-align:center; width:min(400px,94vw)}
 .ses-modal .tm-head{width:100%}
@@ -761,13 +839,6 @@ label.btn-line{cursor:pointer}
 .spark{display:flex; align-items:flex-end; gap:3px; height:80px}
 .spk{flex:1; background:var(--accent); border-radius:2px 2px 0 0; min-height:6px; opacity:.85}
 .spk.empty{background:var(--line-soft); min-height:2px; align-self:flex-end; opacity:1}
-.spark-cap{margin-bottom:12px}
-.ib{display:flex; flex-direction:column; gap:10px}
-.ib-row{display:flex; align-items:center; gap:12px}
-.ib-lab{width:96px; font-size:11px; letter-spacing:1px; color:var(--dim)}
-.ib-bar{flex:1; height:10px; border-radius:6px; background:var(--surface-2); overflow:hidden}
-.ib-bar i{display:block; height:100%; background:var(--accent)}
-.ib-val{font-family:var(--dot); font-weight:700; font-size:13px; width:24px; text-align:right}
 
 /* ===================== subtasks ===================== */
 .t-subs{font-size:10px; letter-spacing:1px; font-weight:700; color:var(--dim); border:1px solid var(--line); border-radius:20px; padding:2px 8px}
@@ -792,30 +863,6 @@ label.btn-line{cursor:pointer}
 @keyframes battpulse{0%{box-shadow:0 0 0 0 var(--accent)}30%{box-shadow:0 0 0 7px color-mix(in srgb,var(--accent) 40%,transparent)}100%{box-shadow:0 0 0 0 transparent}}
 .hbatt.full{animation:battpulse .9s ease}
 
-/* ===================== weekly review ===================== */
-.review-card .review{font-size:14px; color:var(--text); line-height:1.7; margin:0 0 14px}
-.review-card .review b{color:var(--accent)}
-.review-nums{display:flex; flex-wrap:wrap; gap:10px}
-.review-nums span{border:1px solid var(--line); border-radius:30px; padding:6px 14px; font-size:11px; letter-spacing:1.5px; color:var(--dim); font-weight:700}
-.review-nums b{font-family:var(--dot); color:var(--text); font-size:15px}
-
-/* ===================== task goal ===================== */
-.goal-body{display:flex; align-items:center; gap:22px; flex-wrap:wrap}
-.goal-ring{position:relative; width:140px; height:140px; flex:none}
-.goal-ring svg{width:100%; height:100%; display:block}
-.goal-ring-num{position:absolute; inset:0; display:grid; place-items:center; font-family:var(--dot); font-weight:900;
-  font-size:28px; color:var(--text); font-variant-numeric:tabular-nums}
-.goal-meta{display:flex; flex-direction:column; gap:8px; align-items:flex-start; min-width:180px}
-.goal-count-line{font-family:var(--dot); font-weight:900; font-size:22px; color:var(--text)}
-.goal-count-input{max-width:150px}
-.goal-date-input{max-width:170px; color-scheme:dark}
-[data-theme="light"] .goal-date-input{color-scheme:light}
-
-/* ===================== heatmap ===================== */
-.heatmap{display:flex; gap:3px; overflow-x:auto; padding-bottom:10px}
-.hm-col{display:flex; flex-direction:column; gap:3px}
-.hm-cell{width:10px; height:10px; border-radius:50%; background:var(--surface-2)}
-
 /* ===================== themed scrollbars (flat, monochrome — no native chrome) ===================== */
 /* the page's own scrollbar too — the native one reads as a foreign element on the right edge */
 html{scrollbar-width:thin; scrollbar-color:var(--line) transparent}
@@ -823,17 +870,11 @@ html::-webkit-scrollbar{width:9px}
 html::-webkit-scrollbar-track{background:var(--bg)}
 html::-webkit-scrollbar-thumb{background:var(--line); border-radius:8px; border:2px solid var(--bg)}
 html::-webkit-scrollbar-thumb:hover{background:var(--dim)}
-.heatmap,.sheet,.lib-list,.task-modal{scrollbar-width:thin; scrollbar-color:var(--line) transparent}
-.heatmap::-webkit-scrollbar{height:6px; width:6px}
+.sheet,.lib-list,.task-modal{scrollbar-width:thin; scrollbar-color:var(--line) transparent}
 .sheet::-webkit-scrollbar,.lib-list::-webkit-scrollbar,.task-modal::-webkit-scrollbar{width:6px; height:6px}
-.heatmap::-webkit-scrollbar-track,.sheet::-webkit-scrollbar-track,.lib-list::-webkit-scrollbar-track,.task-modal::-webkit-scrollbar-track{background:transparent}
-.heatmap::-webkit-scrollbar-thumb,.sheet::-webkit-scrollbar-thumb,.lib-list::-webkit-scrollbar-thumb,.task-modal::-webkit-scrollbar-thumb{background:var(--line); border-radius:6px}
-.heatmap::-webkit-scrollbar-thumb:hover,.sheet::-webkit-scrollbar-thumb:hover,.lib-list::-webkit-scrollbar-thumb:hover,.task-modal::-webkit-scrollbar-thumb:hover{background:var(--dim)}
-.hm-cell.empty{background:transparent}
-.hm-cell.l1{background:color-mix(in srgb,var(--accent) 28%, var(--surface-2))}
-.hm-cell.l2{background:color-mix(in srgb,var(--accent) 52%, var(--surface-2))}
-.hm-cell.l3{background:color-mix(in srgb,var(--accent) 76%, var(--surface-2))}
-.hm-cell.l4{background:var(--accent)}
+.sheet::-webkit-scrollbar-track,.lib-list::-webkit-scrollbar-track,.task-modal::-webkit-scrollbar-track{background:transparent}
+.sheet::-webkit-scrollbar-thumb,.lib-list::-webkit-scrollbar-thumb,.task-modal::-webkit-scrollbar-thumb{background:var(--line); border-radius:6px}
+.sheet::-webkit-scrollbar-thumb:hover,.lib-list::-webkit-scrollbar-thumb:hover,.task-modal::-webkit-scrollbar-thumb:hover{background:var(--dim)}
 
 /* ===================== responsive ===================== */
 @media (max-width:680px){
@@ -924,28 +965,10 @@ html::-webkit-scrollbar-thumb:hover{background:var(--dim)}
       <button class="tab" data-tab="focus" role="tab"><i data-ic="timer"></i><span>Focus</span></button>
     </nav>
 
-    <!-- ============ Add bar ============ -->
-    <form class="addbar" id="addbar" autocomplete="off">
-      <div class="addrow">
-        <input type="text" id="add-input" aria-label="Task title" maxlength="80" />
-        <input type="time" id="add-time" aria-label="Time" />
-        <input type="date" id="add-date" aria-label="Date" title="Pick a date" />
-        <select id="add-cat" aria-label="Category"></select>
-        <button type="submit" class="addbtn" aria-label="Add task"><i data-ic="plus"></i></button>
-      </div>
-      <div class="addrow2">
-        <span class="label">REPEAT ON</span>
-        <div class="day-chips" id="day-chips">
-          <button type="button" class="dchip" data-wd="1">M</button>
-          <button type="button" class="dchip" data-wd="2">T</button>
-          <button type="button" class="dchip" data-wd="3">W</button>
-          <button type="button" class="dchip" data-wd="4">T</button>
-          <button type="button" class="dchip" data-wd="5">F</button>
-          <button type="button" class="dchip" data-wd="6">S</button>
-          <button type="button" class="dchip" data-wd="0">S</button>
-        </div>
-      </div>
-    </form>
+    <!-- ============ Add bar (opens the in-app task composer) ============ -->
+    <div class="addbar" id="addbar">
+      <button type="button" class="new-task-btn" id="new-task-btn"><i data-ic="plus"></i> NEW TASK</button>
+    </div>
 
     <!-- ============ Category filter ============ -->
     <div class="catbar" id="catbar"></div>
@@ -969,7 +992,6 @@ html::-webkit-scrollbar-thumb:hover{background:var(--dim)}
         <button class="stab active" data-stab="appearance">Appearance</button>
         <button class="stab" data-stab="progress">Progress</button>
         <button class="stab" data-stab="bin">Bin</button>
-        <button class="stab" data-stab="stats">Stats</button>
         <button class="stab" data-stab="exlib">Exercises</button>
         <button class="stab" data-stab="sleep">Sleep</button>
         <button class="stab" data-stab="guide">Guide</button>
@@ -1026,11 +1048,6 @@ html::-webkit-scrollbar-thumb:hover{background:var(--dim)}
         <!-- Bin -->
         <section class="spanel" data-panel="bin" hidden>
           <div id="bin-panel"></div>
-        </section>
-
-        <!-- Stats -->
-        <section class="spanel" data-panel="stats" hidden>
-          <div id="stats-panel"></div>
         </section>
 
         <!-- Progress (rank ladder + badges) -->
@@ -1131,7 +1148,10 @@ const ICONS = {
   edit:'<svg viewBox="0 0 24 24"><path d="M4 20l1-4.2L15.8 5 19 8.2 8.2 19z"/><path d="M13.5 6.5l4 4"/></svg>',
   dumbbell:'<svg viewBox="0 0 24 24"><path d="M2 10v4"/><path d="M4 8v8"/><path d="M6 11h12"/><path d="M18 8v8"/><path d="M22 10v4"/></svg>',
   eye:'<svg viewBox="0 0 24 24"><path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
-  copy:'<svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>'
+  copy:'<svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>',
+  lock:'<svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
+  ban:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg>',
+  chevD:'<svg viewBox="0 0 24 24"><path d="M5 9l7 7 7-7"/></svg>'
 };
 function iconHTML(k){ return ICONS[k]||''; }
 function paintIcons(root=document){ root.querySelectorAll('[data-ic]').forEach(el=>{ const k=el.getAttribute('data-ic'); if(ICONS[k]) el.innerHTML=ICONS[k]; }); }
@@ -1767,7 +1787,15 @@ const BADGES=[
 ];
 // Debug freeze: badges re-qualify from live state (streak, counters), so clearing them is a no-op
 // unless auto-earning is paused too — otherwise the next render instantly re-awards them.
-function badgesFrozen(){ return localStorage.getItem('debug_freeze_badges')==='1'; }
+// Session-only unlock (sessionStorage, never synced/persisted) — debug tools can hand out free XP
+// and badges, so they're locked behind a password by default and re-lock every fresh session.
+// The flags below (debug_fast/debug_freeze_badges) can linger in localStorage from a prior unlock,
+// but they're only ever HONOURED while the current session is unlocked — a stale flag alone can't
+// silently keep cheating active after the app is closed and reopened.
+const DEBUG_PASSWORD='8534';
+function debugUnlocked(){ return sessionStorage.getItem('debug_unlocked')==='1'; }
+function lockDebug(){ sessionStorage.removeItem('debug_unlocked'); }
+function badgesFrozen(){ return debugUnlocked() && localStorage.getItem('debug_freeze_badges')==='1'; }
 function checkBadges(){
   state.badges=state.badges||[];
   if(badgesFrozen()) return;
@@ -1903,31 +1931,257 @@ const NUDGES=['STAND UP & STRETCH','SIP SOME WATER','LOOK 20FT AWAY · 20S','ROL
 function nudgesOn(){ return localStorage.getItem('nudges')!=='0'; }
 function breakNudge(){ if(nudgesOn()) toast(NUDGES[Math.floor(Math.random()*NUDGES.length)]); }
 
-/* add-bar */
-let selectedDays=new Set();
-document.querySelectorAll('.dchip').forEach(b=>b.onclick=()=>{ const wd=+b.dataset.wd;
-  if(selectedDays.has(wd)){ selectedDays.delete(wd); b.classList.remove('on'); } else { selectedDays.add(wd); b.classList.add('on'); } });
-function clearDayChips(){ selectedDays.clear(); document.querySelectorAll('.dchip').forEach(b=>b.classList.remove('on')); }
-document.getElementById('addbar').onsubmit=(e)=>{
-  e.preventDefault();
-  const inp=document.getElementById('add-input'); const raw=inp.value.trim(); if(!raw) return;
-  const p=parseNL(raw);
-  const title=p.title||raw;
-  const time=p.time || document.getElementById('add-time').value || '';
-  const cat=p.cat || (activeCat!=='all'? activeCat : document.getElementById('add-cat').value);
-  const manualDate=document.getElementById('add-date').value || '';
-  let repeat='none', weekdays=[], date=p.date||manualDate||today();
-  const chips=[...selectedDays];
-  if(p.repeat==='daily'){ repeat='daily'; }
-  else if(p.repeat==='weekly'){ repeat='weekly'; weekdays=p.weekdays.length?p.weekdays:[wdOf(date)]; }
-  else if(chips.length===7){ repeat='daily'; }
-  else if(chips.length){ repeat='weekly'; weekdays=chips; }
-  addTask({title, time, cat, repeat, weekdays, date});
-  inp.value=''; document.getElementById('add-time').value=''; document.getElementById('add-date').value=''; clearDayChips(); inp.focus();
-};
+/* ===================== in-app task composer (replaces the native add-bar) =====================
+   One modal that builds/edits a task with every field, using only in-app controls — no native
+   date/time pickers or <select> popups. Reuses openWkModal(). NL quick-add is preserved as the
+   top field (parses on blur/enter into the explicit controls). */
+let TC=null;
+function fmtTime12(t){ if(!t) return ''; let [h,m]=t.split(':').map(Number); const ap=h<12?'AM':'PM'; let hh=h%12; if(hh===0)hh=12; return hh+':'+String(m).padStart(2,'0')+' '+ap; }
+function openTaskComposer(preset={}){
+  const cats=state.categories||[];
+  const editing = preset.editId!=null;
+  const src = editing ? state.tasks.find(t=>t.id===preset.editId) : null;
+  const base = src ? {
+      title:src.title||'', time:src.time||'', date:(src.date||today()),
+      cat:src.cat, repeat:src.repeat||'none', weekdays:new Set(src.weekdays||[]),
+      notes:src.notes||'', subs:(src.subs||[]).map(s=>({text:s.text, done:!!s.done}))
+    } : {
+      title:'', time:'', date:preset.date||today(),
+      cat:preset.cat || ((activeCat!=='all'&&cats.some(c=>c.id===activeCat))?activeCat:(cats[0]?cats[0].id:'')),
+      repeat:'none', weekdays:new Set(), notes:'', subs:[]
+    };
+  TC={ ...base, editId: editing?preset.editId:null, dateOpen:false, timeOpen:false, catNew:false, monthAnchor:firstOfMonth(base.date||today()) };
+  openWkModal(`<div id="tc-root" class="tc-root"></div>`);
+  renderComposer();
+}
+function tcMonthGridHTML(){
+  const first=firstOfMonth(TC.monthAnchor), dMonth=new Date(first+'T00:00:00').getMonth();
+  const last=addDays(addMonths(first,1),-1), start=mondayOf(first), end=addDays(mondayOf(last),6);
+  const dow=[1,2,3,4,5,6,0].map(wd=>`<span class="m-dow">${DAYLETTER[wd]}</span>`).join('');
+  let cells='';
+  for(let ds=start; ds<=end; ds=addDays(ds,1)){
+    const inM=new Date(ds+'T00:00:00').getMonth()===dMonth;
+    cells+=`<button type="button" class="tcp-day ${inM?'':'out'} ${ds===TC.date?'sel':''} ${ds===today()?'today':''}" data-tcd="${ds}">${new Date(ds+'T00:00:00').getDate()}</button>`;
+  }
+  return `<div class="tcp">
+    <div class="tcp-head">
+      <button type="button" class="iconbtn" id="tcp-prev" aria-label="Previous month"><i data-ic="chevL"></i></button>
+      <span class="tcp-mlabel">${monthLabel(first)}</span>
+      <button type="button" class="iconbtn" id="tcp-next" aria-label="Next month"><i data-ic="chevR"></i></button>
+    </div>
+    <div class="tcp-jumps"><button type="button" class="tcp-jump" data-tcquick="today">TODAY</button><button type="button" class="tcp-jump" data-tcquick="tom">TOMORROW</button></div>
+    <div class="tcp-dow">${dow}</div>
+    <div class="tcp-grid">${cells}</div>
+  </div>`;
+}
+function tcTimeHTML(){
+  const t=TC.time||'09:00', disp=fmtTime12(t), parts=disp.split(' '), hm=parts[0].split(':');
+  const presets=[['06:00','6A'],['09:00','9A'],['12:00','12P'],['15:00','3P'],['18:00','6P'],['21:00','9P']];
+  return `<div class="tcp tct">
+    <div class="tct-row">
+      <div class="tct-step"><button type="button" data-tch="1" aria-label="Hour up">▲</button><span class="tct-val">${hm[0]}</span><button type="button" data-tch="-1" aria-label="Hour down">▼</button></div>
+      <span class="tct-colon">:</span>
+      <div class="tct-step"><button type="button" data-tcm="5" aria-label="Minute up">▲</button><span class="tct-val">${hm[1]}</span><button type="button" data-tcm="-5" aria-label="Minute down">▼</button></div>
+      <button type="button" class="tct-ampm" id="tct-ampm">${parts[1]}</button>
+    </div>
+    <div class="tcp-quick">${presets.map(p=>`<button type="button" class="dchip ${t===p[0]?'on':''}" data-tctp="${p[0]}">${p[1]}</button>`).join('')}<button type="button" class="dchip tct-none" data-tctp="" aria-label="No time" title="No time"><i data-ic="ban"></i></button></div>
+  </div>`;
+}
+function renderComposer(){
+  const root=document.getElementById('tc-root'); if(!root) return;
+  const cats=state.categories||[];
+  const catChips=cats.map(c=>`<button type="button" class="catchip ${TC.cat===c.id?'on':''}" data-tccat="${c.id}">${esc(c.name.toUpperCase())}</button>`).join('')
+    + (TC.catNew ? `<form class="tc-catform" id="tc-catform"><input id="tc-catname" class="catname" placeholder="NEW…" maxlength="20" autocomplete="off"/><button type="submit" class="catchip on">ADD</button><button type="button" class="catchip" id="tc-catcancel">✕</button></form>`
+                 : `<button type="button" class="catadd" id="tc-catnew" aria-label="New category"><i data-ic="plus"></i></button>`);
+  const dayChips=[1,2,3,4,5,6,0].map(wd=>`<button type="button" class="dchip ${TC.weekdays.has(wd)?'on':''}" data-tcwd="${wd}">${DAYLETTER[wd]}</button>`).join('');
+  const seg=[['none','ONE-OFF'],['daily','DAILY'],['weekly','WEEKLY']].map(r=>`<button type="button" class="tc-seg-btn ${TC.repeat===r[0]?'on':''}" data-tcrep="${r[0]}">${r[1]}</button>`).join('');
+  const subs=(TC.subs||[]).map((s,i)=>`<div class="sub ${s.done?'done':''}"><button type="button" class="sub-check ${s.done?'on':''}" data-tcsub="${i}" aria-label="Toggle"></button><span class="sub-txt">${esc(s.text)}</span><button type="button" class="sub-del" data-tcsubdel="${i}" aria-label="Remove"><i data-ic="trash"></i></button></div>`).join('');
+  root.innerHTML=`
+    <div class="tm-head"><h3>${TC.editId!=null?'Edit task':'New task'}</h3><button class="iconbtn" data-wkclose aria-label="Close">✕</button></div>
+    <div class="tc-body">
+      <label class="label tc-lab">TITLE</label>
+      <input type="text" class="sp-input" id="tc-title" value="${esc(TC.title)}" placeholder="WHAT NEEDS DOING?" maxlength="80" autocomplete="off"/>
+      <label class="label tc-lab">WHEN</label>
+      <div class="tc-when">
+        <button type="button" class="tc-field ${TC.dateOpen?'on':''}" id="tc-date-btn"><i data-ic="calendar"></i> ${dateLabel(TC.date)||'PICK DATE'}</button>
+        <button type="button" class="tc-field ${TC.timeOpen?'on':''}" id="tc-time-btn"><i data-ic="timer"></i> ${TC.time?fmtTime12(TC.time):'ADD TIME'}</button>
+      </div>
+      ${TC.dateOpen?tcMonthGridHTML():''}
+      ${TC.timeOpen?tcTimeHTML():''}
+      <label class="label tc-lab">CATEGORY</label>
+      <div class="tc-cats">${catChips}</div>
+      <label class="label tc-lab">REPEAT</label>
+      <div class="tc-seg">${seg}</div>
+      ${TC.repeat==='weekly'?`<div class="day-chips tc-days">${dayChips}</div>`:''}
+      <label class="label tc-lab">SUBTASKS</label>
+      <div class="tc-subs">${subs||'<p class="s-p">No steps yet.</p>'}</div>
+      <form id="tc-sub-form" class="tm-sub-form"><input id="tc-sub-input" class="sp-input" placeholder="ADD A STEP…" maxlength="60" autocomplete="off"/><button type="submit" class="btn-line" aria-label="Add step"><i data-ic="plus"></i></button></form>
+      <label class="label tc-lab">NOTES</label>
+      <textarea id="tc-notes" class="tm-notes" placeholder="Details, links, context…">${esc(TC.notes)}</textarea>
+      <button type="button" class="pbtn-main tc-save" id="tc-save">${TC.editId!=null?'SAVE CHANGES':'ADD TASK'}</button>
+    </div>`;
+  paintIcons(root);
+  bindComposer();
+}
+function bindComposer(){
+  const root=document.getElementById('tc-root'); if(!root) return;
+  const $=(id)=>document.getElementById(id);
+  // openWkModal wired [data-wkclose] against an EMPTY tc-root, so the composer's X was never bound
+  // (and re-renders replace it) — bind it here on every render so close always works.
+  const close=root.querySelector('[data-wkclose]'); if(close) close.onclick=()=>{ closeWkModal(); TC=null; };
+  const title=$('tc-title'); if(title) title.oninput=()=>{ TC.title=title.value; };
+  const notes=$('tc-notes'); if(notes) notes.oninput=()=>{ TC.notes=notes.value; };
+  const db=$('tc-date-btn'); if(db) db.onclick=()=>{ TC.dateOpen=!TC.dateOpen; TC.timeOpen=false; renderComposer(); };
+  const tb=$('tc-time-btn'); if(tb) tb.onclick=()=>{ TC.timeOpen=!TC.timeOpen; TC.dateOpen=false; if(TC.timeOpen&&!TC.time) TC.time='09:00'; renderComposer(); };
+  const prev=$('tcp-prev'); if(prev) prev.onclick=()=>{ TC.monthAnchor=addMonths(TC.monthAnchor,-1); renderComposer(); };
+  const next=$('tcp-next'); if(next) next.onclick=()=>{ TC.monthAnchor=addMonths(TC.monthAnchor,1); renderComposer(); };
+  root.querySelectorAll('[data-tcd]').forEach(b=>b.onclick=()=>{ TC.date=b.dataset.tcd; TC.dateOpen=false; renderComposer(); });
+  root.querySelectorAll('[data-tcquick]').forEach(b=>b.onclick=()=>{ TC.date=b.dataset.tcquick==='today'?today():addDays(today(),1); TC.monthAnchor=firstOfMonth(TC.date); TC.dateOpen=false; renderComposer(); });
+  const step=(dh,dm)=>{ let [h,m]=(TC.time||'09:00').split(':').map(Number); h=(h+dh+24)%24; m=(m+dm+60)%60; TC.time=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0'); renderComposer(); };
+  root.querySelectorAll('[data-tch]').forEach(b=>b.onclick=()=>step(+b.dataset.tch,0));
+  root.querySelectorAll('[data-tcm]').forEach(b=>b.onclick=()=>step(0,+b.dataset.tcm));
+  const ampm=$('tct-ampm'); if(ampm) ampm.onclick=()=>step(12,0);
+  root.querySelectorAll('[data-tctp]').forEach(b=>b.onclick=()=>{ TC.time=b.dataset.tctp; if(!TC.time) TC.timeOpen=false; renderComposer(); });
+  root.querySelectorAll('[data-tccat]').forEach(b=>b.onclick=()=>{ TC.cat=b.dataset.tccat; renderComposer(); });
+  const cn=$('tc-catnew'); if(cn) cn.onclick=()=>{ TC.catNew=true; renderComposer(); };
+  const cc=$('tc-catcancel'); if(cc) cc.onclick=()=>{ TC.catNew=false; renderComposer(); };
+  const cform=$('tc-catform'); if(cform) cform.onsubmit=(e)=>{ e.preventDefault(); const v=$('tc-catname').value.trim(); if(v){ const id='c'+Date.now(); state.categories.push({id,name:v}); TC.cat=id; save(); renderAddCatOptions(); renderCatbar(); } TC.catNew=false; renderComposer(); };
+  const cnm=$('tc-catname'); if(cnm) cnm.focus();
+  root.querySelectorAll('[data-tcrep]').forEach(b=>b.onclick=()=>{ TC.repeat=b.dataset.tcrep; renderComposer(); });
+  root.querySelectorAll('[data-tcwd]').forEach(b=>b.onclick=()=>{ const wd=+b.dataset.tcwd; if(TC.weekdays.has(wd))TC.weekdays.delete(wd); else TC.weekdays.add(wd); renderComposer(); });
+  const sf=$('tc-sub-form'); if(sf) sf.onsubmit=(e)=>{ e.preventDefault(); const inp=$('tc-sub-input'); const v=inp.value.trim(); if(v){ TC.subs.push({text:v,done:false}); renderComposer(); const n=document.getElementById('tc-sub-input'); if(n) n.focus(); } };
+  root.querySelectorAll('[data-tcsub]').forEach(b=>b.onclick=()=>{ const i=+b.dataset.tcsub; TC.subs[i].done=!TC.subs[i].done; renderComposer(); });
+  root.querySelectorAll('[data-tcsubdel]').forEach(b=>b.onclick=()=>{ TC.subs.splice(+b.dataset.tcsubdel,1); renderComposer(); });
+  const sv=$('tc-save'); if(sv) sv.onclick=composerSave;
+}
+function composerSave(){
+  const titleV=(TC.title||'').trim();
+  if(!titleV){ toast('TITLE CAN’T BE EMPTY'); return; }
+  const repeat=TC.repeat, date=TC.date||today();
+  let weekdays=[];
+  if(repeat==='weekly') weekdays=TC.weekdays.size?[...TC.weekdays].sort((a,b)=>a-b):[wdOf(date)];
+  const cat=TC.cat || (state.categories[0]&&state.categories[0].id) || '';
+  const subs=(TC.subs||[]).filter(s=>(s.text||'').trim()).map((s,i)=>({id:Date.now()+i, text:s.text.trim(), done:!!s.done}));
+  const notes=TC.notes||'', time=TC.time||'';
+  if(TC.editId!=null){
+    const t=state.tasks.find(x=>x.id===TC.editId);
+    if(t){
+      if(repeat!==t.repeat){
+        if(repeat==='none'){ t.done=(t.doneDates||[]).includes(date); t.doneDates=[]; }
+        else { t.doneDates=t.done?[date]:(t.doneDates||[]); t.done=false; }
+      }
+      t.title=titleV; t.time=time; t.cat=cat; t.repeat=repeat; t.date=date; t.weekdays=weekdays; t.notes=notes; t.subs=subs;
+    }
+    save(); renderGlyph(); render(); updateLive();
+  } else {
+    addTask({title:titleV, time, cat, repeat, weekdays, date, notes, subs});
+  }
+  closeWkModal(); toast(TC.editId!=null?'TASK UPDATED':'TASK ADDED'); TC=null;
+}
+/* Reusable in-app time picker popup (no native <input type=time>). onPick gets "HH:MM". */
+function openTimePicker(initial, onPick, opts={}){
+  let time = /^\d{2}:\d{2}$/.test(initial||'') ? initial : '09:00';
+  openWkModal(`<div id="tp-root"></div>`);
+  function paint(){
+    const root=document.getElementById('tp-root'); if(!root) return;
+    const disp=fmtTime12(time), parts=disp.split(' '), hm=parts[0].split(':');
+    root.innerHTML=`
+      <div class="tm-head"><h3>${esc(opts.title||'Set time')}</h3><button class="iconbtn" data-wkclose aria-label="Close">✕</button></div>
+      <div class="tcp tct tp-solo">
+        <div class="tct-row">
+          <div class="tct-step"><button type="button" data-h="1" aria-label="Hour up">▲</button><span class="tct-val">${hm[0]}</span><button type="button" data-h="-1" aria-label="Hour down">▼</button></div>
+          <span class="tct-colon">:</span>
+          <div class="tct-step"><button type="button" data-m="5" aria-label="Minute up">▲</button><span class="tct-val">${hm[1]}</span><button type="button" data-m="-5" aria-label="Minute down">▼</button></div>
+          <button type="button" class="tct-ampm" id="tp-ampm">${parts[1]}</button>
+        </div>
+      </div>
+      <button type="button" class="pbtn-main tp-done" id="tp-done">DONE</button>`;
+    paintIcons(root);
+    root.querySelector('[data-wkclose]').onclick=closeWkModal;
+    const step=(dh,dm)=>{ let [h,m]=time.split(':').map(Number); h=(h+dh+24)%24; m=(m+dm+60)%60; time=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0'); paint(); };
+    root.querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>step(+b.dataset.h,0));
+    root.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>step(0,+b.dataset.m));
+    root.querySelector('#tp-ampm').onclick=()=>step(12,0);
+    root.querySelector('#tp-done').onclick=()=>{ closeWkModal(); onPick(time); };
+  }
+  paint();
+}
+/* ================= in-app custom dropdowns (replace native <select> OS popups) =================
+   Progressive enhancement: the real <select> stays in the DOM (its options + onchange handlers are
+   untouched) but is hidden; a custom trigger + floating list mirrors it, and picking an option sets
+   select.value and dispatches 'change' so every existing handler just works. A MutationObserver
+   enhances any <select> the app renders later, so this is set-once and covers every current + future
+   dropdown — including ones inside modals (the list floats above via position:fixed). */
+let IAS_open=null;
+function iasClose(){
+  if(!IAS_open) return;
+  const {trigger,pop,onDoc,onKey,onScroll}=IAS_open;
+  document.removeEventListener('mousedown',onDoc,true);
+  document.removeEventListener('keydown',onKey,true);
+  window.removeEventListener('resize',onScroll,true);
+  window.removeEventListener('scroll',onScroll,true);
+  if(pop&&pop.parentNode) pop.parentNode.removeChild(pop);
+  if(trigger) trigger.classList.remove('on');
+  IAS_open=null;
+}
+function iasOpen(select, trigger){
+  iasClose();
+  const pop=document.createElement('div'); pop.className='ias-pop';
+  let html='';
+  const rowFor=(o)=>`<button type="button" class="ias-opt ${o.value===select.value?'on':''}" data-iasv="${esc(o.value)}">${esc(o.textContent)}</button>`;
+  [...select.children].forEach(node=>{
+    if(node.tagName==='OPTGROUP'){ html+=`<div class="ias-group">${esc(node.label)}</div>`; [...node.children].forEach(o=>{ if(o.tagName==='OPTION') html+=rowFor(o); }); }
+    else if(node.tagName==='OPTION'){ html+=rowFor(node); }
+  });
+  pop.innerHTML=html;
+  document.body.appendChild(pop);
+  const r=trigger.getBoundingClientRect();
+  const w=Math.max(r.width,150);
+  pop.style.width=w+'px';
+  pop.style.left=Math.round(Math.min(r.left, window.innerWidth-w-8))+'px';
+  const wantH=Math.min(pop.scrollHeight, 260), below=window.innerHeight-r.bottom;
+  if(below < wantH+8 && r.top > below){ pop.style.bottom=Math.round(window.innerHeight-r.top+4)+'px'; pop.style.maxHeight=Math.min(260, r.top-8)+'px'; }
+  else { pop.style.top=Math.round(r.bottom+4)+'px'; pop.style.maxHeight=Math.min(260, below-8)+'px'; }
+  trigger.classList.add('on');
+  pop.querySelectorAll('[data-iasv]').forEach(row=>row.onclick=()=>{
+    const v=row.getAttribute('data-iasv'); const changed=select.value!==v;
+    iasClose();
+    if(changed){ select.value=v; select.dispatchEvent(new Event('change',{bubbles:true})); }
+  });
+  const onDoc=(e)=>{ if(!pop.contains(e.target) && e.target!==trigger && !trigger.contains(e.target)) iasClose(); };
+  const onKey=(e)=>{ if(e.key==='Escape') iasClose(); };
+  const onScroll=()=>iasClose();
+  document.addEventListener('mousedown',onDoc,true);
+  document.addEventListener('keydown',onKey,true);
+  window.addEventListener('resize',onScroll,true);
+  window.addEventListener('scroll',onScroll,true);
+  IAS_open={select,trigger,pop,onDoc,onKey,onScroll};
+}
+function enhanceSelect(select){
+  if(!select || select.dataset.iasDone) return;
+  select.dataset.iasDone='1';
+  select.setAttribute('aria-hidden','true'); select.tabIndex=-1; select.style.display='none';
+  const trigger=document.createElement('button');
+  trigger.type='button'; trigger.className=('ias '+(select.className||'')).trim(); trigger.setAttribute('aria-haspopup','listbox');
+  const paint=()=>{ const o=select.options[select.selectedIndex]; trigger.innerHTML=`<span class="ias-lab">${esc(o?o.textContent:'—')}</span><i data-ic="chevD"></i>`; paintIcons(trigger); };
+  paint();
+  select.parentNode.insertBefore(trigger, select.nextSibling);
+  trigger.onclick=(e)=>{ e.preventDefault(); if(IAS_open&&IAS_open.select===select) iasClose(); else iasOpen(select,trigger); };
+  select.addEventListener('change',paint);
+}
+function enhanceSelects(root){ root=root||document; if(root.querySelectorAll) root.querySelectorAll('select').forEach(enhanceSelect); }
+const iasObserver=new MutationObserver((muts)=>{
+  for(const m of muts){ for(const n of m.addedNodes){ if(n.nodeType!==1) continue;
+    if(n.tagName==='SELECT') enhanceSelect(n); else if(n.querySelectorAll) n.querySelectorAll('select').forEach(enhanceSelect); } }
+});
+try{ iasObserver.observe(document.body,{childList:true,subtree:true}); }catch(e){}
+enhanceSelects(document);
+
+const newTaskBtn=document.getElementById('new-task-btn');
+if(newTaskBtn) newTaskBtn.onclick=()=>openTaskComposer({date: activeTab==='calendar'?(selDate||today()):today()});
 
 /* ---------- category bar ---------- */
-function renderAddCatOptions(){ const sel=document.getElementById('add-cat');
+function renderAddCatOptions(){ const sel=document.getElementById('add-cat'); if(!sel) return; // legacy no-op: native add-cat <select> replaced by the in-app composer
   sel.innerHTML=state.categories.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
   if(activeCat!=='all') sel.value=activeCat; }
 let catEditMode=false;
@@ -2224,8 +2478,9 @@ function renderCalendar(){
       <button class="iconbtn" id="cal-next" aria-label="Next ${calMode}"><i data-ic="chevR"></i></button>
     </div>
     ${body}
-    ${showList?`<div class="group-label"><span class="label">${dateLabel(selDate)} · ${sel.length} TASK${sel.length===1?'':'S'}</span></div>
+    ${showList?`<div class="group-label cal-add-row"><span class="label">${dateLabel(selDate)} · ${sel.length} TASK${sel.length===1?'':'S'}</span><button class="btn-line" id="cal-add"><i data-ic="plus"></i> ADD TO THIS DAY</button></div>
     ${sel.length? sel.map(t=>taskRow(t,selDate)).join('') : emptyState()}`:''}`;
+  const calAdd=document.getElementById('cal-add'); if(calAdd) calAdd.onclick=()=>openTaskComposer({date:selDate});
   document.getElementById('cal-prev').onclick=()=>{
     if(calMode==='month') monthAnchor=addMonths(monthAnchor,-1);
     else if(calMode==='schedule') selDate=addDays(selDate,-1);
@@ -3095,126 +3350,6 @@ function renderFocus(){
   renderMusic();
 }
 
-/* ---- Stats ---- */
-/* ---- task goal (custom target count + target date) ---- */
-function taskGoal(){ return state.taskGoal||null; }
-function goalProgress(g){ let done=0, d=g.startDate; const end=g.targetDate<today()?g.targetDate:today();
-  while(d<=end){ done+=state.completed[d]||0; d=addDays(d,1); } return done; }
-function renderGoalCard(){
-  const g=taskGoal();
-  if(!g){
-    return `<div class="week-card goal-card"><h3>Task goal</h3>
-      <p class="s-p">Set a target count and a date — progress tracks every task you complete between now and then.</p>
-      <form id="goal-set-form" class="sp-row">
-        <input type="number" id="goal-count" class="sp-input goal-count-input" placeholder="TARGET COUNT" min="1" required />
-        <input type="date" id="goal-date" class="sp-input goal-date-input" min="${today()}" required />
-        <button class="btn-line" type="submit">Set goal</button>
-      </form>
-    </div>`;
-  }
-  const done=goalProgress(g), pct=Math.min(1, g.targetCount?done/g.targetCount:0);
-  const daysLeft=Math.round((new Date(g.targetDate+'T00:00:00')-new Date(today()+'T00:00:00'))/86400000);
-  const status = daysLeft>0 ? `${daysLeft} day${daysLeft===1?'':'s'} left · target ${dateLabel(g.targetDate)}`
-    : daysLeft===0 ? 'Due today' : 'Goal period ended';
-  return `<div class="week-card goal-card"><h3>Task goal</h3>
-    <div class="goal-body">
-      <div class="goal-ring">${dotRing(pct,36,140)}<div class="goal-ring-num">${Math.round(pct*100)}%</div></div>
-      <div class="goal-meta">
-        <div class="goal-count-line">${done} / ${g.targetCount} tasks</div>
-        <p class="s-p">${status}</p>
-        <button class="btn-line danger" id="goal-clear">Clear goal</button>
-      </div>
-    </div>
-  </div>`;
-}
-function bindGoalCard(target){
-  const f=document.getElementById('goal-set-form');
-  if(f) f.onsubmit=(e)=>{ e.preventDefault();
-    const count=+document.getElementById('goal-count').value, date=document.getElementById('goal-date').value;
-    if(count>0 && date){ state.taskGoal={targetCount:count, targetDate:date, startDate:today()}; save(); renderStats(target); } };
-  const c=document.getElementById('goal-clear');
-  if(c) c.onclick=()=>{ state.taskGoal=null; save(); renderStats(target); };
-}
-function renderStats(target){
-  target=target||document.getElementById('stats-panel')||view;
-  const tt=tasksForDate(today()), done=tt.filter(t=>isDone(t,today())).length, total=tt.length;
-  const pct=total?Math.round(done/total*100):0;
-  const wkStart=mondayOf(today());
-  const week=[]; for(let i=0;i<7;i++){ const d=addDays(wkStart,i); week.push(state.completed[d]||0); }
-  const avg=Math.round(week.reduce((a,b)=>a+b,0)/7), max=Math.max(8,...week), todayIdx=(new Date().getDay()+6)%7;
-  let cols='';
-  week.forEach((n,i)=>{ let cells=''; for(let c=0;c<max;c++) cells+=`<span class="cell ${c<n?'on':''}"></span>`;
-    cols+=`<div class="dotday ${i===todayIdx?'today':''}"><div class="dotcol">${cells}</div><div class="d-lab">${DAYNAMES[(i+1)%7]}</div></div>`; });
-
-  // insight: category breakdown (all active tasks)
-  const catCount={}; state.tasks.forEach(t=>{ catCount[t.cat]=(catCount[t.cat]||0)+1; });
-  const catMax=Math.max(1,...Object.values(catCount));
-  const catBars=state.categories.filter(c=>catCount[c.id]).map(c=>`
-    <div class="ib-row"><span class="ib-lab">${esc(c.name.toUpperCase())}</span>
-      <span class="ib-bar"><i style="width:${Math.round(catCount[c.id]/catMax*100)}%"></i></span>
-      <span class="ib-val">${catCount[c.id]}</span></div>`).join('') || '<p class="s-p">No tasks yet.</p>';
-
-  // insight: best focus hour
-  let bestH=null, bestV=0; Object.entries(state.hourLog||{}).forEach(([h,v])=>{ if(v>bestV){ bestV=v; bestH=+h; } });
-  const bestHour = bestH!=null ? String(bestH).padStart(2,'0')+':00' : '—';
-
-  // insight: 30-day momentum sparkline — one bar per day, tasks completed that day
-  let spark=''; let smax=1; const sd=[];
-  for(let i=29;i>=0;i--){ const d=addDays(today(),-i); const v=state.completed[d]||0; sd.push({d,v}); if(v>smax)smax=v; }
-  const spkTotal=sd.reduce((a,x)=>a+x.v,0), spkActive=sd.filter(x=>x.v>0).length, spkBest=smax;
-  spark=sd.map(x=>{ const h=x.v?Math.max(12,Math.round(x.v/smax*100)):0;
-    return `<span class="spk ${x.v?'':'empty'}" style="height:${h}%" title="${x.d} · ${x.v} done"></span>`; }).join('');
-
-  // weekly review
-  const wkDays=[]; for(let i=0;i<7;i++) wkDays.push(addDays(wkStart,i));
-  const wkDone=wkDays.reduce((a,d)=>a+(state.completed[d]||0),0);
-  const activeDays=wkDays.filter(d=>state.completed[d]&&d<=today()).length;
-  let bestDayN=0,bestDay='—'; wkDays.forEach((d,i)=>{ if((state.completed[d]||0)>bestDayN){ bestDayN=state.completed[d]; bestDay=DAYNAMES[(i+1)%7]; } });
-  const review=`Completed <b>${wkDone}</b> task${wkDone===1?'':'s'} across <b>${activeDays}</b> active day${activeDays===1?'':'s'}.`+(bestDayN?` Best day <b>${bestDay}</b>.`:'')+` Current streak <b>${streak()}</b>.`;
-
-  // year heatmap
-  const hmS=addDays(addDays(today(),-364), -wdOf(addDays(today(),-364)));
-  const heatLevel=v=>{ if(!v)return 0; if(v<=1)return 1; if(v<=3)return 2; if(v<=5)return 3; return 4; };
-  let hm='';
-  for(let w=0;w<53;w++){ let col=''; for(let dow=0;dow<7;dow++){ const ds=addDays(hmS,w*7+dow);
-    if(ds>today()){ col+='<span class="hm-cell empty"></span>'; continue; }
-    col+=`<span class="hm-cell l${heatLevel(state.completed[ds]||0)}" title="${ds}"></span>`; } hm+=`<div class="hm-col">${col}</div>`; }
-
-  // workout history heatmap (all templates' completion logs combined)
-  const wlog={}; (state.workoutTemplates||[]).forEach(t=>{ Object.keys(t.log||{}).forEach(d=>{ wlog[d]=(wlog[d]||0)+1; }); });
-  let whm='';
-  for(let w=0;w<53;w++){ let col=''; for(let dow=0;dow<7;dow++){ const ds=addDays(hmS,w*7+dow);
-    if(ds>today()){ col+='<span class="hm-cell empty"></span>'; continue; }
-    const v=wlog[ds]||0;
-    col+=`<span class="hm-cell l${v?(v>1?4:3):0}" title="${ds}${v?` · ${v} workout${v>1?'s':''}`:''}"></span>`; } whm+=`<div class="hm-col">${col}</div>`; }
-
-  target.innerHTML=`
-    <div class="week-card review-card"><h3>This week in review</h3>
-      <p class="review">${review}</p>
-      <div class="review-nums"><span><b>${wkDone}</b> DONE</span><span><b>${activeDays}/7</b> ACTIVE</span><span><b>${state.pomodoros||0}</b> FOCUS</span></div>
-    </div>
-    ${renderGoalCard()}
-    <div class="stat-grid">
-      <div class="stat"><div class="s-num acc">${pct}%</div><div class="label">TODAY COMPLETE</div></div>
-      <div class="stat"><div class="s-num">${done}/${total}</div><div class="label">TASKS DONE</div></div>
-      <div class="stat"><div class="s-num acc">${streak()}</div><div class="label">DAY STREAK</div></div>
-      <div class="stat"><div class="s-num">${state.karma||0}</div><div class="label">XP · ${currentRank().name}</div></div>
-      <div class="stat"><div class="s-num">${state.pomodoros||0}</div><div class="label">FOCUS SESSIONS</div></div>
-      <div class="stat"><div class="s-num acc">${bestHour}</div><div class="label">BEST FOCUS HOUR</div></div>
-    </div>
-    <div class="week-card"><h3>This week · completed per day</h3><div class="dotweek">${cols}</div></div>
-    <div class="week-card"><h3>30-day momentum</h3>
-      <p class="s-p spark-cap">Tasks you completed each day over the last 30 days — one bar per day, tallest is your busiest.</p>
-      <div class="spark">${spark}</div>
-      <div class="review-nums"><span><b>${spkTotal}</b> DONE</span><span><b>${spkActive}/30</b> ACTIVE DAYS</span><span><b>${spkBest}</b> BEST DAY</span></div>
-    </div>
-    <div class="week-card"><h3>Activity · past year</h3><div class="heatmap">${hm}</div></div>
-    <div class="week-card"><h3>Workouts · past year</h3><div class="heatmap">${whm}</div></div>
-    <div class="week-card"><h3>By category</h3><div class="ib">${catBars}</div></div>`;
-  paintIcons(target);
-  bindGoalCard(target);
-}
-
 /* =====================================================================
    Task action sheet (doing-now / focus / notes)
    ===================================================================== */
@@ -3286,7 +3421,9 @@ function renderTaskEditPanel(){
     toast('TASK UPDATED');
   };
 }
-document.getElementById('tm-edit').onclick=()=>{ taskEditMode=!taskEditMode; renderTaskEditPanel(); };
+// Pencil now opens the full in-app composer (same rich editor as New task) instead of the old
+// inline panel that used native date/time/select popups. renderTaskEditPanel kept for safety but unused.
+document.getElementById('tm-edit').onclick=()=>{ if(sheetTaskId==null) return; const id=sheetTaskId; closeTask(); openTaskComposer({editId:id}); };
 document.getElementById('tm-close').onclick=closeTask;
 document.getElementById('task-sheet').onclick=(e)=>{ if(e.target.id==='task-sheet') closeTask(); };
 document.getElementById('tm-now').onclick=()=>{ if(sheetTaskId==null)return; state.activeTask=(state.activeTask===sheetTaskId?null:sheetTaskId); save();
@@ -3309,7 +3446,6 @@ document.querySelectorAll('.stab').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('.stab').forEach(x=>x.classList.toggle('active',x===b));
   document.querySelectorAll('.spanel').forEach(p=>p.hidden=(p.dataset.panel!==b.dataset.stab));
   if(b.dataset.stab==='bin') renderBin();
-  else if(b.dataset.stab==='stats') renderStats();
   else if(b.dataset.stab==='exlib') renderExLibrary();
   else if(b.dataset.stab==='sleep') renderSleep();
   else if(b.dataset.stab==='debug') renderDebug();
@@ -3365,11 +3501,30 @@ function renderProgress(target){
     ${shelf}`;
   paintIcons(target);
 }
-function debugFast(){ return localStorage.getItem('debug_fast')==='1'; }
+function debugFast(){ return debugUnlocked() && localStorage.getItem('debug_fast')==='1'; }
 function renderDebug(target){
   target=target||document.getElementById('debug-panel'); if(!target) return;
+  if(!debugUnlocked()){
+    target.innerHTML=`
+      <p class="s-p">Debug tools can hand out free XP and badges instantly — locked by default so a casual tap can’t quietly cheat your own progress. Enter the password to unlock for this session.</p>
+      <div class="sp-row">
+        <input type="password" inputmode="numeric" class="sp-input" id="dbg-pass" placeholder="PASSWORD…" autocomplete="off" />
+        <button class="btn-line" id="dbg-unlock">Unlock</button>
+      </div>
+      <p class="sp-note fm-status err" id="dbg-pass-err" hidden>Wrong password.</p>`;
+    const tryUnlock=()=>{
+      const v=document.getElementById('dbg-pass').value.trim();
+      if(v===DEBUG_PASSWORD){ sessionStorage.setItem('debug_unlocked','1'); toast('DEBUG UNLOCKED FOR THIS SESSION'); renderDebug(target); }
+      else{ document.getElementById('dbg-pass-err').hidden=false; document.getElementById('dbg-pass').value=''; document.getElementById('dbg-pass').focus(); }
+    };
+    document.getElementById('dbg-unlock').onclick=tryUnlock;
+    document.getElementById('dbg-pass').onkeydown=(e)=>{ if(e.key==='Enter'){ e.preventDefault(); tryUnlock(); } };
+    document.getElementById('dbg-pass').focus();
+    return;
+  }
   const tpls=state.workoutTemplates||[];
   target.innerHTML=`
+    <div class="sp-row"><button class="btn-line" id="dbg-lock"><i data-ic="lock"></i> Lock debug mode</button></div>
     <p class="s-p">Testing shortcuts — trigger things instantly instead of waiting. Not needed for normal use.</p>
     <h3 class="s-h">FOCUS GARDEN</h3>
     <div class="sp-row">
@@ -3409,6 +3564,7 @@ function renderDebug(target){
     </div>`;
   paintIcons(target);
   const re=()=>{ renderDebug(target); if(activeTab==='focus') renderFocus(); };
+  document.getElementById('dbg-lock').onclick=()=>{ lockDebug(); toast('DEBUG LOCKED'); re(); };
   const selTpl=()=>schedTemplate(document.getElementById('dbg-tpl').value);
   document.getElementById('dbg-grow1').onclick=()=>{ gardenState().push({date:today(),ts:Date.now()}); save(); toast('PLANT GROWN'); re(); };
   document.getElementById('dbg-grow7').onclick=()=>{ for(let i=0;i<7;i++) gardenState().push({date:addDays(today(),-i),ts:Date.now()+i}); save(); toast('7 PLANTS GROWN'); re(); };
@@ -3482,7 +3638,7 @@ function renderSleep(target){
   target.innerHTML=`
     <p class="s-p">Sleep runs in ~90-minute cycles — waking at the end of one feels far better than mid-cycle. Set your wake-up time and a target; the app works back to tonight’s bedtime (including ~15 min to fall asleep).</p>
     <span class="label">I WAKE UP AT</span>
-    <div class="sp-row"><input type="time" id="sl-wake" value="${c.wake}" aria-label="Wake-up time" /></div>
+    <div class="sp-row"><button type="button" class="tc-field sl-wake-btn" id="sl-wake"><i data-ic="timer"></i> ${fmtTime12(c.wake)}</button></div>
     <span class="label">SLEEP TARGET</span>
     <div class="sl-cycles">${chips}</div>
     <div class="week-card sleep-card">
@@ -3499,7 +3655,7 @@ function renderSleep(target){
     <p class="sp-note">The reminder pops up in the app (and as a notification if you allow it) while the app is open or installed. Your sleep settings sync between devices.</p>
     <h3 class="s-h">RECOMMENDATIONS</h3>
     <div class="guide">${tips}</div>`;
-  target.querySelector('#sl-wake').onchange=(e)=>{ c.wake=e.target.value||'07:00'; save(); renderSleep(target); };
+  target.querySelector('#sl-wake').onclick=()=>openTimePicker(c.wake, (t)=>{ c.wake=t||'07:00'; save(); renderSleep(target); }, {title:'Wake-up time'});
   target.querySelectorAll('[data-slcyc]').forEach(b=>b.onclick=()=>{ c.cycles=+b.dataset.slcyc; save(); renderSleep(target); });
   target.querySelector('#sl-remind').onclick=()=>{
     c.remind=!c.remind;
@@ -3510,8 +3666,8 @@ function renderSleep(target){
 function openSettings(tab){ sheet.hidden=false; renderGuide(); if(tab){ const b=document.querySelector('.stab[data-stab="'+tab+'"]'); if(b) b.click(); } }
 function goFocusTab(){ activeTab='focus'; document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab==='focus')); render(); }
 const GUIDE=[
-  ['Quick add (natural language)','Type a task and press +. It reads time (<code>3pm</code>, <code>15:00</code>, <code>at 7am</code>), days (<code>today</code>, <code>tomorrow</code>, <code>fri</code>), repeats (<code>daily</code>, <code>every monday</code>) and <code>#category</code>. Example: <code>Call mom mon wed fri 6pm #personal</code>. For an exact date the text can’t express (e.g. the 23rd of next month), use the <b>date field</b> next to the time picker instead — it overrides the guessed date. Recurring exercise routines belong in the Workouts tab, not Tasks, so they have their own space with day-scheduling and streaks.'],
-  ['Repeat-on day chips','Under the add box, tap weekday chips to repeat a task on those exact days. None = one-off · all 7 = daily.'],
+  ['New task','Tap <b>+ NEW TASK</b> to open the task builder — everything lives in one pop-up, built right into the app (no device date/time pop-ups). Set a title, pick a date on the in-app calendar (or tap TODAY / TOMORROW), set a time with the ▲▼ stepper (or a preset, or the ⊘ for no time), choose a category, pick a repeat (one-off / daily / weekly with day chips), and add subtasks and notes. In Calendar you can also tap <b>+ ADD TO THIS DAY</b> to start a task on the day you’re looking at. Recurring exercise routines belong in the Workouts tab, not Tasks.'],
+  ['Repeat & day chips','In the task builder, choose WEEKLY and tap weekday chips to repeat on those exact days; DAILY repeats every day; ONE-OFF happens once.'],
   ['Categories','Every task has a category pill. The chip bar filters — ALL shows everything. Tap + to create your own, or the pencil icon to delete one (its tasks move to the first remaining category). The selected chip becomes the default for new tasks.'],
   ['Widgets','Below the clock: the next task with a countdown, a Day bar (waking hours elapsed) and a Charge battery (today’s completion).'],
   ['Doing a task','Tap the ⚡ on any task to open its sheet — mark it “Doing now”, jump to a focus session on it, add private notes (scratchpad), complete, or delete. Tap the <b>pencil</b> in that sheet to edit anything about the task: title, time, date, category, and repeat (one-off / daily / weekly with day chips).'],
@@ -3521,14 +3677,12 @@ const GUIDE=[
   ['Focus timer','25-min focus / 5-min break dot ring — tap "Customize durations" to change either length. +15 XP per session. Every completed focus session grows a plant in your <b>Focus Garden</b> below the timer — quit early and the seedling wilts (nothing banked). Focus Music sits under the garden.'],
   ['Workouts','A Mon–Sun weekly plan. Tap the <b>pencil</b> on any day to pick what happens that day — a workout template, a Rest Day, or <b>+ New template</b>, which opens a popup where you name it and optionally start from a copy of an existing workout. Edit exercises right there: <b>Add exercise</b> opens a popup to pick from the library <i>or</i> create a brand-new exercise on the spot (name, reps/time, category — including a new category). Per exercise: sets × reps or duration (tap the <code>REPS</code>/<code>SECS</code> pill to switch, just for that workout), rest timers, circuits with a rounds count, plus <b>Duplicate</b> (an independent copy to customize separately), <b>Copy to…</b> (assign this exact workout to more days at once — edit it later and every day using it updates together) and Delete. Tap the <b>eye</b> to preview the exact step order you’ll follow. The <b>2-WEEK</b> button alternates two different weeks (A/B) automatically — edit each week from its chip; “NOW” marks the live one. Flip <b>WARM-UP SET</b> on a workout to auto-add a couple of lighter build-up sets of the first exercise before the real work. Today’s row gets a START button (guided session player: reps steps wait for your tap; timed work and rests show a PLAY button and only start counting down once you tap it, so nothing runs while you’re getting into position; the ◀ arrow steps back to redo or re-check a previous exercise; your PR shows under the exercise) and a check-circle (+10 karma). Finishing shows a <b>summary card</b> — total time and the sets you did — and logs the session, which feeds each exercise’s <b>progress chart</b> (volume per session over time) in Settings → Exercises. The flame streak only breaks when a <i>scheduled</i> workout is missed. <b>Workout Music</b> sits below the plan. The exercise moves themselves live in Settings → Exercises.'],
   ['Bin','Deleted tasks group by category & date with DONE/OPEN. Restore or empty.'],
-  ['Stats','Completion %, streak, XP, focus sessions, best focus hour, a weekly grid, 30-day momentum, a year heatmap for tasks and another for workouts, and a category breakdown.'],
   ['Appearance','Pick one of four accent colours — or tap the fifth swatch to open the in-app colour picker: drag the shade pad and hue strip (or type a hex code), hit APPLY, and the swatch remembers exactly what you picked. Plus the light / dark toggle.'],
   ['Sleep','Settings → Sleep: set your wake-up time and a sleep target in 90-minute cycles — the app works back to tonight’s ideal bedtime (plus ~15 min to fall asleep) and shows the alternatives. Turn on the bedtime reminder for a nudge 15–60 minutes before lights-out (a system notification too, if you allow it). Your sleep settings sync between devices.'],
   ['Music (Focus & Workouts tabs)','The same player lives below the pomodoro (Focus) and below the weekly plan (Workouts). <b>My Files</b> — add your own audio (files or a whole folder); stored on-device, plays fully offline, no limits. <b>Free · Lo-fi</b> — one built-in station (Nightwave Plaza), kept deliberately small to only offer streams that actually connect reliably; paste your own direct stream link for more, and a status line tells you plainly if a stream fails instead of just going silent. <b>Noise</b> — white/pink/brown/blue/violet, generated on-device, good for masking distractions. <b>Spotify</b> — embedded player (no Premium/setup; free Spotify = ~30s previews). Any of them can auto-play when a focus session starts. Tap the now-playing chip top-right for a mini-player without leaving your current tab.'],
   ['Backup & snapshots','Settings → Appearance → Export tasks downloads your task/XP data as JSON; Import tasks restores it (replaces current data). Export library downloads your My Files tracks and playlists as a .zip; Import library adds a .zip’s tracks and playlists into your current library. <b>Snapshots</b> (same section) are an automatic on-device safety net — one is saved each day and before any restore, so you can roll back with one tap if an edit or sync goes wrong.'],
   ['Rank & badges','Tap your rank chip in the hero (or Settings → Progress) for the full picture. <b>XP</b> is a lifetime total — it only grows from real effort (tasks, focus sessions, workouts) and only drops if you undo one of those. Eleven ranks run DUST → SINGULARITY; reach the top and hold it for an unbroken year to earn the one-of-a-kind <b>GENESIS</b> title — dipping back below the threshold resets that clock. Badges cover tasks, streaks, workouts and a few hidden ones you’ll stumble into. Nothing here interrupts you — no popups, no toasts, it just quietly updates whenever you check.'],
-  ['Sync (Google Drive)','Keeps two devices in step via a hidden app file in your own Google Drive — tasks, workouts and settings (not music files). Newest change wins; AUTO-SYNC pushes ~30s after an edit and pulls on app start. <b>One-time setup:</b> 1) go to <code>console.cloud.google.com</code>, create a project. 2) APIs &amp; Services → Library → enable <code>Google Drive API</code>. 3) OAuth consent screen → External → add your own Gmail as a test user. 4) Credentials → Create credentials → OAuth client ID → Web application → under “Authorized JavaScript origins” add the address you open the app from (e.g. <code>https://yourname.github.io</code>). 5) Copy the Client ID, paste it into Settings → Appearance → Sync on <i>every</i> device, tap Sync now and sign in with the same Google account.'],
-  ['Task goal','In Stats, set a target task count and a date. A dot-ring tracks how many tasks you complete between now and then.']
+  ['Sync (Google Drive)','Keeps two devices in step via a hidden app file in your own Google Drive — tasks, workouts and settings (not music files). Newest change wins; AUTO-SYNC pushes ~30s after an edit and pulls on app start. <b>One-time setup:</b> 1) go to <code>console.cloud.google.com</code>, create a project. 2) APIs &amp; Services → Library → enable <code>Google Drive API</code>. 3) OAuth consent screen → External → add your own Gmail as a test user. 4) Credentials → Create credentials → OAuth client ID → Web application → under “Authorized JavaScript origins” add the address you open the app from (e.g. <code>https://yourname.github.io</code>). 5) Copy the Client ID, paste it into Settings → Appearance → Sync on <i>every</i> device, tap Sync now and sign in with the same Google account.']
 ];
 function renderGuide(){ const g=document.getElementById('guide'); if(!g||g.dataset.done) return;
   g.innerHTML=GUIDE.map(f=>`<div class="feature"><h4><span class="fdot"></span>${f[0]}</h4><p>${f[1]}</p></div>`).join(''); g.dataset.done='1'; }
@@ -3547,7 +3701,7 @@ const SP={
   autoplay(){ return localStorage.getItem(this.AUTO)==='1'; }, setAutoplay(v){ localStorage.setItem(this.AUTO, v?'1':'0'); },
   b64url(buf){ return btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); },
   async pkce(){ const v=this.b64url(crypto.getRandomValues(new Uint8Array(48))); const d=await crypto.subtle.digest('SHA-256', new TextEncoder().encode(v)); return {v, c:this.b64url(d)}; },
-  async connect(){ const id=this.clientId(); if(!id){ alert('Enter your Spotify Client ID first.'); return; }
+  async connect(){ const id=this.clientId(); if(!id){ toast('ENTER YOUR SPOTIFY CLIENT ID FIRST'); return; }
     const {v,c}=await this.pkce(); sessionStorage.setItem('sp_verifier',v);
     const p=new URLSearchParams({client_id:id, response_type:'code', redirect_uri:this.redirect(), scope:this.scopes, code_challenge_method:'S256', code_challenge:c});
     location.href='https://accounts.spotify.com/authorize?'+p.toString(); },
@@ -3629,13 +3783,21 @@ function startViz(containerId, getAnalyser){
 }
 
 let spPlaying=false;
-// Built-in station list, kept deliberately short: only streams actually verified to connect fast
-// and reliably. SomaFM was dropped entirely — every station, every mirror, blocked this app outright
-// (403, with and without CORS). Radio Paradise is reachable but its buffering time swung from ~1s to
-// 15s+ to a full timeout across repeated tests, which isn't a "just works" experience. Nightwave
-// Plaza started in ~1.6s on every attempt. Paste-your-own below covers anyone who wants more variety.
+// Built-in station list. Every URL here was verified 2026-07 by ACTUALLY PLAYING IT in the browser
+// (a raw <audio crossOrigin="anonymous">, the exact way start() loads it), not just curl'd. This
+// distinction bit us again: SomaFM's Icecast mirrors return 206 + Access-Control-Allow-Origin:* to
+// curl, yet the browser still fails them with MediaError code 4 (with OR without crossOrigin) — so
+// SomaFM stays OUT. crossOrigin='anonymous' on built-in stations is mandatory so the dot-matrix
+// visualizer can read them, which is why every station here must genuinely load cross-origin.
+// FluxFM (Chillhop/Boombox/Jazz) and Radio Paradise both play fast (<2.5s) and animate the visualizer.
+// RULE if you add a station: play it in the preview browser first — curl reachability is NOT enough.
 const FM_STATIONS=[
-  {id:'nightwave', name:'Nightwave Plaza', url:'https://radio.plaza.one/mp3'}
+  {id:'chillhop',  name:'Chillhop',        url:'https://streams.fluxfm.de/Chillhop/mp3-320/streams.fluxfm.de/'},
+  {id:'boombox',   name:'Boombox',         url:'https://streams.fluxfm.de/boombox/mp3-320/streams.fluxfm.de/'},
+  {id:'fluxjazz',  name:'Jazz',            url:'https://streams.fluxfm.de/jazzradio/mp3-320/streams.fluxfm.de/'},
+  {id:'nightwave', name:'Nightwave Plaza', url:'https://radio.plaza.one/mp3'},
+  {id:'rpmellow',  name:'Mellow Mix',      url:'https://stream.radioparadise.com/mellow-128'},
+  {id:'rpmain',    name:'Eclectic Mix',    url:'https://stream.radioparadise.com/aac-128'}
 ];
 function musicProvider(){ return localStorage.getItem('music_provider')||'free'; }
 function setMusicProvider(p){ localStorage.setItem('music_provider',p); }
@@ -3844,6 +4006,31 @@ function renderMusic(){
   if(prov==='files') renderLibrary(); else if(prov==='free') renderFree(); else if(prov==='noise') renderNoise(); else renderSpotify();
 }
 
+// ---- storage meter (#12): music-blob total from IndexedDB + whole-origin usage/quota ----
+function fmtBytes(b){ if(!b||b<0) return '0 MB'; const mb=b/1048576; if(mb>=1024) return (mb/1024).toFixed(2)+' GB'; if(mb>=10) return Math.round(mb)+' MB'; if(mb>=1) return mb.toFixed(1)+' MB'; return Math.max(1,Math.round(b/1024))+' KB'; }
+async function storageInfo(){
+  let usage=0, quota=0, music=0, count=0;
+  try{ if(navigator.storage && navigator.storage.estimate){ const e=await navigator.storage.estimate(); usage=e.usage||0; quota=e.quota||0; } }catch(e){}
+  try{ const recs=await idbAll(); count=recs.length; recs.forEach(r=>{ if(r&&r.blob&&typeof r.blob.size==='number') music+=r.blob.size; }); }catch(e){}
+  return {usage,quota,music,count};
+}
+async function paintStorageMeter(){
+  const el=document.getElementById('storage-meter'); if(!el) return;
+  const {usage,quota,music,count}=await storageInfo();
+  if(!document.getElementById('storage-meter')) return; // guard: panel re-rendered while awaiting
+  const pct = quota ? Math.min(100, usage/quota*100) : 0;
+  const pctTxt = quota ? (pct<1 ? '<1%' : Math.round(pct)+'%') : '';
+  let html = `<div class="sm-line"><span class="label">MUSIC LIBRARY</span><span class="sm-val">${fmtBytes(music)} · ${count} TRACK${count===1?'':'S'}</span></div>`;
+  if(quota){
+    html += `<div class="sm-line"><span class="label">APP STORAGE</span><span class="sm-val">${fmtBytes(usage)} / ${fmtBytes(quota)}</span></div>
+      <div class="w-bar"><i style="width:${pct}%"></i></div>`;
+    if(pct>=80) html += `<div class="sm-sub warn">${pctTxt} of your browser's quota used — near the limit.</div>`;
+    else html += `<div class="sm-sub">${pctTxt} of your browser's quota used.</div>`;
+  } else {
+    html += `<div class="sm-sub">This browser doesn't report a storage quota; the browser manages the limit for you.</div>`;
+  }
+  el.innerHTML=html;
+}
 function renderLibrary(){
   const el=document.getElementById('prov-panel'); if(!el) return;
   const pls=playlists();
@@ -3910,9 +4097,11 @@ function renderLibrary(){
     <p class="s-p">Your own audio, stored on-device, plays fully offline. Group tracks into playlists.</p>
     ${chips}
     ${body}
+    <div class="storage-meter" id="storage-meter"></div>
     <div class="sp-toggle">AUTO-PLAY DURING FOCUS <button class="switch ${SP.autoplay()?'on':''}" id="lib-auto" role="switch" aria-checked="${SP.autoplay()}"></button></div>
   </div>`;
   paintIcons(el);
+  paintStorageMeter();
   el.querySelectorAll('.pl-row .catchip').forEach(b=>b.onclick=()=>{ libView=b.dataset.pl; libEdit=false; renderLibrary(); });
   const pa=document.getElementById('pl-add'); if(pa) pa.onclick=showNewPlaylist;
   const fi=document.getElementById('lib-file'); if(fi) fi.onchange=async()=>{ if(fi.files&&fi.files.length){ await LIB.add(fi.files); renderLibrary(); } };
@@ -3947,7 +4136,7 @@ function renderFree(){
   const el=document.getElementById('prov-panel'); if(!el) return;
   const cur=FM.station(), playing=FM.playing();
   el.innerHTML=`<div class="sp-block">
-    <p class="s-p">Free lo-fi radio — no account, plays in the background while you focus. Only one built-in station is offered on purpose: it's the one that's actually proven reliable. Paste your own stream link below for more.</p>
+    <p class="s-p">Free lo-fi radio — no account, plays in the background while you focus. Pick a station below, or paste your own stream link. Chillhop is straight-up lo-fi beats; the rest range from downtempo to deep ambient.</p>
     <div class="fm-stations">${FM_STATIONS.map(s=>`<button class="fm-station ${cur===s.id?'on':''}" data-st="${s.id}">${s.name}</button>`).join('')}</div>
     <div class="sp-row"><input class="sp-input" id="fm-custom" placeholder="OR PASTE A STREAM URL (.mp3 / .aac)" value="${esc(localStorage.getItem('fm_custom')||'')}" /><button class="btn-line" id="fm-custom-save">Use</button></div>
     <div class="sp-transport"><button class="pbtn-main" id="fm-toggle"><i data-ic="${playing?'pause':'play'}"></i> ${playing?'Pause':'Play'}</button><span class="fm-now">${esc(FM.name())}</span></div>
