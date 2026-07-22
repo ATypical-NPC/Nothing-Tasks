@@ -1,11 +1,14 @@
-const CACHE = "nothing-tasks-v47";
+const CACHE = "nothing-tasks-v53";
 const ASSETS = [
   "./",
   "./index.html",
   "./styles.css",
   "./app.js",
   "./manifest.webmanifest",
-  "./icons/icon.svg"
+  "./icons/icon-192.png",
+  "./icons/icon-512.png",
+  "./icons/icon-512-maskable.png",
+  "./icons/tasks-icon-1024.png"
 ];
 
 self.addEventListener("install", (e) => {
