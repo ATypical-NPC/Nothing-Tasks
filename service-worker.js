@@ -1,4 +1,4 @@
-const CACHE = "nothing-tasks-v53";
+const CACHE = "nothing-tasks-v58";
 const ASSETS = [
   "./",
   "./index.html",
@@ -13,8 +13,18 @@ const ASSETS = [
 
 self.addEventListener("install", (e) => {
   // cache:"reload" bypasses the browser's HTTP cache — otherwise a new SW version
-  // can install a STALE index.html into its fresh cache and updates never land
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS.map((u) => new Request(u, { cache: "reload" })))).then(() => self.skipWaiting()));
+  // can install a STALE index.html into its fresh cache and updates never land.
+  //
+  // Cache each asset INDIVIDUALLY, tolerating failures. cache.addAll() is atomic: a single 404
+  // rejects the whole install, so skipWaiting() never runs and the new SW never activates —
+  // silently killing offline support AND update delivery. That is a live hazard here because
+  // index.html is a self-contained bundle, so styles.css / app.js are optional on the server and
+  // may legitimately be absent. Missing extras now degrade offline coverage instead of breaking it.
+  e.waitUntil((async () => {
+    const c = await caches.open(CACHE);
+    await Promise.all(ASSETS.map((u) => c.add(new Request(u, { cache: "reload" })).catch(() => {})));
+    await self.skipWaiting();
+  })());
 });
 self.addEventListener("activate", (e) => {
   e.waitUntil(
