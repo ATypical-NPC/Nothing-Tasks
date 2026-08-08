@@ -657,7 +657,6 @@ label.btn-line{cursor:pointer}
 .sc-check{min-width:26px}
 .sc-check.on{background:var(--accent); border-color:var(--accent)}
 .sched-bar-right{display:flex; align-items:center; gap:12px}
-.sched-weeks{display:flex; gap:8px; margin-bottom:10px}
 .workout-music{max-width:none; margin-top:22px}
 .pr-row{align-items:center}
 .pr-input{width:76px; height:38px}
@@ -748,6 +747,102 @@ label.btn-line{cursor:pointer}
 .tp-solo{align-items:center}
 #tp-root{display:flex; flex-direction:column; gap:14px}
 #tp-root .tp-done{align-self:stretch; justify-content:center}
+
+/* ===================== schedule: day buttons + timetable =====================
+   Timetable is deliberately text-only — no cell boxes, no colour fills (the reference image's
+   structure, rendered in the app's own monochrome language). Dotted rules separate periods. */
+.sc-days{display:flex; gap:6px; flex-wrap:wrap; margin:0 0 14px}
+.sc-days .dchip.is-today{color:var(--accent)}
+.sc-days .dchip.on.is-today{color:var(--on-accent)}
+.sc-days .dchip.wide{width:auto; padding:0 12px}
+.tt-wrap{overflow-x:auto; padding-bottom:4px}
+.tt{display:grid; gap:0; min-width:100%}
+.tt-day{font-family:var(--dot); font-weight:800; letter-spacing:1.5px; font-size:11px; color:var(--dim);
+  padding:0 10px 10px; border-bottom:1px solid var(--line)}
+.tt-day.today{color:var(--accent)}
+.tt-corner{border-bottom:1px solid var(--line)}
+.tt-time{display:flex; flex-direction:column; gap:2px; padding:12px 8px 12px 0; border-top:1px dashed var(--line);
+  font-family:var(--dot); font-variant-numeric:tabular-nums; white-space:nowrap}
+.ttb-stepper{border:1px solid var(--line); border-radius:var(--r); background:var(--surface); padding:10px}
+.ttb-dur{display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-top:2px}
+.ttb-durval{font-family:var(--dot); font-weight:800; font-size:16px; font-variant-numeric:tabular-nums}
+#ttb-root{display:flex; flex-direction:column; gap:6px}
+#ttb-root .pbtn-main{justify-content:center}
+.tt-t1{font-size:11px; font-weight:800; color:var(--text)}
+.tt-t2{font-size:10px; color:var(--dim)}
+.tt-time.empty{color:var(--line); font-size:11px}
+.tt-cell{display:flex; flex-direction:column; gap:3px; align-items:flex-start; text-align:left;
+  padding:12px 10px; min-height:76px; border:0; border-top:1px dashed var(--line);
+  background:none; color:var(--text); cursor:pointer}
+.tt-cell.first,.tt-time.first{border-top:0}
+.tt-cell:hover{background:var(--surface)}
+.tt-cell.empty{color:var(--dim); opacity:.45; font-size:16px; align-items:center; justify-content:center}
+.tt-cell.empty:hover{opacity:1}
+.tt-cell.empty:hover{color:var(--accent)}
+.tt-sub{font-weight:700; font-size:13px; line-height:1.25; word-break:break-word}
+.tt-code{font-size:11px; color:var(--dim); letter-spacing:.5px}
+.tt-meta{font-size:11px; color:var(--dim); line-height:1.3; word-break:break-word}
+.tt-tools{display:flex; gap:8px; flex-wrap:wrap; margin-top:14px}
+.tt-tools .btn-line.on{border-color:var(--accent); color:var(--accent)}
+.tt-weeks{display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin:0 0 12px}
+/* block states: happening now / clashing / inside the sleep window */
+.tt-cell.now{background:var(--surface-2); background:color-mix(in srgb, var(--accent) 12%, transparent)}
+.tt-cell.now .tt-sub{color:var(--accent)}
+.tt-cell.clash .tt-sub{text-decoration:underline wavy var(--accent) 1px; text-underline-offset:3px}
+.tt-cell.sleepy{opacity:.62}
+.tt-flag{font-size:9px; letter-spacing:1px; font-weight:800; color:var(--dim); border:1px dashed var(--line); border-radius:3px; padding:1px 4px; margin-top:2px}
+.tt-flag.now{color:var(--on-accent); background:var(--accent); border-color:var(--accent)}
+.tt-flag.sleep{color:var(--dim)}
+.tt-cell.clash .tt-flag:not(.now):not(.sleep){color:var(--accent); border-color:var(--accent)}
+.tt-cell.dragging{opacity:.5; outline:1px dashed var(--accent)}
+/* gym strip (#14) + sleep window (#15) */
+.tt-wk{border:0; border-top:1px dashed var(--line); background:none; cursor:pointer; text-align:left;
+  padding:7px 10px; font-size:10px; letter-spacing:1px; font-weight:700; color:var(--dim);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.tt-wk:hover{color:var(--accent)}
+.tt-wk.rest{opacity:.5}
+.tt-time.wkrow{padding-top:7px; padding-bottom:7px; border-top:1px dashed var(--line)}
+.tt-sleep{display:flex; align-items:baseline; gap:10px; margin-top:12px; padding-top:10px; border-top:1px dashed var(--line)}
+.tt-sleepv{font-family:var(--dot); font-weight:700; font-size:12px; color:var(--dim); font-variant-numeric:tabular-nums}
+/* #2 plan bands behind the hourly timeline */
+.tl-plan{position:absolute; left:0; right:0; background:var(--surface); border-left:2px solid var(--line);
+  pointer-events:none; z-index:0; overflow:hidden}
+@supports (background:color-mix(in srgb,red 10%,transparent)){
+  .tl-plan{background:color-mix(in srgb, var(--accent) 9%, transparent); border-left-color:color-mix(in srgb, var(--accent) 45%, transparent)}
+}
+.tl-plan span{display:block; padding:2px 6px; font-size:10px; letter-spacing:.5px; color:var(--dim); white-space:nowrap; text-overflow:ellipsis; overflow:hidden}
+.tl-task{position:relative; z-index:1}
+
+/* ===================== goals ===================== */
+.goals-list{display:flex; flex-direction:column; gap:8px; margin:6px 0 4px}
+.goal{display:flex; align-items:flex-start; gap:10px; padding:10px 12px; border:1px solid var(--line);
+  border-radius:var(--r); background:var(--surface)}
+.goal.done{opacity:.55}
+.goal.done .goal-text{text-decoration:line-through}
+.goal-body{flex:1; min-width:0}
+.goal-text{font-weight:700; font-size:14px; line-height:1.35; word-break:break-word}
+.goal-why{margin-top:4px; font-size:12px; color:var(--dim); line-height:1.4; word-break:break-word}
+.goal .sub-check{flex:none; margin-top:2px}
+.goal .sub-del{flex:none; opacity:.6}
+.goal .sub-del:hover{opacity:1}
+
+/* ===================== glyph canvas ===================== */
+.focus-canvas{margin-top:26px; display:flex; flex-direction:column; align-items:center; gap:8px}
+.focus-canvas .s-h{align-self:flex-start}
+.canvas-live{line-height:0}
+.canvas-gallery{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:10px}
+.cv-thumb{line-height:0; padding:5px; border:1px solid var(--line); border-radius:var(--r); background:var(--surface)}
+.cvd-pad{width:min(280px,74vw); aspect-ratio:1; line-height:0; touch-action:none; cursor:crosshair;
+  border:1px solid var(--line); border-radius:var(--r); background:var(--surface); padding:6px; align-self:center}
+.cvd-pad svg{width:100%; height:100%; display:block; pointer-events:none}
+.cvd-tools{display:flex; flex-wrap:wrap; gap:6px; align-items:center}
+/* .dchip is a fixed 36px square (built for single-letter day chips) — word chips like
+   ERASE/CLEAR overflowed and overlapped. Let word chips size to their text here. */
+.cvd-tools .dchip{width:auto; min-width:36px; padding:0 12px}
+#cvd-root{display:flex; flex-direction:column; gap:10px}
+#cvd-root .pbtn-main{justify-content:center}
+#goals-root{display:flex; flex-direction:column; gap:6px}
+#goals-root .pbtn-main{justify-content:center}
 
 /* ===================== in-app custom dropdown (replaces native <select>) ===================== */
 .ias{display:inline-flex; align-items:center; justify-content:space-between; gap:8px; height:38px; min-width:0;
@@ -907,6 +1002,7 @@ html::-webkit-scrollbar-thumb:hover{background:var(--dim)}
     <header class="topbar">
       <div class="tb-left">
         <button class="iconbtn" id="open-settings" aria-label="Open settings" title="Settings"><i data-ic="gear"></i></button>
+        <button class="iconbtn" id="open-goals" aria-label="My goals" title="My goals"><i data-ic="target"></i></button>
         <div class="brand"><span class="glyph-dot"></span><span class="wordmark">TASKS</span></div>
       </div>
       <div class="top-right">
@@ -961,6 +1057,7 @@ html::-webkit-scrollbar-thumb:hover{background:var(--dim)}
     <nav class="tabs" id="tabs" role="tablist">
       <button class="tab active" data-tab="today" role="tab"><i data-ic="check"></i><span>Tasks</span></button>
       <button class="tab" data-tab="calendar" role="tab"><i data-ic="calendar"></i><span>Calendar</span></button>
+      <button class="tab" data-tab="schedule" role="tab"><i data-ic="clock"></i><span>Schedule</span></button>
       <button class="tab" data-tab="workouts" role="tab"><i data-ic="dumbbell"></i><span>Workouts</span></button>
       <button class="tab" data-tab="focus" role="tab"><i data-ic="timer"></i><span>Focus</span></button>
     </nav>
@@ -1236,12 +1333,15 @@ function buildDefaults(){
       {id:6,title:'Science project — solar',time:'16:00',cat:'science',repeat:'none', weekdays:[],     date:t,done:false,doneDates:[],notes:'',subs:[{id:601,text:'Gather materials',done:true},{id:602,text:'Build circuit',done:false},{id:603,text:'Write report',done:false}]},
       {id:7,title:'Call with Alex',       time:'15:30',cat:'work',    repeat:'weekly',weekdays:[5],    date:a,done:false,doneDates:[],notes:''},
       {id:8,title:'Read 20 pages',        time:'21:00',cat:'personal',repeat:'daily', weekdays:[],     date:a,done:false,doneDates:[],notes:''}
-    ]
+    ],
+    goals:[], canvas:freshCanvas(), canvasGallery:[]
   };
 }
+function freshCanvas(){ return {dots:[], progress:0, goalSessions:4}; }
 let state = load();
 function load(){ try{ const s=JSON.parse(localStorage.getItem(LS));
-  if(s&&s.tasks&&s.categories){ s.habits=s.habits||[]; s.workouts=s.workouts||[]; s.exerciseLibrary=s.exerciseLibrary||builtinExercises(); s.exerciseCats=s.exerciseCats||[]; s.workoutTemplates=s.workoutTemplates||[]; s.workoutTemplates.forEach(t=>{ t.log=t.log||{}; t.circuits=t.circuits||[]; t.exercises=t.exercises||[]; }); s.hourLog=s.hourLog||{}; s.bin=s.bin||[]; if(s.activeTask===undefined)s.activeTask=null; s.badges=s.badges||[]; s.badgeStats=s.badgeStats||freshBadgeStats(s.completed); s.rankMeta=s.rankMeta||{enteredSingularityAt:null}; return s; }
+  if(s&&s.tasks&&s.categories){ s.habits=s.habits||[]; s.workouts=s.workouts||[]; s.exerciseLibrary=s.exerciseLibrary||builtinExercises(); s.exerciseCats=s.exerciseCats||[]; s.workoutTemplates=s.workoutTemplates||[]; s.workoutTemplates.forEach(t=>{ t.log=t.log||{}; t.circuits=t.circuits||[]; t.exercises=t.exercises||[]; }); s.hourLog=s.hourLog||{}; s.bin=s.bin||[]; if(s.activeTask===undefined)s.activeTask=null; s.badges=s.badges||[]; s.badgeStats=s.badgeStats||freshBadgeStats(s.completed); s.rankMeta=s.rankMeta||{enteredSingularityAt:null};
+    s.goals=s.goals||[]; s.canvas=s.canvas||freshCanvas(); s.canvasGallery=s.canvasGallery||[]; return s; }
 }catch(e){} return buildDefaults(); }
 function save(){ state.updatedAt=Date.now(); try{ localStorage.setItem(LS, JSON.stringify(state)); }catch(e){} queueSync(); }
 
@@ -1544,6 +1644,7 @@ function importTasksFile(file){
       state=parsed; state.habits=state.habits||[]; state.workouts=state.workouts||[]; state.exerciseLibrary=state.exerciseLibrary||builtinExercises(); state.exerciseCats=state.exerciseCats||[]; state.workoutTemplates=state.workoutTemplates||[]; state.workoutTemplates.forEach(t=>{ t.log=t.log||{}; t.circuits=t.circuits||[]; t.exercises=t.exercises||[]; });
       state.hourLog=state.hourLog||{}; state.bin=state.bin||[]; if(state.activeTask===undefined) state.activeTask=null;
       state.badges=state.badges||[]; state.badgeStats=state.badgeStats||freshBadgeStats(state.completed); state.rankMeta=state.rankMeta||{enteredSingularityAt:null};
+      state.goals=state.goals||[]; state.canvas=state.canvas||freshCanvas(); state.canvasGallery=state.canvasGallery||[];
       migrateWorkoutsToSchedule();
       save(); applyTheme(); renderAddCatOptions(); renderCatbar(); renderGlyph(); render(); updateLive();
       toast('TASKS IMPORTED');
@@ -2150,7 +2251,11 @@ function iasOpen(select, trigger){
   });
   const onDoc=(e)=>{ if(!pop.contains(e.target) && e.target!==trigger && !trigger.contains(e.target)) iasClose(); };
   const onKey=(e)=>{ if(e.key==='Escape') iasClose(); };
-  const onScroll=()=>iasClose();
+  // capture-phase scroll also fires for scrolls INSIDE the list — ignore those, or a long
+  // dropdown (e.g. the workout template picker) closes the instant you try to scroll it.
+  // nodeType guard: scroll events can target window (not a Node) and pop.contains(window) throws,
+  // which would kill the handler and leave the list stuck open.
+  const onScroll=(e)=>{ const t=e&&e.target; if(t&&t.nodeType===1&&pop.contains(t)) return; iasClose(); };
   document.addEventListener('mousedown',onDoc,true);
   document.addEventListener('keydown',onKey,true);
   window.addEventListener('resize',onScroll,true);
@@ -2176,6 +2281,161 @@ const iasObserver=new MutationObserver((muts)=>{
 });
 try{ iasObserver.observe(document.body,{childList:true,subtree:true}); }catch(e){}
 enhanceSelects(document);
+
+/* ===================== GOALS — the "why" behind the work =====================
+   Deliberately a quiet, pull-only surface: a target icon in the top bar opens it. No reminders,
+   no toasts, nothing that interrupts — you open it when the drive dips, it never nags you. */
+function goalsState(){ state.goals=state.goals||[]; return state.goals; }
+function openGoalsModal(){ openWkModal(`<div id="goals-root"></div>`); renderGoalsModal(); }
+function renderGoalsModal(){
+  const el=document.getElementById('goals-root'); if(!el) return;
+  const gs=goalsState(), active=gs.filter(g=>!g.done), done=gs.filter(g=>g.done);
+  const row=(g)=>`<div class="goal ${g.done?'done':''}">
+      <button type="button" class="sub-check ${g.done?'on':''}" data-gdone="${g.id}" aria-label="${g.done?'Mark not achieved':'Mark achieved'}"></button>
+      <div class="goal-body"><div class="goal-text">${esc(g.text)}</div>${g.why?`<div class="goal-why">${esc(g.why)}</div>`:''}</div>
+      <button type="button" class="sub-del" data-gdel="${g.id}" aria-label="Delete goal"><i data-ic="trash"></i></button>
+    </div>`;
+  el.innerHTML=`
+    <div class="tm-head"><h3>My goals</h3><button class="iconbtn" data-wkclose aria-label="Close">✕</button></div>
+    <p class="s-p">The reasons behind the work. Open this on the days the drive isn’t there.</p>
+    <div class="goals-list">${active.length?active.map(row).join(''):'<p class="s-p dhint">Nothing written down yet — add the first one below.</p>'}</div>
+    <form id="goal-form" class="wk-form">
+      <input type="text" class="sp-input" id="goal-text" placeholder="A GOAL…" maxlength="80" autocomplete="off"/>
+      <input type="text" class="sp-input" id="goal-why" placeholder="WHY IT MATTERS (OPTIONAL)…" maxlength="140" autocomplete="off"/>
+      <button type="submit" class="pbtn-main">ADD GOAL</button>
+    </form>
+    ${done.length?`<h4 class="s-h">ACHIEVED · ${done.length}</h4><div class="goals-list">${done.map(row).join('')}</div>`:''}`;
+  paintIcons(el);
+  el.querySelector('[data-wkclose]').onclick=closeWkModal;
+  el.querySelector('#goal-form').onsubmit=(e)=>{ e.preventDefault();
+    const t=el.querySelector('#goal-text').value.trim(); if(!t){ toast('WRITE THE GOAL FIRST'); return; }
+    goalsState().push({id:'g'+Date.now(), text:t, why:el.querySelector('#goal-why').value.trim(), done:false, ts:Date.now()});
+    save(); renderGoalsModal(); };
+  el.querySelectorAll('[data-gdone]').forEach(b=>b.onclick=()=>{ const g=goalsState().find(x=>x.id===b.dataset.gdone);
+    if(g){ g.done=!g.done; save(); renderGoalsModal(); if(g.done) toast('GOAL ACHIEVED'); } });
+  // customConfirm calls openWkModal, which closes THIS modal — reopen it after the choice.
+  el.querySelectorAll('[data-gdel]').forEach(b=>{ const id=b.dataset.gdel;
+    b.onclick=()=>customConfirm('Delete this goal?',()=>{ state.goals=goalsState().filter(x=>x.id!==id); save(); openGoalsModal(); }); });
+}
+const goalsBtn=document.getElementById('open-goals'); if(goalsBtn) goalsBtn.onclick=openGoalsModal;
+
+/* ===================== GLYPH CANVAS (focus-garden drawing mode) =====================
+   A circular dot matrix mirroring the real Nothing Glyph Matrix (25x25 grid masked to a disc ≈489
+   dots — the actual hardware count). You draw on it whenever you like; each completed focus session
+   banks one slice, and the drawing reveals itself top-to-bottom as it fills. Quit early = nothing
+   banked (same rule as the flower). At 100% it banks into the gallery and a blank canvas starts. */
+const CV_GRID=25;
+const CV_CELLS=(()=>{ const out=[], c=(CV_GRID-1)/2, r2=Math.pow(CV_GRID/2,2);
+  for(let y=0;y<CV_GRID;y++) for(let x=0;x<CV_GRID;x++){ const dx=x-c, dy=y-c; if(dx*dx+dy*dy<=r2) out.push(y*CV_GRID+x); }
+  return out; })();
+const CV_SET=new Set(CV_CELLS);
+function canvasState(){ state.canvas=state.canvas||freshCanvas(); const c=state.canvas;
+  c.dots=c.dots||[]; if(typeof c.progress!=='number') c.progress=0; c.goalSessions=c.goalSessions||4; return c; }
+// Cell indices are row-major, so plain ascending order IS the top→bottom sweep reveal.
+function canvasSVG(dots, g, size, mode){
+  const acc=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#ff2d2d';
+  const line=getComputedStyle(document.documentElement).getPropertyValue('--line').trim()||'#262626';
+  const soft=getComputedStyle(document.documentElement).getPropertyValue('--line-soft').trim()||'#1a1a1a';
+  const lit=(dots||[]).slice().sort((a,b)=>a-b);
+  const shown=new Set(mode==='edit'||mode==='thumb' ? lit : lit.slice(0, Math.floor(Math.max(0,Math.min(1,g))*lit.length)));
+  const drawn=new Set(lit);
+  const CELL=10; let s='';
+  const cells = mode==='thumb' ? lit : CV_CELLS;
+  cells.forEach(i=>{
+    const x=(i%CV_GRID)*CELL+CELL/2, y=Math.floor(i/CV_GRID)*CELL+CELL/2;
+    let r, fill;
+    if(shown.has(i)){ r=3.8; fill=acc; }
+    else if(drawn.has(i)){ r=2.4; fill=line; }   // drawn but not yet revealed — a hint of what's coming
+    else { r=1.6; fill=soft; }
+    s+=`<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}"/>`;
+  });
+  const W=CV_GRID*CELL;
+  return `<svg viewBox="0 0 ${W} ${W}" width="${size}" height="${size}">${s}</svg>`;
+}
+function canvasSessionFrac(){ if(pomo.mode!=='focus') return 0; const d=focusDurNow(); return Math.max(0,Math.min(1,1-pomo.left/d)); }
+function canvasLiveProgress(){ const c=canvasState(); if(!c.dots.length) return c.progress;
+  return Math.min(1, c.progress + canvasSessionFrac()/Math.max(1,c.goalSessions)); }
+function updateCanvasLive(){
+  const el=document.getElementById('canvas-live'); if(!el) return;
+  const c=canvasState(), g=canvasLiveProgress();
+  el.innerHTML=canvasSVG(c.dots, g, 190, 'live');
+  const cap=document.getElementById('canvas-cap'); if(!cap) return;
+  cap.textContent = !c.dots.length ? 'TAP DRAW TO CREATE SOMETHING'
+    : `${Math.round(g*100)}% · ${Math.round(c.progress*c.goalSessions)}/${c.goalSessions} SESSIONS BANKED`;
+}
+function canvasBankSession(){
+  const c=canvasState(); if(!c.dots.length) return null;
+  c.progress=Math.min(1, c.progress + 1/Math.max(1,c.goalSessions));
+  if(c.progress>=0.999){
+    state.canvasGallery=state.canvasGallery||[];
+    state.canvasGallery.push({id:'cv'+Date.now(), dots:c.dots.slice(), date:today(), ts:Date.now()});
+    if(state.canvasGallery.length>200) state.canvasGallery=state.canvasGallery.slice(-200);
+    state.canvas=freshCanvas();
+    return 'complete';
+  }
+  return 'progress';
+}
+function canvasGalleryHTML(){
+  const g=state.canvasGallery||[];
+  if(!g.length) return `<p class="dhint">NO CREATIONS YET — DRAW ONE, THEN FOCUS TO FILL IT IN.</p>`;
+  return `<div class="canvas-gallery">${g.slice(-24).reverse().map(c=>`<span class="cv-thumb" title="${c.date}">${canvasSVG(c.dots,1,52,'thumb')}</span>`).join('')}</div>
+    <p class="dhint">${g.length} CREATION${g.length===1?'':'S'} COMPLETED</p>`;
+}
+let CVD=null;
+function openCanvasDraw(){ const c=canvasState(); CVD={dots:new Set(c.dots), brush:1, erase:false};
+  openWkModal(`<div id="cvd-root"></div>`); renderCanvasDraw(); }
+function renderCanvasDraw(){
+  const el=document.getElementById('cvd-root'); if(!el) return;
+  const c=canvasState();
+  el.innerHTML=`
+    <div class="tm-head"><h3>Glyph canvas</h3><button class="iconbtn" data-wkclose aria-label="Close">✕</button></div>
+    <div class="cvd-pad" id="cvd-pad">${canvasSVG([...CVD.dots],1,260,'edit')}</div>
+    <div class="cvd-tools">
+      <span class="label">BRUSH</span>
+      <button type="button" class="dchip ${!CVD.erase&&CVD.brush===1?'on':''}" data-cvb="1">1</button>
+      <button type="button" class="dchip ${!CVD.erase&&CVD.brush===3?'on':''}" data-cvb="3">3</button>
+      <button type="button" class="dchip ${CVD.erase?'on':''}" id="cvd-erase">ERASE</button>
+      <button type="button" class="dchip" id="cvd-clear">CLEAR</button>
+    </div>
+    <span class="label">SESSIONS TO COMPLETE</span>
+    <div class="cvd-tools">${[2,4,8].map(n=>`<button type="button" class="dchip ${c.goalSessions===n?'on':''}" data-cvg="${n}">${n}</button>`).join('')}</div>
+    <p class="sp-note" id="cvd-count">${CVD.dots.size} DOTS</p>
+    <button type="button" class="pbtn-main" id="cvd-save">SAVE CANVAS</button>`;
+  paintIcons(el);
+  el.querySelector('[data-wkclose]').onclick=()=>{ closeWkModal(); CVD=null; };
+  const pad=el.querySelector('#cvd-pad');
+  const repaint=()=>{ pad.innerHTML=canvasSVG([...CVD.dots],1,260,'edit');
+    const cc=el.querySelector('#cvd-count'); if(cc) cc.textContent=CVD.dots.size+' DOTS'; };
+  const cellAt=(e)=>{ const r=pad.getBoundingClientRect();
+    const x=Math.floor((e.clientX-r.left)/r.width*CV_GRID), y=Math.floor((e.clientY-r.top)/r.height*CV_GRID);
+    if(x<0||y<0||x>=CV_GRID||y>=CV_GRID) return null; return y*CV_GRID+x; };
+  const applyAt=(i)=>{ if(i==null) return; const cells=[];
+    if(CVD.brush===1) cells.push(i);
+    else { const x=i%CV_GRID, y=Math.floor(i/CV_GRID);
+      for(let dy=-1;dy<=1;dy++) for(let dx=-1;dx<=1;dx++){ const nx=x+dx, ny=y+dy;
+        if(nx>=0&&ny>=0&&nx<CV_GRID&&ny<CV_GRID) cells.push(ny*CV_GRID+nx); } }
+    let changed=false;
+    cells.forEach(ci=>{ if(!CV_SET.has(ci)) return;
+      if(CVD.erase){ if(CVD.dots.delete(ci)) changed=true; }
+      else if(!CVD.dots.has(ci)){ CVD.dots.add(ci); changed=true; } });
+    if(changed) repaint(); };
+  let painting=false;
+  pad.onpointerdown=(e)=>{ painting=true; try{ pad.setPointerCapture(e.pointerId); }catch(_){} applyAt(cellAt(e)); e.preventDefault(); };
+  pad.onpointermove=(e)=>{ if(painting) applyAt(cellAt(e)); };
+  pad.onpointerup=()=>{ painting=false; };
+  pad.onpointercancel=()=>{ painting=false; };
+  el.querySelectorAll('[data-cvb]').forEach(b=>b.onclick=()=>{ CVD.brush=+b.dataset.cvb; CVD.erase=false; renderCanvasDraw(); });
+  el.querySelector('#cvd-erase').onclick=()=>{ CVD.erase=!CVD.erase; renderCanvasDraw(); };
+  el.querySelector('#cvd-clear').onclick=()=>{ CVD.dots.clear(); repaint(); };
+  el.querySelectorAll('[data-cvg]').forEach(b=>b.onclick=()=>{ canvasState().goalSessions=+b.dataset.cvg; save(); renderCanvasDraw(); });
+  el.querySelector('#cvd-save').onclick=()=>{
+    const cc=canvasState(); cc.dots=[...CVD.dots].sort((a,b)=>a-b);
+    if(!cc.dots.length) cc.progress=0;
+    save(); closeWkModal(); CVD=null;
+    if(activeTab==='focus') renderFocus();
+    toast('CANVAS SAVED');
+  };
+}
 
 const newTaskBtn=document.getElementById('new-task-btn');
 if(newTaskBtn) newTaskBtn.onclick=()=>openTaskComposer({date: activeTab==='calendar'?(selDate||today()):today()});
@@ -2260,11 +2520,11 @@ function emptyState(){ return `<div class="empty"><div class="e-glyph">· · ·<
 
 function render(){
   if(activeTab!=='focus'&&activeTab!=='workouts') stopViz();
-  const taskView=(activeTab==='today'||activeTab==='calendar');
+  const taskView=(activeTab==='today'||activeTab==='calendar'||activeTab==='schedule');
   const ab=document.getElementById('addbar'); if(ab) ab.style.display=taskView?'flex':'none';
   const cb=document.getElementById('catbar'); if(cb) cb.style.display=taskView?'flex':'none';
   view.classList.remove('view-fade'); void view.offsetWidth; view.classList.add('view-fade');
-  ({today:renderToday, calendar:renderCalendar, focus:renderFocus, workouts:renderWorkouts}[activeTab]||renderToday)();
+  ({today:renderToday, calendar:renderCalendar, schedule:renderSchedule, focus:renderFocus, workouts:renderWorkouts}[activeTab]||renderToday)();
   paintIcons(view);
 }
 
@@ -2335,15 +2595,37 @@ function openReviewModal(){
       <span class="plan-tt">${t.time?`<span class="t-time">${t.time}</span> `:''}${esc(t.title)}</span>
       <button type="button" class="plan-toggle tdy" data-autoundo="${t.id}">DID IT</button>
     </div>`).join('');
+  // #4 plan vs actual — today's timetable blocks and whether they actually happened
+  const planned=ttDayBlocks(wdOf(today()));
+  const ttlog=timetableState().log; const dayLog=ttlog[today()]=ttlog[today()]||{};
+  const blockDone=(key,b)=>{ const t=b.taskId!=null?state.tasks.find(x=>x.id===b.taskId):null;
+    return t?isDone(t,today()):!!dayLog[key]; };
+  const planRows=planned.map(({p,b})=>{ const key=wdOf(today())+'-'+p, ok=blockDone(key,b);
+    return `<div class="plan-row"><span class="plan-tt">${b.start?`<span class="t-time">${b.start}</span> `:''}${esc(ttBlockName(b))}</span>
+      <button type="button" class="plan-toggle ${ok?'tdy':'tmrw'}" data-ttdone="${p}">${ok?'DONE':'MISSED'}</button></div>`;
+  }).join('');
+  const hit=planned.filter(({p,b})=>blockDone(wdOf(today())+'-'+p,b)).length;
   const el=openWkModal(`
     <div class="tm-head"><h3>Wrap up today</h3><button class="iconbtn" data-wkclose aria-label="Close">✕</button></div>
     <div class="sum-big">${done}/${tt.length}</div>
     <div class="label sum-meta">TASKS DONE · STREAK ${streak()}</div>
+    ${planned.length?`<span class="label">YOUR PLAN — ${hit}/${planned.length} BLOCKS HIT</span>
+    <div class="plan-list" id="tt-plan-list">${planRows}</div>`:''}
     ${auto.length?`<span class="label">ASSUMED DONE AT THEIR DEADLINE — TAP ANY YOU DIDN’T ACTUALLY DO</span>
     <div class="plan-list" id="auto-list">${autoRows}</div>`:''}
     <p class="s-p">${carry.length?`${carry.length} unfinished one-off task${carry.length===1?'':'s'} — carry ${carry.length===1?'it':'them'} to tomorrow so nothing slips.`:'Everything’s handled or scheduled. Nice.'}</p>
     ${carry.length?`<button class="btn-line" id="review-carry"><i data-ic="chevR"></i> Carry ${carry.length} to tomorrow</button>`:''}
     <button class="pbtn-main" id="review-finish">FINISH THE DAY</button>`);
+  const pl=document.getElementById('tt-plan-list');
+  if(pl) pl.onclick=(ev)=>{
+    const btn=ev.target.closest('[data-ttdone]'); if(!btn) return;
+    const p=+btn.dataset.ttdone, wd=wdOf(today()), b=ttBlock(wd,p); if(!b) return;
+    const t=b.taskId!=null?state.tasks.find(x=>x.id===b.taskId):null;
+    if(t){ toggle(t.id, today()); }                       // linked to a real task — flip the task itself
+    else { const lg=timetableState().log; lg[today()]=lg[today()]||{};
+      const k=wd+'-'+p; if(lg[today()][k]) delete lg[today()][k]; else lg[today()][k]=true; save(); }
+    closeWkModal(); openReviewModal();
+  };
   const al=document.getElementById('auto-list');
   if(al) al.onclick=(ev)=>{
     const b=ev.target.closest('[data-autoundo]'); if(!b) return;
@@ -2419,23 +2701,397 @@ function scheduleTimelineHTML(ds){
   const tt=tasksForDate(ds).filter(catFilter);
   const isToday=ds===today();
   const nowH=new Date().getHours(), nowM=new Date().getMinutes();
+  // #2 overlay this weekday's timetable blocks as faint bands behind the real tasks
+  const planBlocks=ttDayBlocks(wdOf(ds)).map(x=>x.b).filter(b=>b.start);
   let rows='';
   for(let h=7;h<=22;h++){
+    const hs=h*60, he=hs+60;
+    const bands=planBlocks.map(b=>{
+      const s=tMin(b.start), e=ttEndMin(b);
+      if(e<=hs||s>=he) return '';
+      const top=Math.max(0,(s-hs)/60*100), bot=Math.min(100,(e-hs)/60*100);
+      return `<div class="tl-plan" style="top:${top.toFixed(1)}%;height:${Math.max(4,bot-top).toFixed(1)}%">${s>=hs?`<span>${esc(ttBlockName(b))}</span>`:''}</div>`;
+    }).join('');
     const items=tt.filter(t=>t.time && parseInt(t.time.slice(0,2),10)===h);
     const body=items.map(t=>`<div class="tl-task ${isDone(t,ds)?'done':''}">
       <button class="check tl-check" onclick="toggle(${t.id},'${ds}')" aria-label="${isDone(t,ds)?'Mark incomplete':'Mark complete'}"></button>
       <span class="t-time">${t.time}</span><span class="tl-t">${esc(t.title)}</span></div>`).join('');
     const now = (isToday&&h===nowH) ? `<div class="tl-now" style="top:${(nowM/60*100).toFixed(0)}%"></div>` : '';
-    rows+=`<div class="tl-row"><div class="tl-hour">${String(h).padStart(2,'0')}</div><div class="tl-body">${now}${body}</div></div>`;
+    rows+=`<div class="tl-row"><div class="tl-hour">${String(h).padStart(2,'0')}</div><div class="tl-body">${bands}${now}${body}</div></div>`;
   }
   return `<div class="timeline">${rows}</div>`;
 }
+/* Schedule is its own tab again (2026-07-22) — it was folded into Calendar in Roadmap 14, but the
+   user wants it standalone ahead of a planned revamp. Calendar's SCHEDULE mode was removed so there
+   is only ONE path to the hourly timeline. Own date cursor so it doesn't fight Calendar's selDate. */
+let schedDate=today();
+let schedView='timeline';           // 'timeline' = the task-driven hourly view · 'timetable' = the fixed weekly plan
+let ttFocusDay=null;                // null = whole-week grid · 0-6 = single day column
+/* ---- Timetable: a fixed weekly plan (classes/blocks), independent of tasks ----
+   Text-only by request: no boxes, no colour fills — just columns of text with dotted row rules. */
+/* Multi-week shapes (#11). Migrates the original single-week {periods,cells} shape into weeks[0]. */
+function timetableState(){
+  let tt=state.timetable;
+  if(!tt) tt=state.timetable={weeks:[], active:null, showWeekend:false, log:{}};
+  if(!tt.weeks){ tt.weeks=[{id:'wk1', name:'My week', periods:tt.periods||4, cells:tt.cells||{}}]; delete tt.periods; delete tt.cells; tt.active='wk1'; }
+  if(!tt.weeks.length) tt.weeks.push({id:'wk'+Date.now(), name:'My week', periods:4, cells:{}});
+  if(!tt.active || !tt.weeks.some(w=>w.id===tt.active)) tt.active=tt.weeks[0].id;
+  if(typeof tt.showWeekend!=='boolean') tt.showWeekend=false;
+  tt.log=tt.log||{};
+  tt.weeks.forEach(w=>{ w.cells=w.cells||{}; w.periods=w.periods||4; });
+  return tt;
+}
+function ttWeek(){ const tt=timetableState(); return tt.weeks.find(w=>w.id===tt.active)||tt.weeks[0]; }
+function ttCellsMap(){ return ttWeek().cells; }
+function ttPeriods(){ return ttWeek().periods; }
+const TT_SCAN=60;   // upper bound when scanning a day's rows (rows can exceed the visible count)
+function ttDays(){ const tt=timetableState(); return tt.showWeekend?[1,2,3,4,5,6,0]:[1,2,3,4,5]; }
+/* #7 auto-sort: rewrite each day's blocks in chronological order with no gaps. */
+function ttNormalizeDay(wd){
+  const cells=ttCellsMap(), list=[];
+  for(let p=0;p<TT_SCAN;p++){ const k=wd+'-'+p; if(cells[k]){ list.push(cells[k]); delete cells[k]; } }
+  list.sort((a,b)=>((a.start?tMin(a.start):99999)-(b.start?tMin(b.start):99999)));
+  list.forEach((b,i)=>{ cells[wd+'-'+i]=b; });
+  return list.length;
+}
+function ttNormalizeAll(){
+  let max=0; [0,1,2,3,4,5,6].forEach(wd=>{ max=Math.max(max, ttNormalizeDay(wd)); });
+  const w=ttWeek(); if(max>w.periods) w.periods=Math.min(12,max);
+}
+function ttEndMin(b){ return (tMin(b.start)||0)+durMins(b.start, b.end||b.start); }
+/* #5 clash detection: any two blocks on the same day whose times overlap. */
+function ttClashSet(wd){
+  const out=new Set(), list=[];
+  for(let p=0;p<TT_SCAN;p++){ const b=ttBlock(wd,p); if(b&&b.start&&b.end) list.push({p, s:tMin(b.start), e:ttEndMin(b)}); }
+  for(let i=0;i<list.length;i++) for(let j=i+1;j<list.length;j++){
+    if(list[i].s<list[j].e && list[j].s<list[i].e){ out.add(list[i].p); out.add(list[j].p); }
+  }
+  return out;
+}
+/* #3 which block is happening right now (today's column only) */
+function ttNowP(wd){
+  if(wd!==wdOf(today())) return -1;
+  const n=nowMin();
+  for(let p=0;p<TT_SCAN;p++){ const b=ttBlock(wd,p); if(!b||!b.start) continue;
+    if(n>=tMin(b.start) && n<ttEndMin(b)) return p; }
+  return -1;
+}
+function ttDayBlocks(wd){ const out=[]; for(let p=0;p<TT_SCAN;p++){ const b=ttBlock(wd,p); if(b&&ttBlockName(b)) out.push({p,b}); } return out; }
+/* #15 sleep window, from the existing bedtime maths */
+function sleepWindow(){ const c=sleepCfg(); return {bed:bedtimeFor(c.wake,c.cycles), wake:c.wake}; }
+function ttInSleep(b){
+  if(!b||!b.start) return false;
+  const {bed,wake}=sleepWindow(), bs=tMin(bed), we=tMin(wake), s=tMin(b.start);
+  return bs>we ? (s>=bs||s<we) : (s>=bs&&s<we);
+}
+/* #14 the workout scheduled on that weekday (week A — the timetable is a generic week) */
+function ttWorkoutFor(wd){
+  const v=(state.workoutSchedule||{})[wd];
+  if(!v) return null;
+  if(v==='rest') return {rest:true, name:'Rest day'};
+  const t=(state.workoutTemplates||[]).find(x=>x.id===v);
+  return t?{rest:false, name:t.name}:null;
+}
+/* A timetable block is a TIME BLOCK fed by your task list: {taskId, start, end}.
+   `label` is the fallback for a block whose task was deleted (and for legacy school-format cells,
+   whose `subject` is mapped to it) so nothing ever silently vanishes from the grid. */
+function ttBlock(wd,p){
+  const c=ttCellsMap()[wd+'-'+p]; if(!c) return null;
+  if(c.taskId!=null || c.start || c.label) return c;
+  if(c.subject) return {taskId:null, label:c.subject, start:'', end:''};
+  return null;
+}
+function timeAdd(t,mins){ let m=(tMin(t)||0)+mins; m=((m%1440)+1440)%1440; return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'); }
+function durMins(s,e){ if(!s||!e) return 0; let d=tMin(e)-tMin(s); if(d<0) d+=1440; return d; }
+function fmtDur(m){ if(!m||m<=0) return ''; const h=Math.floor(m/60), mm=m%60; return (h?h+'H':'')+(h&&mm?' ':'')+(mm?mm+'M':''); }
+function ttBlockName(b){
+  if(!b) return '';
+  if(b.taskId!=null){ const t=state.tasks.find(x=>x.id===b.taskId); if(t) return t.title; }
+  return b.label||'';
+}
+function ttRowTime(p, daysArg){
+  const days=daysArg||ttDays(); let s=null,e=null;
+  days.forEach(wd=>{ const b=ttBlock(wd,p); if(b&&b.start){ if(!s||b.start<s) s=b.start; if(b.end&&(!e||b.end>e)) e=b.end; } });
+  const f=p===0?' first':'';
+  if(!s) return `<div class="tt-time empty${f}">—</div>`;
+  return `<div class="tt-time${f}"><span class="tt-t1">${fmtTime12(s)}</span>${e?`<span class="tt-t2">${fmtTime12(e)}</span>`:''}</div>`;
+}
+function ttCellHTML(wd,p,clash,nowP){
+  const b=ttBlock(wd,p), name=ttBlockName(b), f=p===0?' first':'';
+  if(!b||!name) return `<button class="tt-cell empty${f}" data-ttc="${wd}-${p}" aria-label="Add a block">+</button>`;
+  const d=fmtDur(durMins(b.start,b.end));
+  const when=b.start?`${b.start}${b.end?'–'+b.end:''}${d?' · '+d:''}`:'';
+  const task=b.taskId!=null?state.tasks.find(x=>x.id===b.taskId):null;
+  const cat=task?(state.categories.find(c=>c.id===task.cat)||{}).name:'';
+  const cls=[ 'tt-cell', f.trim(), clash&&clash.has(p)?'clash':'', p===nowP?'now':'', ttInSleep(b)?'sleepy':'' ].filter(Boolean).join(' ');
+  return `<button class="${cls}" data-ttc="${wd}-${p}">
+    <span class="tt-sub">${esc(name)}</span>
+    ${when?`<span class="tt-code">${esc(when)}</span>`:''}
+    ${cat?`<span class="tt-meta">${esc(cat.toUpperCase())}</span>`:''}
+    ${clash&&clash.has(p)?'<span class="tt-flag">CLASH</span>':''}
+    ${ttInSleep(b)?'<span class="tt-flag sleep">SLEEP</span>':''}
+    ${p===nowP?'<span class="tt-flag now">NOW</span>':''}
+  </button>`;
+}
+function timetableHTML(){
+  ttNormalizeAll();
+  const tt=timetableState(), wk=ttWeek();
+  const days=ttFocusDay==null?ttDays():[ttFocusDay];
+  const tdy=wdOf(today());
+  const weekChips=tt.weeks.map(w=>`<button class="catchip ${w.id===tt.active?'on':''}" data-ttwk="${w.id}">${esc(w.name.toUpperCase())}</button>`).join('')
+    +`<button class="catadd" id="tt-weeks" aria-label="Manage weeks"><i data-ic="edit"></i></button>`;
+  let head=`<div class="tt-corner"></div>`+days.map(wd=>`<div class="tt-day ${wd===tdy?'today':''}">${DAYNAMES[wd]}</div>`).join('');
+  let wkStrip=`<div class="tt-time wkrow"><span class="tt-t2">GYM</span></div>`+days.map(wd=>{
+    const w=ttWorkoutFor(wd);
+    return `<button class="tt-wk ${w&&w.rest?'rest':''}" data-ttgym="1">${w?esc(w.name.toUpperCase()):'·'}</button>`;
+  }).join('');
+  const clash={}, nowP={};
+  days.forEach(wd=>{ clash[wd]=ttClashSet(wd); nowP[wd]=ttNowP(wd); });
+  let rows='';
+  for(let p=0;p<wk.periods;p++) rows+=ttRowTime(p,days)+days.map(wd=>ttCellHTML(wd,p,clash[wd],nowP[wd])).join('');
+  const sw=sleepWindow();
+  return `<div class="tt-weeks">${weekChips}</div>
+    <div class="tt-wrap"><div class="tt" style="grid-template-columns:64px repeat(${days.length},minmax(0,1fr))">${head}${wkStrip}${rows}</div></div>
+    <div class="tt-sleep"><span class="label">SLEEP WINDOW</span> <span class="tt-sleepv">${fmtTime12(sw.bed)} → ${fmtTime12(sw.wake)}</span></div>
+    <div class="tt-tools">
+      <button class="btn-line" id="tt-less">− ROW</button>
+      <button class="btn-line" id="tt-more">+ ROW</button>
+      <button class="btn-line ${tt.showWeekend?'on':''}" id="tt-weekend">${tt.showWeekend?'MON–SUN':'MON–FRI'}</button>
+      <button class="btn-line" id="tt-copyday"><i data-ic="copy"></i> COPY DAY</button>
+    </div>`;
+}
+/* #9 copy one day's blocks onto other days */
+function openCopyDay(){
+  let from=ttFocusDay!=null?ttFocusDay:1; const to=new Set();
+  openWkModal(`<div id="cpd-root"></div>`);
+  (function paint(){
+    const el=document.getElementById('cpd-root'); if(!el) return;
+    const all=[1,2,3,4,5,6,0];
+    el.innerHTML=`
+      <div class="tm-head"><h3>Copy a day</h3><button class="iconbtn" data-wkclose aria-label="Close">✕</button></div>
+      <div class="wk-form">
+        <span class="label">COPY FROM</span>
+        <div class="cvd-tools">${all.map(wd=>`<button type="button" class="dchip ${from===wd?'on':''}" data-cpf="${wd}">${DAYLETTER[wd]}</button>`).join('')}</div>
+        <span class="label">ONTO — ${ttDayBlocks(from).length} BLOCK${ttDayBlocks(from).length===1?'':'S'}</span>
+        <div class="cvd-tools">${all.filter(wd=>wd!==from).map(wd=>`<button type="button" class="dchip ${to.has(wd)?'on':''}" data-cpt="${wd}">${DAYLETTER[wd]}</button>`).join('')}</div>
+        <p class="sp-note">Replaces everything on the target days.</p>
+        <button type="button" class="pbtn-main" id="cpd-go">COPY</button>
+      </div>`;
+    paintIcons(el);
+    el.querySelector('[data-wkclose]').onclick=closeWkModal;
+    el.querySelectorAll('[data-cpf]').forEach(b=>b.onclick=()=>{ from=+b.dataset.cpf; to.delete(from); paint(); });
+    el.querySelectorAll('[data-cpt]').forEach(b=>b.onclick=()=>{ const wd=+b.dataset.cpt; if(to.has(wd)) to.delete(wd); else to.add(wd); paint(); });
+    el.querySelector('#cpd-go').onclick=()=>{
+      if(!to.size){ toast('PICK AT LEAST ONE DAY'); return; }
+      const src=ttDayBlocks(from).map(x=>x.b), cells=ttCellsMap();
+      to.forEach(wd=>{
+        for(let p=0;p<TT_SCAN;p++) delete cells[wd+'-'+p];
+        src.forEach((b,i)=>{ cells[wd+'-'+i]={...b}; });
+      });
+      save(); closeWkModal(); render(); toast(`COPIED ONTO ${to.size} DAY${to.size===1?'':'S'}`);
+    };
+  })();
+}
+/* #11 saved week shapes */
+function openWeeks(){
+  openWkModal(`<div id="wks-root"></div>`);
+  (function paint(){
+    const el=document.getElementById('wks-root'); if(!el) return;
+    const tt=timetableState();
+    el.innerHTML=`
+      <div class="tm-head"><h3>Week shapes</h3><button class="iconbtn" data-wkclose aria-label="Close">✕</button></div>
+      <div class="wk-form">
+        <p class="s-p">Keep more than one shape of week — term time, holidays, exam weeks — and switch between them.</p>
+        <div class="goals-list">${tt.weeks.map(w=>`<div class="goal ${w.id===tt.active?'':'done'}">
+          <div class="goal-body"><div class="goal-text">${esc(w.name)}</div>
+            <div class="goal-why">${Object.keys(w.cells||{}).length} BLOCK${Object.keys(w.cells||{}).length===1?'':'S'}${w.id===tt.active?' · ACTIVE':''}</div></div>
+          <button type="button" class="btn-line" data-wkuse="${w.id}">${w.id===tt.active?'IN USE':'USE'}</button>
+          <button type="button" class="sub-del" data-wkdel="${w.id}" aria-label="Delete"><i data-ic="trash"></i></button>
+        </div>`).join('')}</div>
+        <input type="text" class="sp-input" id="wks-name" placeholder="NEW WEEK NAME…" maxlength="24" autocomplete="off"/>
+        <div class="cvd-tools">
+          <button type="button" class="btn-line" id="wks-blank">+ BLANK</button>
+          <button type="button" class="btn-line" id="wks-copy">+ COPY OF CURRENT</button>
+        </div>
+      </div>`;
+    paintIcons(el);
+    el.querySelector('[data-wkclose]').onclick=closeWkModal;
+    el.querySelectorAll('[data-wkuse]').forEach(b=>b.onclick=()=>{ timetableState().active=b.dataset.wkuse; save(); paint(); render(); });
+    el.querySelectorAll('[data-wkdel]').forEach(b=>b.onclick=()=>{
+      const tt2=timetableState();
+      if(tt2.weeks.length<2){ toast('KEEP AT LEAST ONE WEEK'); return; }
+      customConfirm('Delete this week shape?',()=>{ const t3=timetableState();
+        t3.weeks=t3.weeks.filter(w=>w.id!==b.dataset.wkdel);
+        if(t3.active===b.dataset.wkdel) t3.active=t3.weeks[0].id;
+        save(); render(); openWeeks(); });
+    });
+    const mk=(cells)=>{
+      const nm=(el.querySelector('#wks-name').value||'').trim()||'Week '+(timetableState().weeks.length+1);
+      const tt2=timetableState(); const id='wk'+Date.now();
+      tt2.weeks.push({id, name:nm, periods:ttPeriods(), cells});
+      tt2.active=id; save(); paint(); render();
+    };
+    el.querySelector('#wks-blank').onclick=()=>mk({});
+    el.querySelector('#wks-copy').onclick=()=>mk(JSON.parse(JSON.stringify(ttCellsMap())));
+  })();
+}
+/* #10 drag a block to another slot or day (swap). Movement threshold keeps taps working. */
+function initTtDrag(){
+  view.querySelectorAll('.tt-cell').forEach(cell=>{
+    cell.onpointerdown=(ev)=>{
+      const sx=ev.clientX, sy=ev.clientY, key=cell.dataset.ttc; let moved=false;
+      try{ cell.setPointerCapture(ev.pointerId); }catch(_){}
+      const move=(e)=>{ if(!moved && (Math.abs(e.clientX-sx)>8||Math.abs(e.clientY-sy)>8)){ moved=true; cell.classList.add('dragging'); } };
+      const up=(e)=>{
+        cell.removeEventListener('pointermove',move); cell.classList.remove('dragging');
+        try{ cell.releasePointerCapture(ev.pointerId); }catch(_){}
+        if(!moved){ openTtCell(key); return; }
+        const under=document.elementFromPoint(e.clientX,e.clientY);
+        const target=under&&under.closest?under.closest('.tt-cell'):null;
+        if(target&&target!==cell&&target.dataset.ttc){
+          const cells=ttCellsMap(), a=key, b=target.dataset.ttc, tmp=cells[a];
+          if(cells[b]) cells[a]=cells[b]; else delete cells[a];
+          if(tmp) cells[b]=tmp; else delete cells[b];
+          save(); render();
+        }
+      };
+      cell.addEventListener('pointermove',move);
+      cell.addEventListener('pointerup',up,{once:true});
+    };
+  });
+}
+/* Block editor. Time steppers are inline (NOT openTimePicker) — that opens its own modal via
+   openWkModal, which would close this one. Same nested-modal trap as customConfirm. */
+let TTB=null;
+function openTtCell(key){
+  const b=ttBlock(...key.split('-').map(Number))||{};
+  TTB={key, taskId:(b.taskId!=null?b.taskId:null), start:b.start||'09:00', end:b.end||(b.start?timeAdd(b.start,60):'10:00'), label:b.label||''};
+  openWkModal(`<div id="ttb-root"></div>`);
+  renderTtBlock();
+}
+function renderTtBlock(){
+  const el=document.getElementById('ttb-root'); if(!el) return;
+  const [wd,p]=TTB.key.split('-').map(Number);
+  const mins=durMins(TTB.start,TTB.end);
+  const stepper=(which,val)=>{
+    const parts=fmtTime12(val).split(' '), hm=parts[0].split(':');
+    return `<div class="tct ttb-stepper">
+      <div class="tct-row">
+        <div class="tct-step"><button type="button" data-t="${which}" data-d="60">▲</button><span class="tct-val">${hm[0]}</span><button type="button" data-t="${which}" data-d="-60">▼</button></div>
+        <span class="tct-colon">:</span>
+        <div class="tct-step"><button type="button" data-t="${which}" data-d="5">▲</button><span class="tct-val">${hm[1]}</span><button type="button" data-t="${which}" data-d="-5">▼</button></div>
+        <button type="button" class="tct-ampm" data-t="${which}" data-d="720">${parts[1]}</button>
+      </div></div>`;
+  };
+  const open=state.tasks.slice().sort((a,b2)=>a.title.localeCompare(b2.title));
+  el.innerHTML=`
+    <div class="tm-head"><h3>${DAYNAMES[wd]} · block ${p+1}</h3><button class="iconbtn" data-wkclose aria-label="Close">✕</button></div>
+    <div class="wk-form">
+      <span class="label">IMPORT A TASK</span>
+      <select id="ttb-task" aria-label="Task">
+        <option value="">— NONE —</option>
+        ${open.map(t=>`<option value="${t.id}" ${TTB.taskId===t.id?'selected':''}>${esc(t.title)}</option>`).join('')}
+      </select>
+      ${TTB.taskId==null?`<input type="text" class="sp-input" id="ttb-label" placeholder="…OR TYPE A LABEL" maxlength="40" value="${esc(TTB.label)}" autocomplete="off"/>`:''}
+      <span class="label">STARTS</span>
+      ${stepper('start',TTB.start)}
+      <span class="label">ENDS</span>
+      ${stepper('end',TTB.end)}
+      <div class="ttb-dur"><span class="label">DURATION</span><span class="ttb-durval">${fmtDur(mins)||'—'}</span></div>
+      <div class="cvd-tools">${[30,45,60,90,120].map(m=>`<button type="button" class="dchip ${mins===m?'on':''}" data-dur="${m}">${fmtDur(m)}</button>`).join('')}</div>
+      <button type="button" class="pbtn-main" id="ttb-save">SAVE BLOCK</button>
+      <div class="cvd-tools">
+        <button type="button" class="btn-line" id="ttb-focus"><i data-ic="timer"></i> START FOCUS</button>
+        <button type="button" class="btn-line" id="ttb-dupe"><i data-ic="copy"></i> DUPLICATE</button>
+      </div>
+      <button type="button" class="btn-line danger" id="ttb-clear">Clear this block</button>
+    </div>`;
+  paintIcons(el); enhanceSelects(el);
+  el.querySelector('[data-wkclose]').onclick=()=>{ closeWkModal(); TTB=null; };
+  const sel=el.querySelector('#ttb-task');
+  sel.onchange=()=>{ TTB.taskId = sel.value===''?null:+sel.value; renderTtBlock(); };
+  const lab=el.querySelector('#ttb-label'); if(lab) lab.oninput=()=>{ TTB.label=lab.value; };
+  el.querySelectorAll('[data-t]').forEach(btn=>btn.onclick=()=>{
+    const which=btn.dataset.t, d=+btn.dataset.d;
+    TTB[which]=timeAdd(TTB[which], d);
+    if(which==='start' && durMins(TTB.start,TTB.end)<=0) TTB.end=timeAdd(TTB.start,60);
+    renderTtBlock(); });
+  el.querySelectorAll('[data-dur]').forEach(btn=>btn.onclick=()=>{ TTB.end=timeAdd(TTB.start, +btn.dataset.dur); renderTtBlock(); });
+  const collect=()=>({taskId:TTB.taskId, label:TTB.taskId==null?(TTB.label||'').trim():'', start:TTB.start, end:TTB.end});
+  const valid=()=>TTB.taskId!=null || (TTB.label||'').trim();
+  el.querySelector('#ttb-save').onclick=()=>{
+    if(!valid()){ toast('PICK A TASK OR TYPE A LABEL'); return; }
+    ttCellsMap()[TTB.key]=collect();
+    save(); closeWkModal(); TTB=null; render();
+  };
+  el.querySelector('#ttb-clear').onclick=()=>{ delete ttCellsMap()[TTB.key]; save(); closeWkModal(); TTB=null; render(); };
+  // #12 duplicate into the next free slot on the same day (auto-sort will place it by time)
+  el.querySelector('#ttb-dupe').onclick=()=>{
+    if(!valid()){ toast('PICK A TASK OR TYPE A LABEL'); return; }
+    const cells=ttCellsMap(); cells[TTB.key]=collect();
+    let free=0; while(cells[wd+'-'+free] && free<TT_SCAN) free++;
+    cells[wd+'-'+free]={...collect(), start:TTB.end, end:timeAdd(TTB.end, durMins(TTB.start,TTB.end)||60)};
+    save(); closeWkModal(); TTB=null; render(); toast('BLOCK DUPLICATED');
+  };
+  // #13 run a focus session sized to this block
+  el.querySelector('#ttb-focus').onclick=()=>{
+    if(!valid()){ toast('PICK A TASK OR TYPE A LABEL'); return; }
+    ttCellsMap()[TTB.key]=collect();
+    const mins2=durMins(TTB.start,TTB.end)||25;
+    if(TTB.taskId!=null) state.activeTask=TTB.taskId;
+    save(); closeWkModal(); TTB=null;
+    pomoPause(); pomo.mode='focus'; pomo.overrideDur=Math.min(mins2,180)*60; pomo.left=pomo.overrideDur;
+    activeTab='focus'; document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab==='focus'));
+    render(); pomoStart(); toast(`FOCUS · ${fmtDur(Math.min(mins2,180))}`);
+  };
+}
+function renderSchedule(){
+  const tdy=wdOf(today());
+  const dayBtns=[1,2,3,4,5,6,0].map(wd=>{
+    const on = schedView==='timeline' ? wdOf(schedDate)===wd : ttFocusDay===wd;
+    return `<button class="dchip ${on?'on':''} ${wd===tdy?'is-today':''}" data-scday="${wd}">${DAYLETTER[wd]}</button>`;
+  }).join('');
+  const allBtn = schedView==='timetable'
+    ? `<button class="dchip wide ${ttFocusDay==null?'on':''}" data-scday="all">ALL</button>` : '';
+  view.innerHTML=`
+    <div class="cal-head">
+      <button class="iconbtn" id="sc-prev" aria-label="Previous day"><i data-ic="chevL"></i></button>
+      <div class="cal-range">${schedView==='timeline'?dateLabel(schedDate):'WEEKLY PLAN'}</div>
+      <div class="cal-modes">
+        <button class="pmode ${schedView==='timeline'?'active':''}" data-scview="timeline">TIMELINE</button>
+        <button class="pmode ${schedView==='timetable'?'active':''}" data-scview="timetable">TIMETABLE</button>
+      </div>
+      <button class="iconbtn wbtn" id="sc-today">TODAY</button>
+      <button class="iconbtn" id="sc-next" aria-label="Next day"><i data-ic="chevR"></i></button>
+    </div>
+    <div class="sc-days">${dayBtns}${allBtn}</div>
+    ${schedView==='timeline'?scheduleTimelineHTML(schedDate):timetableHTML()}`;
+  document.getElementById('sc-prev').onclick=()=>{ if(schedView==='timeline'){ schedDate=addDays(schedDate,-1); } else { const d=ttDays(); const i=ttFocusDay==null?0:d.indexOf(ttFocusDay); ttFocusDay=d[(i-1+d.length)%d.length]; } render(); };
+  document.getElementById('sc-next').onclick=()=>{ if(schedView==='timeline'){ schedDate=addDays(schedDate,1); } else { const d=ttDays(); const i=ttFocusDay==null?-1:d.indexOf(ttFocusDay); ttFocusDay=d[(i+1)%d.length]; } render(); };
+  document.getElementById('sc-today').onclick=()=>{ schedDate=today(); ttFocusDay=null; render(); };
+  view.querySelectorAll('[data-scview]').forEach(b=>b.onclick=()=>{ schedView=b.dataset.scview; render(); });
+  view.querySelectorAll('[data-scday]').forEach(b=>b.onclick=()=>{
+    const v=b.dataset.scday;
+    if(v==='all'){ ttFocusDay=null; render(); return; }
+    const wd=+v;
+    if(schedView==='timeline'){ const mon=mondayOf(schedDate); const offset=(wd+6)%7; schedDate=addDays(mon,offset); }
+    else ttFocusDay = ttFocusDay===wd ? null : wd;
+    render();
+  });
+  if(schedView==='timetable') initTtDrag();
+  const less=document.getElementById('tt-less'), more=document.getElementById('tt-more'), wk=document.getElementById('tt-weekend');
+  if(less) less.onclick=()=>{ const w=ttWeek(); if(w.periods>1){ w.periods--; save(); render(); } };
+  if(more) more.onclick=()=>{ const w=ttWeek(); if(w.periods<12){ w.periods++; save(); render(); } };
+  if(wk) wk.onclick=()=>{ const tt=timetableState(); tt.showWeekend=!tt.showWeekend; save(); render(); };
+  const cpd=document.getElementById('tt-copyday'); if(cpd) cpd.onclick=openCopyDay;
+  const wks=document.getElementById('tt-weeks'); if(wks) wks.onclick=openWeeks;
+  view.querySelectorAll('[data-ttwk]').forEach(b=>b.onclick=()=>{ timetableState().active=b.dataset.ttwk; save(); render(); });
+  view.querySelectorAll('[data-ttgym]').forEach(b=>b.onclick=()=>{ activeTab='workouts';
+    document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab==='workouts')); render(); });
+}
 function renderCalendar(){
   let body='', range='';
-  if(calMode==='schedule'){
-    range=dateLabel(selDate);
-    body=scheduleTimelineHTML(selDate);
-  } else if(calMode==='month'){
+  if(calMode==='month'){
     const first=firstOfMonth(monthAnchor);
     const dMonth=new Date(first+'T00:00:00').getMonth();
     const last=addDays(addMonths(first,1),-1);
@@ -2463,7 +3119,6 @@ function renderCalendar(){
     range=`${monthShort(weekStart)} ${new Date(weekStart+'T00:00:00').getDate()} – ${new Date(addDays(weekStart,6)+'T00:00:00').getDate()}`;
     body=`<div class="calweek">${cols}</div>`;
   }
-  const showList=calMode!=='schedule';
   const sel=tasksForDate(selDate).filter(catFilter);
   view.innerHTML=`
     <div class="cal-head">
@@ -2472,24 +3127,19 @@ function renderCalendar(){
       <div class="cal-modes">
         <button class="pmode ${calMode==='week'?'active':''}" data-calmode="week">WEEK</button>
         <button class="pmode ${calMode==='month'?'active':''}" data-calmode="month">MONTH</button>
-        <button class="pmode ${calMode==='schedule'?'active':''}" data-calmode="schedule">SCHEDULE</button>
       </div>
       <button class="iconbtn wbtn" id="cal-today">TODAY</button>
       <button class="iconbtn" id="cal-next" aria-label="Next ${calMode}"><i data-ic="chevR"></i></button>
     </div>
     ${body}
-    ${showList?`<div class="group-label cal-add-row"><span class="label">${dateLabel(selDate)} · ${sel.length} TASK${sel.length===1?'':'S'}</span><button class="btn-line" id="cal-add"><i data-ic="plus"></i> ADD TO THIS DAY</button></div>
-    ${sel.length? sel.map(t=>taskRow(t,selDate)).join('') : emptyState()}`:''}`;
+    <div class="group-label cal-add-row"><span class="label">${dateLabel(selDate)} · ${sel.length} TASK${sel.length===1?'':'S'}</span><button class="btn-line" id="cal-add"><i data-ic="plus"></i> ADD TO THIS DAY</button></div>
+    ${sel.length? sel.map(t=>taskRow(t,selDate)).join('') : emptyState()}`;
   const calAdd=document.getElementById('cal-add'); if(calAdd) calAdd.onclick=()=>openTaskComposer({date:selDate});
   document.getElementById('cal-prev').onclick=()=>{
-    if(calMode==='month') monthAnchor=addMonths(monthAnchor,-1);
-    else if(calMode==='schedule') selDate=addDays(selDate,-1);
-    else weekStart=addDays(weekStart,-7);
+    if(calMode==='month') monthAnchor=addMonths(monthAnchor,-1); else weekStart=addDays(weekStart,-7);
     render(); };
   document.getElementById('cal-next').onclick=()=>{
-    if(calMode==='month') monthAnchor=addMonths(monthAnchor,1);
-    else if(calMode==='schedule') selDate=addDays(selDate,1);
-    else weekStart=addDays(weekStart,7);
+    if(calMode==='month') monthAnchor=addMonths(monthAnchor,1); else weekStart=addDays(weekStart,7);
     render(); };
   document.getElementById('cal-today').onclick=()=>{ weekStart=mondayOf(today()); monthAnchor=today(); selDate=today(); render(); };
   view.querySelectorAll('[data-calmode]').forEach(b=>b.onclick=()=>{ calMode=b.dataset.calmode;
@@ -2527,17 +3177,13 @@ function customExCats(){ return state.exerciseCats||[]; }
 function allExCats(){ return EX_CATS.concat(customExCats().map(c=>c.id)); }
 function catTag(c){ if(c==='plyometric') return 'PLYO';
   const cc=customExCats().find(x=>x.id===c); return (cc?cc.name:c).toUpperCase(); }
-/* two-week (A/B) rotation: workoutScheduleB mirrors workoutSchedule; schedAnchor marks a week-A monday */
-let schedViewWeek=null; // 0/1 which week is being viewed; null = follow the active one
-function rotationOn(){ return !!state.workoutScheduleB; }
-function weekIdxOf(ds){ if(!rotationOn()) return 0;
-  const a=state.schedAnchor||mondayOf(today());
-  const diff=Math.round((new Date(mondayOf(ds)+'T00:00:00')-new Date(a+'T00:00:00'))/864e5);
-  return ((Math.floor(diff/7))%2+2)%2;
-}
-function schedForDate(ds){ return weekIdxOf(ds)===1 ? state.workoutScheduleB : state.workoutSchedule; }
-function viewedWeek(){ return rotationOn() ? (schedViewWeek==null?weekIdxOf(today()):schedViewWeek) : 0; }
-function viewedSched(){ return viewedWeek()===1 ? state.workoutScheduleB : state.workoutSchedule; }
+/* Two-week (A/B) rotation REMOVED 2026-07-22 at the user's request — the workout plan is a single
+   repeating week again. `state.workoutScheduleB` / `state.schedAnchor` are deliberately left in
+   storage untouched (same "data survives, UI doesn't" pattern as the Habits and Stats removals);
+   nothing reads them any more. These two accessors are kept as the single source of the schedule so
+   the ~8 call sites didn't all need rewriting. */
+function schedForDate(){ return state.workoutSchedule; }
+function viewedSched(){ return state.workoutSchedule; }
 function scheduleStreak(){
   let n=0, d=today();
   const doneOn=ds=>{ const v=(schedForDate(ds)||{})[wdOf(ds)]; if(!v||v==='rest') return null; const t=schedTemplate(v); return t? !!(t.log||{})[ds] : null; };
@@ -2556,7 +3202,7 @@ function schedOptions(cur){
 let schedEditWd=null, schedViewWd=null;
 function schedDayEditor(wd,val,t){
   return `<div class="workout-edit sched-edit">
-    <span class="label">WORKOUT FOR ${DAYNAMES[wd]}${rotationOn()?` · WEEK ${viewedWeek()===1?'B':'A'}`:''}</span>
+    <span class="label">WORKOUT FOR ${DAYNAMES[wd]}</span>
     <select class="lib-sel" data-scsel="${wd}" aria-label="Assign workout to ${DAYNAMES[wd]}">${schedOptions(val)}<option value="__new">+ NEW TEMPLATE</option></select>
     ${t?tplEditor(t):''}
     ${t?`<div class="sp-row">
@@ -2605,11 +3251,10 @@ function schedPreview(t){
 function scheduleHTML(){
   const sched=viewedSched()||{};
   const todayWd=wdOf(today());
-  const todayIsViewedWeek=viewedWeek()===weekIdxOf(today());
   const rows=[1,2,3,4,5,6,0].map(wd=>{
     const val=sched[wd];
     const t=(val&&val!=='rest')?schedTemplate(val):null;
-    const isToday=wd===todayWd&&todayIsViewedWeek;
+    const isToday=wd===todayWd;
     const done=t&&!!(t.log||{})[today()];
     const tags=t?tplCats(t).map(c=>`<span class="sc-tag">${catTag(c)}</span>`).join(''):'';
     const editing=schedEditWd===wd, viewing=schedViewWd===wd;
@@ -2629,17 +3274,10 @@ function scheduleHTML(){
       ${viewing&&t?schedPreview(t):''}
     </div>`;
   }).join('');
-  const aw=weekIdxOf(today()), vw=viewedWeek();
-  const weekChips=rotationOn()?`<div class="sched-weeks">
-      <button class="catchip ${vw===0?'on':''}" data-schedweek="0">WEEK A${aw===0?' · NOW':''}</button>
-      <button class="catchip ${vw===1?'on':''}" data-schedweek="1">WEEK B${aw===1?' · NOW':''}</button>
-    </div>`:'';
   return `<div class="sched-bar"><span class="label">WEEKLY PLAN</span>
       <span class="sched-bar-right">
-        <button class="iconbtn wbtn ${rotationOn()?'on':''}" id="sched-rot" title="Alternate two different weeks">2-WEEK</button>
         <span class="h-streak"><i data-ic="flame"></i> ${scheduleStreak()}</span>
       </span></div>
-    ${weekChips}
     <div class="sched-list">${rows}</div>
     <div class="focus-music workout-music"><h3 class="s-h">WORKOUT MUSIC</h3><div id="music-panel"></div></div>`;
 }
@@ -2673,24 +3311,8 @@ function bindSchedule(){
     const id=b.dataset.tpldelx;
     customConfirm('Delete this template? It will be removed from every day that uses it.', ()=>{
       state.workoutTemplates=state.workoutTemplates.filter(x=>x.id!==id);
-      [state.workoutSchedule, state.workoutScheduleB].forEach(s=>{ if(s) Object.keys(s).forEach(k=>{ if(s[k]===id) s[k]=null; }); });
+      const s=state.workoutSchedule; if(s) Object.keys(s).forEach(k=>{ if(s[k]===id) s[k]=null; });
       save(); renderWorkouts(); }); });
-  const rotBtn=document.getElementById('sched-rot');
-  if(rotBtn) rotBtn.onclick=()=>{
-    if(rotationOn()){
-      customConfirm('Turn off 2-week rotation? Week B will be removed and week A becomes every week.', ()=>{
-        delete state.workoutScheduleB; delete state.schedAnchor; schedViewWeek=null;
-        schedEditWd=null; schedViewWd=null; save(); renderWorkouts(); });
-    } else {
-      state.workoutScheduleB={...state.workoutSchedule};
-      state.schedAnchor=mondayOf(today());
-      schedViewWeek=1;
-      toast('WEEK B CREATED — EDIT IT, WEEKS ALTERNATE AUTOMATICALLY');
-      schedEditWd=null; schedViewWd=null; save(); renderWorkouts();
-    }
-  };
-  view.querySelectorAll('[data-schedweek]').forEach(b=>b.onclick=()=>{
-    schedViewWeek=+b.dataset.schedweek; schedEditWd=null; schedViewWd=null; renderWorkouts(); });
   bindTplEditor();
 }
 function renderWorkouts(){
@@ -3231,8 +3853,11 @@ function sesPaint(){
 function pomoDur(k){ const v=localStorage.getItem('pomo_'+k); const def={focus:25,break:5}[k]; return (v!=null?+v:def)*60; }
 function setPomoDur(k,mins){ localStorage.setItem('pomo_'+k, Math.max(1,Math.min(180,Math.round(mins)))); }
 function pmodeLabel(k){ const names={focus:'FOCUS',break:'BREAK'}; return `${names[k]} · ${String(pomoDur(k)/60).padStart(2,'0')}`; }
-let pomo={mode:'focus', left:pomoDur('focus')};
+let pomo={mode:'focus', left:pomoDur('focus'), overrideDur:null};
 let pomoInt=null;
+// A timetable block can run a focus session sized to the block (#13) WITHOUT changing the user's
+// saved default duration. Cleared whenever the mode changes or the timer is reset.
+function focusDurNow(){ return (pomo.mode==='focus' && pomo.overrideDur) ? pomo.overrideDur : pomoDur(pomo.mode); }
 function fmtSec(s){ return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); }
 function dotRing(frac,N,size){
   const accent=getComputedStyle(root).getPropertyValue('--accent').trim();
@@ -3245,23 +3870,27 @@ function dotRing(frac,N,size){
 }
 function pomoPaint(){
   const el=document.getElementById('pomo-time'); if(el) el.textContent=fmtSec(pomo.left);
-  const ring=document.getElementById('pomo-ring'); if(ring) ring.innerHTML=dotRing(pomo.left/pomoDur(pomo.mode),48,parseInt(getComputedStyle(ring).width)||260);
+  const ring=document.getElementById('pomo-ring'); if(ring) ring.innerHTML=dotRing(pomo.left/focusDurNow(),48,parseInt(getComputedStyle(ring).width)||260);
   const tog=document.getElementById('pomo-toggle'); if(tog) tog.innerHTML=(pomoInt?iconHTML('pause')+' PAUSE':iconHTML('play')+' START');
   document.querySelectorAll('.pmode').forEach(b=>b.classList.toggle('active',b.dataset.mode===pomo.mode));
   const ses=document.getElementById('pomo-sessions'); if(ses) ses.textContent=state.pomodoros||0;
   updateGardenLive();
+  updateCanvasLive();
 }
 function pomoStart(){ if(pomoInt) return; pomoInt=setInterval(()=>{ pomo.left--; if(pomo.left<=0) pomoDone(); pomoPaint(); updateLive(); },1000); if(pomo.mode==='focus') musicFocusStart(); pomoPaint(); updateLive(); }
 function pomoPause(){ clearInterval(pomoInt); pomoInt=null; musicFocusStop(); pomoPaint(); updateLive(); }
-function pomoReset(){ const wilted=pomo.mode==='focus' && pomoInt && pomo.left<pomoDur('focus'); pomoPause(); pomo.left=pomoDur(pomo.mode); pomoPaint();
+function pomoReset(){ const wilted=pomo.mode==='focus' && pomoInt && pomo.left<focusDurNow(); pomoPause(); pomo.overrideDur=null; pomo.left=pomoDur(pomo.mode); pomoPaint();
   if(wilted && nudgesOn()) toast('SEEDLING WILTED — START AGAIN'); }
-function pomoMode(m){ pomoPause(); pomo.mode=m; pomo.left=pomoDur(m); pomoPaint(); }
+function pomoMode(m){ pomoPause(); pomo.overrideDur=null; pomo.mode=m; pomo.left=pomoDur(m); pomoPaint(); }
 function pomoDone(){ clearInterval(pomoInt); pomoInt=null;
   if(pomo.mode==='focus'){ state.pomodoros=(state.pomodoros||0)+1; state.karma=(state.karma||0)+15;
     gardenState().push({date:today(), ts:Date.now()}); if(state.garden.length>400) state.garden=state.garden.slice(-400);
+    const cvResult=canvasBankSession();
     save(); renderGlyph();
     const gw=document.getElementById('garden-grid-wrap'); if(gw){ gw.innerHTML=gardenGridHTML(); }
-    pomoMode('break'); breakNudge(); if(nudgesOn()) toast('PLANT GROWN · +15 XP'); }
+    const cg=document.getElementById('canvas-gallery-wrap'); if(cg){ cg.innerHTML=canvasGalleryHTML(); }
+    pomoMode('break'); breakNudge();
+    if(nudgesOn()) toast(cvResult==='complete' ? 'PLANT GROWN · CREATION COMPLETE · +15 XP' : 'PLANT GROWN · +15 XP'); }
   else { pomoMode('focus'); if(nudgesOn()) toast('BREAK OVER · BACK TO IT'); } }
 
 /* ---- focus garden (#18) ---- */
@@ -3296,7 +3925,7 @@ function gardenGridHTML(){
 function updateGardenLive(){
   const el=document.getElementById('garden-plant'); if(!el) return;
   let g, cap;
-  if(pomo.mode==='focus'){ g=1-pomo.left/pomoDur('focus');
+  if(pomo.mode==='focus'){ g=1-pomo.left/focusDurNow();
     cap=pomoInt?`GROWING… ${Math.round(g*100)}%`:(g>0?`PAUSED · ${Math.round(g*100)}%`:'START FOCUSING TO GROW A PLANT'); }
   else { g=0; cap='ON A BREAK — LAST PLANT BANKED'; }
   el.innerHTML=plantSVG(g,120);
@@ -3331,6 +3960,13 @@ function renderFocus(){
       <p class="dhint garden-cap" id="garden-caption"></p>
       <div id="garden-grid-wrap">${gardenGridHTML()}</div>
     </div>
+    <div class="focus-canvas">
+      <h3 class="s-h">GLYPH CANVAS</h3>
+      <div class="canvas-live" id="canvas-live"></div>
+      <p class="dhint garden-cap" id="canvas-cap"></p>
+      <button class="btn-line" id="canvas-draw" type="button"><i data-ic="edit"></i> Draw</button>
+      <div id="canvas-gallery-wrap">${canvasGalleryHTML()}</div>
+    </div>
     <div class="focus-music">
       <h3 class="s-h">FOCUS MUSIC</h3>
       <div id="music-panel"></div>
@@ -3346,6 +3982,7 @@ function renderFocus(){
       const btn=view.querySelector(`.pmode[data-mode="${k}"]`); if(btn) btn.textContent=pmodeLabel(k);
       if(pomo.mode===k && !pomoInt){ pomo.left=pomoDur(k); pomoPaint(); } } }; });
   const fs=document.getElementById('focus-sel'); if(fs) fs.onchange=()=>{ state.activeTask=+fs.value; save(); renderFocus(); paintIcons(view); updateLive(); };
+  const cvd=document.getElementById('canvas-draw'); if(cvd) cvd.onclick=openCanvasDraw;
   pomoPaint();
   renderMusic();
 }
@@ -3671,11 +4308,13 @@ const GUIDE=[
   ['Categories','Every task has a category pill. The chip bar filters — ALL shows everything. Tap + to create your own, or the pencil icon to delete one (its tasks move to the first remaining category). The selected chip becomes the default for new tasks.'],
   ['Widgets','Below the clock: the next task with a countdown, a Day bar (waking hours elapsed) and a Charge battery (today’s completion).'],
   ['Doing a task','Tap the ⚡ on any task to open its sheet — mark it “Doing now”, jump to a focus session on it, add private notes (scratchpad), complete, or delete. Tap the <b>pencil</b> in that sheet to edit anything about the task: title, time, date, category, and repeat (one-off / daily / weekly with day chips).'],
-  ['Tasks / Calendar','Tasks groups by Morning/Afternoon/Evening — drag the grip on a task to reorder it within its group. Completing a one-off task sends it straight to the Bin (recurring tasks stay put). Calendar has three views: <b>WEEK</b> and <b>MONTH</b> browse with the arrows and a tap on any day shows its tasks below; <b>SCHEDULE</b> swaps that for an hourly timeline of the selected day, with its own complete-checkbox per task — the arrows step one day at a time in this view.'],
+  ['Tasks / Calendar / Schedule','Tasks groups by Morning/Afternoon/Evening — drag the grip on a task to reorder it within its group. Completing a one-off task sends it straight to the Bin (recurring tasks stay put). Calendar has two views: <b>WEEK</b> and <b>MONTH</b>, browsed with the arrows — tap any day to see its tasks below, or use ADD TO THIS DAY to create one on it. <b>Schedule</b> is its own tab and holds two different schedules, switched with TIMELINE / TIMETABLE. <b>TIMELINE</b> is the task-driven hourly view of one day, with a complete-checkbox on each task and a live "now" line. <b>TIMETABLE</b> is your repeating weekly plan — the shape of a normal week, rather than one specific day. Tap any empty slot to build a <b>time block</b>: import one of your tasks (or just type a label), set when it <b>starts</b> and <b>ends</b> with the ▲▼ steppers, and the <b>duration</b> works itself out — or tap a duration chip (30M / 1H / 2H…) and the end time follows. Times run down the <b>left column</b>, so you can read the shape of a day at a glance. Use − / + ROW to change how many blocks a day holds and MON–FRI / MON–SUN to include the weekend. The seven day buttons at the top jump to a day in either view; in TIMETABLE, ALL shows the whole week side by side. Blocks are a plan, not tasks — ticking a task off elsewhere doesn’t erase its block, and deleting a task leaves its name behind as plain text.'],
   ['Daily planning','On the Tasks tab, a banner appears in the morning to <b>Plan today</b> (tap a task’s TODAY tag to push it to TOMORROW — it stays listed so you can change your mind — then start the day) and in the evening to <b>Wrap up</b> (see how many you finished, undo anything that was auto-assumed, and carry unfinished one-off tasks forward in one tap so nothing silently slips).'],
   ['Assume done at deadline','Settings → Appearance → TASKS. Turn this on and any task you gave a <b>time</b> is marked done automatically once that time passes — so you never have to open the app just to tick a box (and never get pulled into your phone for it). Tasks without a time are never assumed; they still wait for you. Auto-marked tasks carry an <b>AUTO</b> tag, and the evening Wrap-up lists them all so you can undo any you didn’t really do (which takes the karma back too). It only ever assumes <i>today’s</i> tasks while the app is open — it will never invent history for days you weren’t here.'],
   ['Focus timer','25-min focus / 5-min break dot ring — tap "Customize durations" to change either length. +15 XP per session. Every completed focus session grows a plant in your <b>Focus Garden</b> below the timer — quit early and the seedling wilts (nothing banked). Focus Music sits under the garden.'],
-  ['Workouts','A Mon–Sun weekly plan. Tap the <b>pencil</b> on any day to pick what happens that day — a workout template, a Rest Day, or <b>+ New template</b>, which opens a popup where you name it and optionally start from a copy of an existing workout. Edit exercises right there: <b>Add exercise</b> opens a popup to pick from the library <i>or</i> create a brand-new exercise on the spot (name, reps/time, category — including a new category). Per exercise: sets × reps or duration (tap the <code>REPS</code>/<code>SECS</code> pill to switch, just for that workout), rest timers, circuits with a rounds count, plus <b>Duplicate</b> (an independent copy to customize separately), <b>Copy to…</b> (assign this exact workout to more days at once — edit it later and every day using it updates together) and Delete. Tap the <b>eye</b> to preview the exact step order you’ll follow. The <b>2-WEEK</b> button alternates two different weeks (A/B) automatically — edit each week from its chip; “NOW” marks the live one. Flip <b>WARM-UP SET</b> on a workout to auto-add a couple of lighter build-up sets of the first exercise before the real work. Today’s row gets a START button (guided session player: reps steps wait for your tap; timed work and rests show a PLAY button and only start counting down once you tap it, so nothing runs while you’re getting into position; the ◀ arrow steps back to redo or re-check a previous exercise; your PR shows under the exercise) and a check-circle (+10 karma). Finishing shows a <b>summary card</b> — total time and the sets you did — and logs the session, which feeds each exercise’s <b>progress chart</b> (volume per session over time) in Settings → Exercises. The flame streak only breaks when a <i>scheduled</i> workout is missed. <b>Workout Music</b> sits below the plan. The exercise moves themselves live in Settings → Exercises.'],
+  ['Glyph Canvas','Under the garden. Tap <b>Draw</b> to sketch anything you like on a circular dot matrix — the same shape as the Nothing phone’s Glyph Matrix. Pick a <b>1</b> or <b>3</b> dot brush, ERASE to rub out, CLEAR to start over, and choose how many focus sessions the piece should take (2 / 4 / 8). Then just focus: your drawing reveals itself top-to-bottom as you go, one slice banked per completed session. Quit a session early and that slice isn’t banked — same rule as the flower. Fill it to 100% and the creation moves into your gallery and a blank canvas begins. Draw or redraw whenever you want; the canvas is saved between sessions.'],
+  ['My goals','The target icon in the top bar. Write down what you’re actually working toward and, optionally, <i>why it matters</i> — then open it on the days the drive isn’t there. Tick one off to move it to ACHIEVED. It never nags you or pops up on its own; it only opens when you ask for it.'],
+  ['Workouts','A Mon–Sun weekly plan. Tap the <b>pencil</b> on any day to pick what happens that day — a workout template, a Rest Day, or <b>+ New template</b>, which opens a popup where you name it and optionally start from a copy of an existing workout. Edit exercises right there: <b>Add exercise</b> opens a popup to pick from the library <i>or</i> create a brand-new exercise on the spot (name, reps/time, category — including a new category). Per exercise: sets × reps or duration (tap the <code>REPS</code>/<code>SECS</code> pill to switch, just for that workout), rest timers, circuits with a rounds count, plus <b>Duplicate</b> (an independent copy to customize separately), <b>Copy to…</b> (assign this exact workout to more days at once — edit it later and every day using it updates together) and Delete. Tap the <b>eye</b> to preview the exact step order you’ll follow. Flip <b>WARM-UP SET</b> on a workout to auto-add a couple of lighter build-up sets of the first exercise before the real work. Today’s row gets a START button (guided session player: reps steps wait for your tap; timed work and rests show a PLAY button and only start counting down once you tap it, so nothing runs while you’re getting into position; the ◀ arrow steps back to redo or re-check a previous exercise; your PR shows under the exercise) and a check-circle (+10 karma). Finishing shows a <b>summary card</b> — total time and the sets you did — and logs the session, which feeds each exercise’s <b>progress chart</b> (volume per session over time) in Settings → Exercises. The flame streak only breaks when a <i>scheduled</i> workout is missed. <b>Workout Music</b> sits below the plan. The exercise moves themselves live in Settings → Exercises.'],
   ['Bin','Deleted tasks group by category & date with DONE/OPEN. Restore or empty.'],
   ['Appearance','Pick one of four accent colours — or tap the fifth swatch to open the in-app colour picker: drag the shade pad and hue strip (or type a hex code), hit APPLY, and the swatch remembers exactly what you picked. Plus the light / dark toggle.'],
   ['Sleep','Settings → Sleep: set your wake-up time and a sleep target in 90-minute cycles — the app works back to tonight’s ideal bedtime (plus ~15 min to fall asleep) and shows the alternatives. Turn on the bedtime reminder for a nudge 15–60 minutes before lights-out (a system notification too, if you allow it). Your sleep settings sync between devices.'],
