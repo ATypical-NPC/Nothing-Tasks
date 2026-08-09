@@ -782,6 +782,25 @@ label.btn-line{cursor:pointer}
 .tt-sub{font-weight:700; font-size:13px; line-height:1.25; word-break:break-word}
 .tt-code{font-size:11px; color:var(--dim); letter-spacing:.5px}
 .tt-meta{font-size:11px; color:var(--dim); line-height:1.3; word-break:break-word}
+.tt-desc{font-size:10px; color:var(--dim); opacity:.8; line-height:1.35; word-break:break-word;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
+.tt-cell.gym .tt-sub{display:flex; align-items:center; gap:5px}
+.tt-cell.gym .tt-sub i{width:13px; height:13px; flex:none; color:var(--accent)}
+.ttb-descbox{min-height:70px}
+/* time-format rows (Settings → Appearance) */
+.tf-row{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:9px 0; border-top:1px dashed var(--line)}
+.tf-row:first-child{border-top:0}
+.tf-name{display:flex; flex-direction:column; gap:2px; font-size:12px; font-weight:700; letter-spacing:1px; min-width:0}
+.tf-desc{font-size:11px; color:var(--dim); font-weight:600; letter-spacing:0}
+.tf-seg{flex:none; width:132px}
+.tf-seg .tc-seg-btn{height:32px; font-size:11px}
+/* music library search + per-track playlist button */
+.lib-searchrow{gap:8px; margin-top:8px}
+.lib-search{flex:1; min-width:0}
+.lib-addpl{opacity:.6}
+.lib-addpl:hover{opacity:1; color:var(--accent)}
+.ttb-warn{border:1px dashed var(--accent); border-radius:var(--r); padding:9px 11px; font-size:12px;
+  line-height:1.4; color:var(--accent); font-weight:600; letter-spacing:.3px}
 .tt-tools{display:flex; gap:8px; flex-wrap:wrap; margin-top:14px}
 .tt-tools .btn-line.on{border-color:var(--accent); color:var(--accent)}
 .tt-weeks{display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin:0 0 12px}
@@ -990,6 +1009,12 @@ html::-webkit-scrollbar-thumb:hover{background:var(--dim)}
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.001ms !important; transition-duration:.001ms !important}
 }
+/* linked folder row + storage protect */
+.fs-row{gap:8px; flex-wrap:wrap; align-items:center; margin-top:8px}
+.fs-name{display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700; letter-spacing:.5px; color:var(--dim); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.fs-name i{width:14px; height:14px; flex:none; color:var(--accent)}
+.sm-persist{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-top:8px}
+.sm-sub.ok{color:var(--accent)}
 
   </style>
   <title>Tasks</title>
@@ -1113,6 +1138,10 @@ html::-webkit-scrollbar-thumb:hover{background:var(--dim)}
           <h3 class="s-h">TASKS</h3>
           <p class="s-p">Assume a task is done once its deadline passes, so you don’t have to open the app just to tick boxes. Only tasks you gave a <b>time</b> are ever assumed — anything without one still waits for you. Auto-marked tasks show an <b>AUTO</b> tag, and the evening Wrap-up lets you undo any you didn’t actually do.</p>
           <div class="sp-toggle">ASSUME DONE AT DEADLINE <button class="switch" id="autocomplete-toggle" role="switch" aria-checked="false"></button></div>
+          <h3 class="s-h">TIME FORMAT</h3>
+          <p class="s-p">Choose 12- or 24-hour per place. In 24-hour mode the AM/PM button disappears and the hour just counts up to 23.</p>
+          <div id="timefmt-panel"></div>
+
           <h3 class="s-h">BREAK NUDGES</h3>
           <p class="s-p">Gentle wellbeing reminders (water, stretch, look away) when a focus session ends.</p>
           <div class="sp-toggle">BREAK NUDGES <button class="switch" id="nudge-toggle" role="switch" aria-checked="true"></button></div>
@@ -1791,7 +1820,7 @@ function setTxt(id,v){ const e=document.getElementById(id); if(e) e.textContent=
 function setW(id,p){ const e=document.getElementById(id); if(e) e.style.width=p+'%'; }
 function updateLive(){
   const d=new Date();
-  setTxt('clock', String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'));
+  setTxt('clock', fmtT(String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'),'clock'));
   setTxt('date', d.toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'}).toUpperCase());
 
   const tt=tasksForDate(today());
@@ -2038,6 +2067,21 @@ function breakNudge(){ if(nudgesOn()) toast(NUDGES[Math.floor(Math.random()*NUDG
    top field (parses on blur/enter into the explicit controls). */
 let TC=null;
 function fmtTime12(t){ if(!t) return ''; let [h,m]=t.split(':').map(Number); const ap=h<12?'AM':'PM'; let hh=h%12; if(hh===0)hh=12; return hh+':'+String(m).padStart(2,'0')+' '+ap; }
+/* ---- 12h/24h, configurable PER SURFACE (clock / tasks / schedule / sleep) ----
+   Times are always STORED as 24h "HH:MM"; this only affects display + the steppers. */
+const TIME_SURFACES=[['clock','CLOCK','The big clock at the top'],['tasks','TASKS','Task times, timeline and the task builder'],
+  ['schedule','SCHEDULE','The weekly timetable and its blocks'],['sleep','SLEEP','Bedtime and wake-up']];
+function timeFmtState(){ state.timeFmt=state.timeFmt||{}; return state.timeFmt; }
+function timeFmt(sfc){ return timeFmtState()[sfc]==='12' ? '12' : '24'; }   // 24h is the default
+function fmtT(t,sfc){ if(!t) return ''; return timeFmt(sfc)==='24' ? t : fmtTime12(t); }
+function fmtHourLabel(h,sfc){ if(timeFmt(sfc)==='24') return String(h).padStart(2,'0');
+  const ap=h<12?'A':'P'; let hh=h%12; if(hh===0) hh=12; return hh+ap; }
+// Splits a time for the ▲▼ steppers. In 24h mode there is no AM/PM button and the hour runs 00–23.
+function tParts(t,sfc){
+  if(timeFmt(sfc)==='24'){ const [h,m]=(t||'00:00').split(':'); return {hh:h, mm:m, ap:null, is24:true}; }
+  const p=fmtTime12(t||'00:00').split(' '), hm=p[0].split(':');
+  return {hh:hm[0], mm:hm[1], ap:p[1], is24:false};
+}
 function openTaskComposer(preset={}){
   const cats=state.categories||[];
   const editing = preset.editId!=null;
@@ -2076,14 +2120,14 @@ function tcMonthGridHTML(){
   </div>`;
 }
 function tcTimeHTML(){
-  const t=TC.time||'09:00', disp=fmtTime12(t), parts=disp.split(' '), hm=parts[0].split(':');
+  const t=TC.time||'09:00', P=tParts(t,'tasks');
   const presets=[['06:00','6A'],['09:00','9A'],['12:00','12P'],['15:00','3P'],['18:00','6P'],['21:00','9P']];
   return `<div class="tcp tct">
     <div class="tct-row">
-      <div class="tct-step"><button type="button" data-tch="1" aria-label="Hour up">▲</button><span class="tct-val">${hm[0]}</span><button type="button" data-tch="-1" aria-label="Hour down">▼</button></div>
+      <div class="tct-step"><button type="button" data-tch="1" aria-label="Hour up">▲</button><span class="tct-val">${P.hh}</span><button type="button" data-tch="-1" aria-label="Hour down">▼</button></div>
       <span class="tct-colon">:</span>
-      <div class="tct-step"><button type="button" data-tcm="5" aria-label="Minute up">▲</button><span class="tct-val">${hm[1]}</span><button type="button" data-tcm="-5" aria-label="Minute down">▼</button></div>
-      <button type="button" class="tct-ampm" id="tct-ampm">${parts[1]}</button>
+      <div class="tct-step"><button type="button" data-tcm="5" aria-label="Minute up">▲</button><span class="tct-val">${P.mm}</span><button type="button" data-tcm="-5" aria-label="Minute down">▼</button></div>
+      ${P.is24?'':`<button type="button" class="tct-ampm" id="tct-ampm">${P.ap}</button>`}
     </div>
     <div class="tcp-quick">${presets.map(p=>`<button type="button" class="dchip ${t===p[0]?'on':''}" data-tctp="${p[0]}">${p[1]}</button>`).join('')}<button type="button" class="dchip tct-none" data-tctp="" aria-label="No time" title="No time"><i data-ic="ban"></i></button></div>
   </div>`;
@@ -2105,7 +2149,7 @@ function renderComposer(){
       <label class="label tc-lab">WHEN</label>
       <div class="tc-when">
         <button type="button" class="tc-field ${TC.dateOpen?'on':''}" id="tc-date-btn"><i data-ic="calendar"></i> ${dateLabel(TC.date)||'PICK DATE'}</button>
-        <button type="button" class="tc-field ${TC.timeOpen?'on':''}" id="tc-time-btn"><i data-ic="timer"></i> ${TC.time?fmtTime12(TC.time):'ADD TIME'}</button>
+        <button type="button" class="tc-field ${TC.timeOpen?'on':''}" id="tc-time-btn"><i data-ic="timer"></i> ${TC.time?fmtT(TC.time,'tasks'):'ADD TIME'}</button>
       </div>
       ${TC.dateOpen?tcMonthGridHTML():''}
       ${TC.timeOpen?tcTimeHTML():''}
@@ -2185,15 +2229,15 @@ function openTimePicker(initial, onPick, opts={}){
   openWkModal(`<div id="tp-root"></div>`);
   function paint(){
     const root=document.getElementById('tp-root'); if(!root) return;
-    const disp=fmtTime12(time), parts=disp.split(' '), hm=parts[0].split(':');
+    const P=tParts(time, opts.sfc||'tasks');
     root.innerHTML=`
       <div class="tm-head"><h3>${esc(opts.title||'Set time')}</h3><button class="iconbtn" data-wkclose aria-label="Close">✕</button></div>
       <div class="tcp tct tp-solo">
         <div class="tct-row">
-          <div class="tct-step"><button type="button" data-h="1" aria-label="Hour up">▲</button><span class="tct-val">${hm[0]}</span><button type="button" data-h="-1" aria-label="Hour down">▼</button></div>
+          <div class="tct-step"><button type="button" data-h="1" aria-label="Hour up">▲</button><span class="tct-val">${P.hh}</span><button type="button" data-h="-1" aria-label="Hour down">▼</button></div>
           <span class="tct-colon">:</span>
-          <div class="tct-step"><button type="button" data-m="5" aria-label="Minute up">▲</button><span class="tct-val">${hm[1]}</span><button type="button" data-m="-5" aria-label="Minute down">▼</button></div>
-          <button type="button" class="tct-ampm" id="tp-ampm">${parts[1]}</button>
+          <div class="tct-step"><button type="button" data-m="5" aria-label="Minute up">▲</button><span class="tct-val">${P.mm}</span><button type="button" data-m="-5" aria-label="Minute down">▼</button></div>
+          ${P.is24?'':`<button type="button" class="tct-ampm" id="tp-ampm">${P.ap}</button>`}
         </div>
       </div>
       <button type="button" class="pbtn-main tp-done" id="tp-done">DONE</button>`;
@@ -2202,7 +2246,7 @@ function openTimePicker(initial, onPick, opts={}){
     const step=(dh,dm)=>{ let [h,m]=time.split(':').map(Number); h=(h+dh+24)%24; m=(m+dm+60)%60; time=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0'); paint(); };
     root.querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>step(+b.dataset.h,0));
     root.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>step(0,+b.dataset.m));
-    root.querySelector('#tp-ampm').onclick=()=>step(12,0);
+    const ap=root.querySelector('#tp-ampm'); if(ap) ap.onclick=()=>step(12,0);
     root.querySelector('#tp-done').onclick=()=>{ closeWkModal(); onPick(time); };
   }
   paint();
@@ -2318,6 +2362,25 @@ function renderGoalsModal(){
     b.onclick=()=>customConfirm('Delete this goal?',()=>{ state.goals=goalsState().filter(x=>x.id!==id); save(); openGoalsModal(); }); });
 }
 const goalsBtn=document.getElementById('open-goals'); if(goalsBtn) goalsBtn.onclick=openGoalsModal;
+
+/* Settings → Appearance → TIME FORMAT: one 12/24 switch per surface. */
+function renderTimeFmt(){
+  const el=document.getElementById('timefmt-panel'); if(!el) return;
+  el.innerHTML=TIME_SURFACES.map(([id,name,desc])=>`
+    <div class="tf-row">
+      <span class="tf-name">${name}<span class="tf-desc">${desc}</span></span>
+      <span class="tc-seg tf-seg">
+        <button type="button" class="tc-seg-btn ${timeFmt(id)==='12'?'on':''}" data-tf="${id}" data-tfv="12">12H</button>
+        <button type="button" class="tc-seg-btn ${timeFmt(id)==='24'?'on':''}" data-tf="${id}" data-tfv="24">24H</button>
+      </span>
+    </div>`).join('');
+  el.querySelectorAll('[data-tf]').forEach(b=>b.onclick=()=>{
+    timeFmtState()[b.dataset.tf]=b.dataset.tfv; save();
+    renderTimeFmt(); renderGlyph(); render(); updateLive();
+    const sp=document.getElementById('sleep-panel'); if(sp && sp.innerHTML) renderSleep(sp);
+  });
+}
+renderTimeFmt();
 
 /* ===================== GLYPH CANVAS (focus-garden drawing mode) =====================
    A circular dot matrix mirroring the real Nothing Glyph Matrix (25x25 grid masked to a disc ≈489
@@ -2510,7 +2573,7 @@ function taskRow(t, dateStr, draggable){
     <button class="check" onclick="toggle(${t.id},'${dateStr}')" aria-label="${done?'Mark incomplete':'Mark complete'}"></button>
     <div class="t-main">
       <div class="t-title">${esc(t.title)}</div>
-      <div class="t-sub">${t.time?`<span class="t-time">${t.time}</span>`:''}<span class="t-cat">${esc(catName(t.cat))}</span>${rep}${subTag}${noteDot}${nowTag}${autoTag}</div>
+      <div class="t-sub">${t.time?`<span class="t-time">${fmtT(t.time,'tasks')}</span>`:''}<span class="t-cat">${esc(catName(t.cat))}</span>${rep}${subTag}${noteDot}${nowTag}${autoTag}</div>
     </div>
     <button class="t-act" onclick="openTask(${t.id},'${dateStr}')" aria-label="Task actions"><i data-ic="bolt"></i></button>
     <button class="t-del" onclick="del(${t.id})" aria-label="Delete task"><i data-ic="trash"></i></button>
@@ -2560,7 +2623,7 @@ function planRowHTML(t){
     ? '<span class="dhint">REPEATS</span>'
     : `<button type="button" class="plan-toggle ${tmrw?'tmrw':'tdy'}" data-planday="${t.id}">${tmrw?'TOMORROW':'TODAY'}</button>`;
   return `<div class="plan-row ${tmrw?'deferred':''}" data-planrow="${t.id}">
-      <span class="plan-tt">${t.time?`<span class="t-time">${t.time}</span> `:''}${esc(t.title)}</span>
+      <span class="plan-tt">${t.time?`<span class="t-time">${fmtT(t.time,'tasks')}</span> `:''}${esc(t.title)}</span>
       ${toggle}
     </div>`;
 }
@@ -2592,16 +2655,19 @@ function openReviewModal(){
   const carry=state.tasks.filter(t=>t.repeat==='none' && t.date===today() && !t.done);
   const auto=autoDoneToday();
   const autoRows=auto.map(t=>`<div class="plan-row" data-autorow="${t.id}">
-      <span class="plan-tt">${t.time?`<span class="t-time">${t.time}</span> `:''}${esc(t.title)}</span>
+      <span class="plan-tt">${t.time?`<span class="t-time">${fmtT(t.time,'tasks')}</span> `:''}${esc(t.title)}</span>
       <button type="button" class="plan-toggle tdy" data-autoundo="${t.id}">DID IT</button>
     </div>`).join('');
   // #4 plan vs actual — today's timetable blocks and whether they actually happened
   const planned=ttDayBlocks(wdOf(today()));
   const ttlog=timetableState().log; const dayLog=ttlog[today()]=ttlog[today()]||{};
-  const blockDone=(key,b)=>{ const t=b.taskId!=null?state.tasks.find(x=>x.id===b.taskId):null;
-    return t?isDone(t,today()):!!dayLog[key]; };
+  const blockDone=(key,b)=>{
+    const t=b.taskId!=null?state.tasks.find(x=>x.id===b.taskId):null;
+    if(t) return isDone(t,today());
+    const tp=ttTpl(b); if(tp) return !!(tp.log||{})[today()];   // workout block → the template's own log
+    return !!dayLog[key]; };
   const planRows=planned.map(({p,b})=>{ const key=wdOf(today())+'-'+p, ok=blockDone(key,b);
-    return `<div class="plan-row"><span class="plan-tt">${b.start?`<span class="t-time">${b.start}</span> `:''}${esc(ttBlockName(b))}</span>
+    return `<div class="plan-row"><span class="plan-tt">${b.start?`<span class="t-time">${fmtT(b.start,'schedule')}</span> `:''}${esc(ttBlockName(b))}</span>
       <button type="button" class="plan-toggle ${ok?'tdy':'tmrw'}" data-ttdone="${p}">${ok?'DONE':'MISSED'}</button></div>`;
   }).join('');
   const hit=planned.filter(({p,b})=>blockDone(wdOf(today())+'-'+p,b)).length;
@@ -2621,7 +2687,9 @@ function openReviewModal(){
     const btn=ev.target.closest('[data-ttdone]'); if(!btn) return;
     const p=+btn.dataset.ttdone, wd=wdOf(today()), b=ttBlock(wd,p); if(!b) return;
     const t=b.taskId!=null?state.tasks.find(x=>x.id===b.taskId):null;
+    const tp=ttTpl(b);
     if(t){ toggle(t.id, today()); }                       // linked to a real task — flip the task itself
+    else if(tp){ toggleScheduleDone(tp.id); }             // workout block — flip the template's log
     else { const lg=timetableState().log; lg[today()]=lg[today()]||{};
       const k=wd+'-'+p; if(lg[today()][k]) delete lg[today()][k]; else lg[today()][k]=true; save(); }
     closeWkModal(); openReviewModal();
@@ -2715,9 +2783,9 @@ function scheduleTimelineHTML(ds){
     const items=tt.filter(t=>t.time && parseInt(t.time.slice(0,2),10)===h);
     const body=items.map(t=>`<div class="tl-task ${isDone(t,ds)?'done':''}">
       <button class="check tl-check" onclick="toggle(${t.id},'${ds}')" aria-label="${isDone(t,ds)?'Mark incomplete':'Mark complete'}"></button>
-      <span class="t-time">${t.time}</span><span class="tl-t">${esc(t.title)}</span></div>`).join('');
+      <span class="t-time">${fmtT(t.time,'tasks')}</span><span class="tl-t">${esc(t.title)}</span></div>`).join('');
     const now = (isToday&&h===nowH) ? `<div class="tl-now" style="top:${(nowM/60*100).toFixed(0)}%"></div>` : '';
-    rows+=`<div class="tl-row"><div class="tl-hour">${String(h).padStart(2,'0')}</div><div class="tl-body">${bands}${now}${body}</div></div>`;
+    rows+=`<div class="tl-row"><div class="tl-hour">${fmtHourLabel(h,'schedule')}</div><div class="tl-body">${bands}${now}${body}</div></div>`;
   }
   return `<div class="timeline">${rows}</div>`;
 }
@@ -2759,15 +2827,22 @@ function ttNormalizeAll(){
   const w=ttWeek(); if(max>w.periods) w.periods=Math.min(12,max);
 }
 function ttEndMin(b){ return (tMin(b.start)||0)+durMins(b.start, b.end||b.start); }
-/* #5 clash detection: any two blocks on the same day whose times overlap. */
-function ttClashSet(wd){
-  const out=new Set(), list=[];
-  for(let p=0;p<TT_SCAN;p++){ const b=ttBlock(wd,p); if(b&&b.start&&b.end) list.push({p, s:tMin(b.start), e:ttEndMin(b)}); }
+/* #5 clash detection. Returns p -> [names it collides with], not just a flag: one runaway block
+   (e.g. an AM/PM slip making a 45-min break 12h45m) flags every other block on the day, and a bare
+   "CLASH" tag gives no clue which one is the culprit. */
+function ttClashMap(wd){
+  const map={}, list=[];
+  for(let p=0;p<TT_SCAN;p++){ const b=ttBlock(wd,p); if(b&&b.start&&b.end) list.push({p, b, s:tMin(b.start), e:ttEndMin(b)}); }
   for(let i=0;i<list.length;i++) for(let j=i+1;j<list.length;j++){
-    if(list[i].s<list[j].e && list[j].s<list[i].e){ out.add(list[i].p); out.add(list[j].p); }
+    const A=list[i], B=list[j];
+    if(A.s<B.e && B.s<A.e){
+      (map[A.p]=map[A.p]||[]).push(ttBlockName(B.b));
+      (map[B.p]=map[B.p]||[]).push(ttBlockName(A.b));
+    }
   }
-  return out;
+  return map;
 }
+const TT_LONG_MINS=480;   // 8h — past this a block is probably an AM/PM mistake
 /* #3 which block is happening right now (today's column only) */
 function ttNowP(wd){
   if(wd!==wdOf(today())) return -1;
@@ -2797,16 +2872,18 @@ function ttWorkoutFor(wd){
    whose `subject` is mapped to it) so nothing ever silently vanishes from the grid. */
 function ttBlock(wd,p){
   const c=ttCellsMap()[wd+'-'+p]; if(!c) return null;
-  if(c.taskId!=null || c.start || c.label) return c;
+  if(c.taskId!=null || c.tplId || c.start || c.label) return c;
   if(c.subject) return {taskId:null, label:c.subject, start:'', end:''};
   return null;
 }
+function ttTpl(b){ return (b&&b.tplId)?(state.workoutTemplates||[]).find(x=>x.id===b.tplId)||null:null; }
 function timeAdd(t,mins){ let m=(tMin(t)||0)+mins; m=((m%1440)+1440)%1440; return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'); }
 function durMins(s,e){ if(!s||!e) return 0; let d=tMin(e)-tMin(s); if(d<0) d+=1440; return d; }
 function fmtDur(m){ if(!m||m<=0) return ''; const h=Math.floor(m/60), mm=m%60; return (h?h+'H':'')+(h&&mm?' ':'')+(mm?mm+'M':''); }
 function ttBlockName(b){
   if(!b) return '';
   if(b.taskId!=null){ const t=state.tasks.find(x=>x.id===b.taskId); if(t) return t.title; }
+  const tp=ttTpl(b); if(tp) return tp.name;
   return b.label||'';
 }
 function ttRowTime(p, daysArg){
@@ -2814,21 +2891,24 @@ function ttRowTime(p, daysArg){
   days.forEach(wd=>{ const b=ttBlock(wd,p); if(b&&b.start){ if(!s||b.start<s) s=b.start; if(b.end&&(!e||b.end>e)) e=b.end; } });
   const f=p===0?' first':'';
   if(!s) return `<div class="tt-time empty${f}">—</div>`;
-  return `<div class="tt-time${f}"><span class="tt-t1">${fmtTime12(s)}</span>${e?`<span class="tt-t2">${fmtTime12(e)}</span>`:''}</div>`;
+  return `<div class="tt-time${f}"><span class="tt-t1">${fmtT(s,'schedule')}</span>${e?`<span class="tt-t2">${fmtT(e,'schedule')}</span>`:''}</div>`;
 }
 function ttCellHTML(wd,p,clash,nowP){
   const b=ttBlock(wd,p), name=ttBlockName(b), f=p===0?' first':'';
   if(!b||!name) return `<button class="tt-cell empty${f}" data-ttc="${wd}-${p}" aria-label="Add a block">+</button>`;
   const d=fmtDur(durMins(b.start,b.end));
-  const when=b.start?`${b.start}${b.end?'–'+b.end:''}${d?' · '+d:''}`:'';
+  const when=b.start?`${fmtT(b.start,'schedule')}${b.end?'–'+fmtT(b.end,'schedule'):''}${d?' · '+d:''}`:'';
   const task=b.taskId!=null?state.tasks.find(x=>x.id===b.taskId):null;
-  const cat=task?(state.categories.find(c=>c.id===task.cat)||{}).name:'';
-  const cls=[ 'tt-cell', f.trim(), clash&&clash.has(p)?'clash':'', p===nowP?'now':'', ttInSleep(b)?'sleepy':'' ].filter(Boolean).join(' ');
+  const tp=ttTpl(b);
+  const cat=task?((state.categories.find(c=>c.id===task.cat)||{}).name||'') : (tp?'WORKOUT':'');
+  const cl=clash&&clash[p];
+  const cls=[ 'tt-cell', f.trim(), (cl&&cl.length)?'clash':'', p===nowP?'now':'', ttInSleep(b)?'sleepy':'', tp?'gym':'' ].filter(Boolean).join(' ');
   return `<button class="${cls}" data-ttc="${wd}-${p}">
-    <span class="tt-sub">${esc(name)}</span>
+    <span class="tt-sub">${tp?'<i data-ic="dumbbell"></i> ':''}${esc(name)}</span>
     ${when?`<span class="tt-code">${esc(when)}</span>`:''}
     ${cat?`<span class="tt-meta">${esc(cat.toUpperCase())}</span>`:''}
-    ${clash&&clash.has(p)?'<span class="tt-flag">CLASH</span>':''}
+    ${b.desc?`<span class="tt-desc">${esc(b.desc)}</span>`:''}
+    ${(cl&&cl.length)?`<span class="tt-flag">CLASH · ${esc(cl[0].length>12?cl[0].slice(0,12)+'…':cl[0])}${cl.length>1?' +'+(cl.length-1):''}</span>`:''}
     ${ttInSleep(b)?'<span class="tt-flag sleep">SLEEP</span>':''}
     ${p===nowP?'<span class="tt-flag now">NOW</span>':''}
   </button>`;
@@ -2846,13 +2926,13 @@ function timetableHTML(){
     return `<button class="tt-wk ${w&&w.rest?'rest':''}" data-ttgym="1">${w?esc(w.name.toUpperCase()):'·'}</button>`;
   }).join('');
   const clash={}, nowP={};
-  days.forEach(wd=>{ clash[wd]=ttClashSet(wd); nowP[wd]=ttNowP(wd); });
+  days.forEach(wd=>{ clash[wd]=ttClashMap(wd); nowP[wd]=ttNowP(wd); });
   let rows='';
   for(let p=0;p<wk.periods;p++) rows+=ttRowTime(p,days)+days.map(wd=>ttCellHTML(wd,p,clash[wd],nowP[wd])).join('');
   const sw=sleepWindow();
   return `<div class="tt-weeks">${weekChips}</div>
     <div class="tt-wrap"><div class="tt" style="grid-template-columns:64px repeat(${days.length},minmax(0,1fr))">${head}${wkStrip}${rows}</div></div>
-    <div class="tt-sleep"><span class="label">SLEEP WINDOW</span> <span class="tt-sleepv">${fmtTime12(sw.bed)} → ${fmtTime12(sw.wake)}</span></div>
+    <div class="tt-sleep"><span class="label">SLEEP WINDOW</span> <span class="tt-sleepv">${fmtT(sw.bed,'sleep')} → ${fmtT(sw.wake,'sleep')}</span></div>
     <div class="tt-tools">
       <button class="btn-line" id="tt-less">− ROW</button>
       <button class="btn-line" id="tt-more">+ ROW</button>
@@ -2965,7 +3045,9 @@ function initTtDrag(){
 let TTB=null;
 function openTtCell(key){
   const b=ttBlock(...key.split('-').map(Number))||{};
-  TTB={key, taskId:(b.taskId!=null?b.taskId:null), start:b.start||'09:00', end:b.end||(b.start?timeAdd(b.start,60):'10:00'), label:b.label||''};
+  TTB={key, src:(b.tplId?'workout':(b.taskId!=null?'task':'label')),
+    taskId:(b.taskId!=null?b.taskId:null), tplId:b.tplId||null, label:b.label||'', desc:b.desc||'',
+    start:b.start||'09:00', end:b.end||(b.start?timeAdd(b.start,60):'10:00')};
   openWkModal(`<div id="ttb-root"></div>`);
   renderTtBlock();
 }
@@ -2974,60 +3056,84 @@ function renderTtBlock(){
   const [wd,p]=TTB.key.split('-').map(Number);
   const mins=durMins(TTB.start,TTB.end);
   const stepper=(which,val)=>{
-    const parts=fmtTime12(val).split(' '), hm=parts[0].split(':');
+    const P=tParts(val,'schedule');
     return `<div class="tct ttb-stepper">
       <div class="tct-row">
-        <div class="tct-step"><button type="button" data-t="${which}" data-d="60">▲</button><span class="tct-val">${hm[0]}</span><button type="button" data-t="${which}" data-d="-60">▼</button></div>
+        <div class="tct-step"><button type="button" data-t="${which}" data-d="60">▲</button><span class="tct-val">${P.hh}</span><button type="button" data-t="${which}" data-d="-60">▼</button></div>
         <span class="tct-colon">:</span>
-        <div class="tct-step"><button type="button" data-t="${which}" data-d="5">▲</button><span class="tct-val">${hm[1]}</span><button type="button" data-t="${which}" data-d="-5">▼</button></div>
-        <button type="button" class="tct-ampm" data-t="${which}" data-d="720">${parts[1]}</button>
+        <div class="tct-step"><button type="button" data-t="${which}" data-d="5">▲</button><span class="tct-val">${P.mm}</span><button type="button" data-t="${which}" data-d="-5">▼</button></div>
+        ${P.is24?'':`<button type="button" class="tct-ampm" data-t="${which}" data-d="720">${P.ap}</button>`}
       </div></div>`;
   };
   const open=state.tasks.slice().sort((a,b2)=>a.title.localeCompare(b2.title));
+  const tpls=(state.workoutTemplates||[]).slice().sort((a,b2)=>a.name.localeCompare(b2.name));
+  const seg=[['task','TASK'],['workout','WORKOUT'],['label','LABEL']]
+    .map(s=>`<button type="button" class="tc-seg-btn ${TTB.src===s[0]?'on':''}" data-ttsrc="${s[0]}">${s[1]}</button>`).join('');
+  let picker='';
+  if(TTB.src==='task') picker=`<select id="ttb-task" aria-label="Task">
+      <option value="">— PICK A TASK —</option>
+      ${open.map(t=>`<option value="${t.id}" ${TTB.taskId===t.id?'selected':''}>${esc(t.title)}</option>`).join('')}
+    </select>`;
+  else if(TTB.src==='workout') picker= tpls.length
+    ? `<select id="ttb-tpl" aria-label="Workout">
+      <option value="">— PICK A WORKOUT —</option>
+      ${tpls.map(t=>`<option value="${t.id}" ${TTB.tplId===t.id?'selected':''}>${esc(t.name)}</option>`).join('')}
+    </select>`
+    : `<p class="sp-note">No workouts yet — build one in the Workouts tab first.</p>`;
+  else picker=`<input type="text" class="sp-input" id="ttb-label" placeholder="WHAT IS THIS BLOCK?" maxlength="40" value="${esc(TTB.label)}" autocomplete="off"/>`;
   el.innerHTML=`
     <div class="tm-head"><h3>${DAYNAMES[wd]} · block ${p+1}</h3><button class="iconbtn" data-wkclose aria-label="Close">✕</button></div>
     <div class="wk-form">
-      <span class="label">IMPORT A TASK</span>
-      <select id="ttb-task" aria-label="Task">
-        <option value="">— NONE —</option>
-        ${open.map(t=>`<option value="${t.id}" ${TTB.taskId===t.id?'selected':''}>${esc(t.title)}</option>`).join('')}
-      </select>
-      ${TTB.taskId==null?`<input type="text" class="sp-input" id="ttb-label" placeholder="…OR TYPE A LABEL" maxlength="40" value="${esc(TTB.label)}" autocomplete="off"/>`:''}
+      <span class="label">IMPORT</span>
+      <div class="tc-seg">${seg}</div>
+      ${picker}
       <span class="label">STARTS</span>
       ${stepper('start',TTB.start)}
       <span class="label">ENDS</span>
       ${stepper('end',TTB.end)}
       <div class="ttb-dur"><span class="label">DURATION</span><span class="ttb-durval">${fmtDur(mins)||'—'}</span></div>
       <div class="cvd-tools">${[30,45,60,90,120].map(m=>`<button type="button" class="dchip ${mins===m?'on':''}" data-dur="${m}">${fmtDur(m)}</button>`).join('')}</div>
-      <button type="button" class="pbtn-main" id="ttb-save">SAVE BLOCK</button>
+      <span class="label">DESCRIPTION</span>
+      <textarea id="ttb-desc" class="tm-notes ttb-descbox" placeholder="What this block is for, what to bring, where…">${esc(TTB.desc||'')}</textarea>
+      ${mins>TT_LONG_MINS?`<div class="ttb-warn">⚠ ${fmtDur(mins)} long — ${fmtT(TTB.start,'schedule')} to ${fmtT(TTB.end,'schedule')}. Check AM/PM on the end time.</div>`:''}
+      <button type="button" class="pbtn-main" id="ttb-save">${mins>TT_LONG_MINS?'SAVE ANYWAY':'SAVE BLOCK'}</button>
       <div class="cvd-tools">
-        <button type="button" class="btn-line" id="ttb-focus"><i data-ic="timer"></i> START FOCUS</button>
+        <button type="button" class="btn-line" id="ttb-focus"><i data-ic="${TTB.src==='workout'?'dumbbell':'timer'}"></i> ${TTB.src==='workout'?'START WORKOUT':'START FOCUS'}</button>
         <button type="button" class="btn-line" id="ttb-dupe"><i data-ic="copy"></i> DUPLICATE</button>
       </div>
       <button type="button" class="btn-line danger" id="ttb-clear">Clear this block</button>
     </div>`;
   paintIcons(el); enhanceSelects(el);
   el.querySelector('[data-wkclose]').onclick=()=>{ closeWkModal(); TTB=null; };
+  el.querySelectorAll('[data-ttsrc]').forEach(b2=>b2.onclick=()=>{ TTB.src=b2.dataset.ttsrc; renderTtBlock(); });
   const sel=el.querySelector('#ttb-task');
-  sel.onchange=()=>{ TTB.taskId = sel.value===''?null:+sel.value; renderTtBlock(); };
+  if(sel) sel.onchange=()=>{ TTB.taskId = sel.value===''?null:+sel.value; renderTtBlock(); };
+  const tsel=el.querySelector('#ttb-tpl');
+  if(tsel) tsel.onchange=()=>{ TTB.tplId = tsel.value||null; renderTtBlock(); };
   const lab=el.querySelector('#ttb-label'); if(lab) lab.oninput=()=>{ TTB.label=lab.value; };
+  const dsc=el.querySelector('#ttb-desc'); if(dsc) dsc.oninput=()=>{ TTB.desc=dsc.value; };
   el.querySelectorAll('[data-t]').forEach(btn=>btn.onclick=()=>{
     const which=btn.dataset.t, d=+btn.dataset.d;
     TTB[which]=timeAdd(TTB[which], d);
     if(which==='start' && durMins(TTB.start,TTB.end)<=0) TTB.end=timeAdd(TTB.start,60);
     renderTtBlock(); });
   el.querySelectorAll('[data-dur]').forEach(btn=>btn.onclick=()=>{ TTB.end=timeAdd(TTB.start, +btn.dataset.dur); renderTtBlock(); });
-  const collect=()=>({taskId:TTB.taskId, label:TTB.taskId==null?(TTB.label||'').trim():'', start:TTB.start, end:TTB.end});
-  const valid=()=>TTB.taskId!=null || (TTB.label||'').trim();
+  const collect=()=>({
+    taskId: TTB.src==='task'?TTB.taskId:null,
+    tplId:  TTB.src==='workout'?TTB.tplId:null,
+    label:  TTB.src==='label'?(TTB.label||'').trim():'',
+    start:TTB.start, end:TTB.end, desc:(TTB.desc||'').trim()
+  });
+  const valid=()=> (TTB.src==='task'&&TTB.taskId!=null) || (TTB.src==='workout'&&!!TTB.tplId) || (TTB.src==='label'&&!!(TTB.label||'').trim());
   el.querySelector('#ttb-save').onclick=()=>{
-    if(!valid()){ toast('PICK A TASK OR TYPE A LABEL'); return; }
+    if(!valid()){ toast('PICK SOMETHING FOR THIS BLOCK'); return; }
     ttCellsMap()[TTB.key]=collect();
     save(); closeWkModal(); TTB=null; render();
   };
   el.querySelector('#ttb-clear').onclick=()=>{ delete ttCellsMap()[TTB.key]; save(); closeWkModal(); TTB=null; render(); };
   // #12 duplicate into the next free slot on the same day (auto-sort will place it by time)
   el.querySelector('#ttb-dupe').onclick=()=>{
-    if(!valid()){ toast('PICK A TASK OR TYPE A LABEL'); return; }
+    if(!valid()){ toast('PICK SOMETHING FOR THIS BLOCK'); return; }
     const cells=ttCellsMap(); cells[TTB.key]=collect();
     let free=0; while(cells[wd+'-'+free] && free<TT_SCAN) free++;
     cells[wd+'-'+free]={...collect(), start:TTB.end, end:timeAdd(TTB.end, durMins(TTB.start,TTB.end)||60)};
@@ -3035,11 +3141,13 @@ function renderTtBlock(){
   };
   // #13 run a focus session sized to this block
   el.querySelector('#ttb-focus').onclick=()=>{
-    if(!valid()){ toast('PICK A TASK OR TYPE A LABEL'); return; }
+    if(!valid()){ toast('PICK SOMETHING FOR THIS BLOCK'); return; }
     ttCellsMap()[TTB.key]=collect();
     const mins2=durMins(TTB.start,TTB.end)||25;
-    if(TTB.taskId!=null) state.activeTask=TTB.taskId;
+    const tplId=TTB.src==='workout'?TTB.tplId:null;
+    if(TTB.src==='task') state.activeTask=TTB.taskId;
     save(); closeWkModal(); TTB=null;
+    if(tplId){ startSession(tplId); return; }   // a workout block runs the session player instead
     pomoPause(); pomo.mode='focus'; pomo.overrideDur=Math.min(mins2,180)*60; pomo.left=pomo.overrideDur;
     activeTab='focus'; document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab==='focus'));
     render(); pomoStart(); toast(`FOCUS · ${fmtDur(Math.min(mins2,180))}`);
@@ -4270,18 +4378,18 @@ function renderSleep(target){
   const cyc=[6,5,4,3];
   const chips=cyc.map(n=>`<button type="button" class="catchip ${c.cycles===n?'on':''}" data-slcyc="${n}">${n} CYCLES · ${n*1.5}H</button>`).join('');
   const bt=bedtimeFor(c.wake,c.cycles);
-  const alts=cyc.filter(n=>n!==c.cycles).map(n=>`<span class="sc-tag">${bedtimeFor(c.wake,n)} → ${n*1.5}H</span>`).join('');
+  const alts=cyc.filter(n=>n!==c.cycles).map(n=>`<span class="sc-tag">${fmtT(bedtimeFor(c.wake,n),'sleep')} → ${n*1.5}H</span>`).join('');
   const tips=SLEEP_TIPS.map(t=>`<div class="feature"><h4><span class="fdot"></span>${t[0]}</h4><p>${t[1]}</p></div>`).join('');
   target.innerHTML=`
     <p class="s-p">Sleep runs in ~90-minute cycles — waking at the end of one feels far better than mid-cycle. Set your wake-up time and a target; the app works back to tonight’s bedtime (including ~15 min to fall asleep).</p>
     <span class="label">I WAKE UP AT</span>
-    <div class="sp-row"><button type="button" class="tc-field sl-wake-btn" id="sl-wake"><i data-ic="timer"></i> ${fmtTime12(c.wake)}</button></div>
+    <div class="sp-row"><button type="button" class="tc-field sl-wake-btn" id="sl-wake"><i data-ic="timer"></i> ${fmtT(c.wake,'sleep')}</button></div>
     <span class="label">SLEEP TARGET</span>
     <div class="sl-cycles">${chips}</div>
     <div class="week-card sleep-card">
       <h3>Tonight’s bedtime</h3>
-      <div class="sl-big">${bt}</div>
-      <p class="s-p">Lights out <b>${bt}</b> → ${c.cycles} cycles (${c.cycles*1.5}h) → up at ${c.wake}. Other options:</p>
+      <div class="sl-big">${fmtT(bt,'sleep')}</div>
+      <p class="s-p">Lights out <b>${fmtT(bt,'sleep')}</b> → ${c.cycles} cycles (${c.cycles*1.5}h) → up at ${fmtT(c.wake,'sleep')}. Other options:</p>
       <div class="sc-tags">${alts}</div>
     </div>
     <div class="sp-toggle">BEDTIME REMINDER <button class="switch ${c.remind?'on':''}" id="sl-remind" role="switch" aria-checked="${!!c.remind}"></button></div>
@@ -4292,7 +4400,7 @@ function renderSleep(target){
     <p class="sp-note">The reminder pops up in the app (and as a notification if you allow it) while the app is open or installed. Your sleep settings sync between devices.</p>
     <h3 class="s-h">RECOMMENDATIONS</h3>
     <div class="guide">${tips}</div>`;
-  target.querySelector('#sl-wake').onclick=()=>openTimePicker(c.wake, (t)=>{ c.wake=t||'07:00'; save(); renderSleep(target); }, {title:'Wake-up time'});
+  target.querySelector('#sl-wake').onclick=()=>openTimePicker(c.wake, (t)=>{ c.wake=t||'07:00'; save(); renderSleep(target); }, {title:'Wake-up time', sfc:'sleep'});
   target.querySelectorAll('[data-slcyc]').forEach(b=>b.onclick=()=>{ c.cycles=+b.dataset.slcyc; save(); renderSleep(target); });
   target.querySelector('#sl-remind').onclick=()=>{
     c.remind=!c.remind;
@@ -4308,11 +4416,12 @@ const GUIDE=[
   ['Categories','Every task has a category pill. The chip bar filters — ALL shows everything. Tap + to create your own, or the pencil icon to delete one (its tasks move to the first remaining category). The selected chip becomes the default for new tasks.'],
   ['Widgets','Below the clock: the next task with a countdown, a Day bar (waking hours elapsed) and a Charge battery (today’s completion).'],
   ['Doing a task','Tap the ⚡ on any task to open its sheet — mark it “Doing now”, jump to a focus session on it, add private notes (scratchpad), complete, or delete. Tap the <b>pencil</b> in that sheet to edit anything about the task: title, time, date, category, and repeat (one-off / daily / weekly with day chips).'],
-  ['Tasks / Calendar / Schedule','Tasks groups by Morning/Afternoon/Evening — drag the grip on a task to reorder it within its group. Completing a one-off task sends it straight to the Bin (recurring tasks stay put). Calendar has two views: <b>WEEK</b> and <b>MONTH</b>, browsed with the arrows — tap any day to see its tasks below, or use ADD TO THIS DAY to create one on it. <b>Schedule</b> is its own tab and holds two different schedules, switched with TIMELINE / TIMETABLE. <b>TIMELINE</b> is the task-driven hourly view of one day, with a complete-checkbox on each task and a live "now" line. <b>TIMETABLE</b> is your repeating weekly plan — the shape of a normal week, rather than one specific day. Tap any empty slot to build a <b>time block</b>: import one of your tasks (or just type a label), set when it <b>starts</b> and <b>ends</b> with the ▲▼ steppers, and the <b>duration</b> works itself out — or tap a duration chip (30M / 1H / 2H…) and the end time follows. Times run down the <b>left column</b>, so you can read the shape of a day at a glance. Use − / + ROW to change how many blocks a day holds and MON–FRI / MON–SUN to include the weekend. The seven day buttons at the top jump to a day in either view; in TIMETABLE, ALL shows the whole week side by side. Blocks are a plan, not tasks — ticking a task off elsewhere doesn’t erase its block, and deleting a task leaves its name behind as plain text.'],
+  ['Tasks / Calendar / Schedule','Tasks groups by Morning/Afternoon/Evening — drag the grip on a task to reorder it within its group. Completing a one-off task sends it straight to the Bin (recurring tasks stay put). Calendar has two views: <b>WEEK</b> and <b>MONTH</b>, browsed with the arrows — tap any day to see its tasks below, or use ADD TO THIS DAY to create one on it. <b>Schedule</b> is its own tab and holds two different schedules, switched with TIMELINE / TIMETABLE. <b>TIMELINE</b> is the task-driven hourly view of one day, with a complete-checkbox on each task and a live "now" line. <b>TIMETABLE</b> is your repeating weekly plan — the shape of a normal week, rather than one specific day. Tap any empty slot to build a <b>time block</b>. Choose what goes in it with <b>TASK / WORKOUT / LABEL</b> — pull in one of your tasks, one of your workout templates, or just type a name. Set when it <b>starts</b> and <b>ends</b> with the ▲▼ steppers and the <b>duration</b> works itself out — or tap a duration chip (30M / 1H / 2H…) and the end time follows. Add a <b>description</b> for anything you want to remember (what to bring, where to be); it shows under the block. <b>START</b> runs a focus session sized to the block — or, for a workout block, opens the guided session player instead. Times run down the <b>left column</b>, so you can read the shape of a day at a glance. Use − / + ROW to change how many blocks a day holds and MON–FRI / MON–SUN to include the weekend. The seven day buttons at the top jump to a day in either view; in TIMETABLE, ALL shows the whole week side by side. Blocks are a plan, not tasks — ticking a task off elsewhere doesn’t erase its block, and deleting a task leaves its name behind as plain text.'],
   ['Daily planning','On the Tasks tab, a banner appears in the morning to <b>Plan today</b> (tap a task’s TODAY tag to push it to TOMORROW — it stays listed so you can change your mind — then start the day) and in the evening to <b>Wrap up</b> (see how many you finished, undo anything that was auto-assumed, and carry unfinished one-off tasks forward in one tap so nothing silently slips).'],
   ['Assume done at deadline','Settings → Appearance → TASKS. Turn this on and any task you gave a <b>time</b> is marked done automatically once that time passes — so you never have to open the app just to tick a box (and never get pulled into your phone for it). Tasks without a time are never assumed; they still wait for you. Auto-marked tasks carry an <b>AUTO</b> tag, and the evening Wrap-up lists them all so you can undo any you didn’t really do (which takes the karma back too). It only ever assumes <i>today’s</i> tasks while the app is open — it will never invent history for days you weren’t here.'],
   ['Focus timer','25-min focus / 5-min break dot ring — tap "Customize durations" to change either length. +15 XP per session. Every completed focus session grows a plant in your <b>Focus Garden</b> below the timer — quit early and the seedling wilts (nothing banked). Focus Music sits under the garden.'],
   ['Glyph Canvas','Under the garden. Tap <b>Draw</b> to sketch anything you like on a circular dot matrix — the same shape as the Nothing phone’s Glyph Matrix. Pick a <b>1</b> or <b>3</b> dot brush, ERASE to rub out, CLEAR to start over, and choose how many focus sessions the piece should take (2 / 4 / 8). Then just focus: your drawing reveals itself top-to-bottom as you go, one slice banked per completed session. Quit a session early and that slice isn’t banked — same rule as the flower. Fill it to 100% and the creation moves into your gallery and a blank canvas begins. Draw or redraw whenever you want; the canvas is saved between sessions.'],
+  ['Time format (12h / 24h)','Settings → Appearance → <b>TIME FORMAT</b>. Four independent switches — <b>CLOCK</b> (the big clock), <b>TASKS</b> (task times, the timeline and the task builder), <b>SCHEDULE</b> (the weekly timetable) and <b>SLEEP</b> (bedtime and wake-up) — so you can run, say, a 12-hour clock alongside a 24-hour timetable. In 24-hour mode the AM/PM button disappears from every time picker and the hour simply counts up to 23. Everything is stored the same way underneath, so switching back and forth never changes your actual times.'],
   ['My goals','The target icon in the top bar. Write down what you’re actually working toward and, optionally, <i>why it matters</i> — then open it on the days the drive isn’t there. Tick one off to move it to ACHIEVED. It never nags you or pops up on its own; it only opens when you ask for it.'],
   ['Workouts','A Mon–Sun weekly plan. Tap the <b>pencil</b> on any day to pick what happens that day — a workout template, a Rest Day, or <b>+ New template</b>, which opens a popup where you name it and optionally start from a copy of an existing workout. Edit exercises right there: <b>Add exercise</b> opens a popup to pick from the library <i>or</i> create a brand-new exercise on the spot (name, reps/time, category — including a new category). Per exercise: sets × reps or duration (tap the <code>REPS</code>/<code>SECS</code> pill to switch, just for that workout), rest timers, circuits with a rounds count, plus <b>Duplicate</b> (an independent copy to customize separately), <b>Copy to…</b> (assign this exact workout to more days at once — edit it later and every day using it updates together) and Delete. Tap the <b>eye</b> to preview the exact step order you’ll follow. Flip <b>WARM-UP SET</b> on a workout to auto-add a couple of lighter build-up sets of the first exercise before the real work. Today’s row gets a START button (guided session player: reps steps wait for your tap; timed work and rests show a PLAY button and only start counting down once you tap it, so nothing runs while you’re getting into position; the ◀ arrow steps back to redo or re-check a previous exercise; your PR shows under the exercise) and a check-circle (+10 karma). Finishing shows a <b>summary card</b> — total time and the sets you did — and logs the session, which feeds each exercise’s <b>progress chart</b> (volume per session over time) in Settings → Exercises. The flame streak only breaks when a <i>scheduled</i> workout is missed. <b>Workout Music</b> sits below the plan. The exercise moves themselves live in Settings → Exercises.'],
   ['Bin','Deleted tasks group by category & date with DONE/OPEN. Restore or empty.'],
@@ -4556,9 +4665,23 @@ function renderNoise(){
 }
 
 /* ---- local music library (IndexedDB; your own files, offline) ---- */
-function idbOpen(){ return new Promise((res,rej)=>{ const r=indexedDB.open('nt-music',1); r.onupgradeneeded=()=>r.result.createObjectStore('tracks',{keyPath:'id'}); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); }
+const LIB_AX=/\.(mp3|wav|ogg|oga|opus|flac|m4a|m4b|mp4|aac|aif|aiff|alac|wma|mka|weba|webm|3gp|amr|caf|ape|wv|mid|midi|ac3|dts|au|ra)$/i;
+// v2 adds a 'meta' store for the linked-folder handle. The upgrade is additive — 'tracks' is untouched.
+function idbOpen(){ return new Promise((res,rej)=>{ const r=indexedDB.open('nt-music',2);
+  r.onupgradeneeded=()=>{ const db=r.result;
+    if(!db.objectStoreNames.contains('tracks')) db.createObjectStore('tracks',{keyPath:'id'});
+    if(!db.objectStoreNames.contains('meta')) db.createObjectStore('meta'); };
+  r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); }
+async function metaPut(k,v){ try{ const db=await idbOpen(); return await new Promise(res=>{ const tx=db.transaction('meta','readwrite');
+    tx.objectStore('meta').put(v,k); tx.oncomplete=()=>res(true); tx.onerror=()=>res(false); tx.onabort=()=>res(false); }); }catch(e){ return false; } }
+async function metaGet(k){ try{ const db=await idbOpen(); return await new Promise(res=>{ const q=db.transaction('meta').objectStore('meta').get(k);
+    q.onsuccess=()=>res(q.result); q.onerror=()=>res(null); }); }catch(e){ return null; } }
+async function metaDel(k){ try{ const db=await idbOpen(); return await new Promise(res=>{ const tx=db.transaction('meta','readwrite');
+    tx.objectStore('meta').delete(k); tx.oncomplete=()=>res(true); tx.onerror=()=>res(false); }); }catch(e){ return false; } }
 async function idbAll(){ try{ const db=await idbOpen(); return await new Promise(res=>{ const q=db.transaction('tracks').objectStore('tracks').getAll(); q.onsuccess=()=>res(q.result||[]); q.onerror=()=>res([]); }); }catch(e){ return []; } }
-async function idbPut(rec){ try{ const db=await idbOpen(); await new Promise(res=>{ const tx=db.transaction('tracks','readwrite'); tx.objectStore('tracks').put(rec); tx.oncomplete=()=>res(); tx.onerror=()=>res(); }); }catch(e){} }
+// Returns true/false. A full-storage write used to fail SILENTLY — the track just never appeared.
+async function idbPut(rec){ try{ const db=await idbOpen(); return await new Promise(res=>{ const tx=db.transaction('tracks','readwrite');
+    tx.objectStore('tracks').put(rec); tx.oncomplete=()=>res(true); tx.onerror=()=>res(false); tx.onabort=()=>res(false); }); }catch(e){ return false; } }
 async function idbDel(id){ try{ const db=await idbOpen(); await new Promise(res=>{ const tx=db.transaction('tracks','readwrite'); tx.objectStore('tracks').delete(id); tx.oncomplete=()=>res(); tx.onerror=()=>res(); }); }catch(e){} }
 
 let libView='all', libEdit=false;
@@ -4569,6 +4692,76 @@ function newPlaylist(name){ const p=playlists(); const id='pl'+Date.now(); p.pus
 function delPlaylist(id){ savePlaylists(playlists().filter(p=>p.id!==id)); if(libView===id) libView='all'; }
 function plToggleTrack(plId,trackId){ const p=playlists(); const pl=p.find(x=>x.id===plId); if(!pl) return; const i=pl.trackIds.indexOf(trackId); if(i>=0) pl.trackIds.splice(i,1); else pl.trackIds.push(trackId); savePlaylists(p); }
 function plRemoveTrack(plId,trackId){ const p=playlists(); const pl=p.find(x=>x.id===plId); if(pl){ pl.trackIds=pl.trackIds.filter(t=>t!==trackId); savePlaylists(p); } }
+function plAddTrack(plId,trackId){ const p=playlists(); const pl=p.find(x=>x.id===plId); if(pl && !pl.trackIds.includes(trackId)){ pl.trackIds.push(trackId); savePlaylists(p); } }
+function plRename(plId,name){ const p=playlists(); const pl=p.find(x=>x.id===plId); if(pl){ pl.name=name; savePlaylists(p); } }
+function plDuplicate(plId){ const p=playlists(); const pl=p.find(x=>x.id===plId); if(!pl) return null;
+  const copy={id:'pl'+Date.now(), name:pl.name+' copy', trackIds:pl.trackIds.slice()};
+  p.push(copy); savePlaylists(p); return copy.id; }
+function plCreate(name, trackIds){ const p=playlists(); const pl={id:'pl'+Date.now(), name:name||'New playlist', trackIds:trackIds||[]};
+  p.push(pl); savePlaylists(p); return pl.id; }
+let libSearch='';
+
+/* ===================== linked folder (File System Access API) =====================
+   Plays audio straight off a real folder on disk — no copy, so it costs ~nothing against the
+   browser quota. DESKTOP CHROMIUM ONLY: Android Chrome does not implement showDirectoryPicker,
+   so every entry point is behind FS_SUPPORTED and the feature simply doesn't appear there.
+   The directory handle is persisted in IndexedDB ('meta'), but the browser still requires a user
+   gesture to re-grant read permission each session — hence the RECONNECT button. */
+const FS_SUPPORTED = typeof window!=='undefined' && typeof window.showDirectoryPicker==='function';
+const FSLIB={ dir:null, name:localStorage.getItem('fs_dir_name')||'', tracks:[], needsGrant:false,
+  async scan(dir){
+    const out=[];
+    const walk=async(h,path)=>{ for await (const [nm,ent] of h.entries()){
+        if(ent.kind==='directory'){ await walk(ent, path+nm+'/'); }
+        else if(LIB_AX.test(nm)) out.push({h:ent, nm, path:path+nm}); } };
+    await walk(dir,''); return out;
+  },
+  async resolve(dir){
+    const files=await this.scan(dir), tracks=[];
+    for(const f of files){
+      try{ const file=await f.h.getFile();
+        tracks.push({id:'fs:'+f.path, name:f.nm.replace(/\.[^.]+$/,''), url:URL.createObjectURL(file), fs:true}); }catch(e){}
+    }
+    return tracks;
+  },
+  revoke(){ this.tracks.forEach(t=>{ try{ URL.revokeObjectURL(t.url); }catch(e){} }); this.tracks=[]; },
+  async pick(){
+    let dir; try{ dir=await window.showDirectoryPicker({id:'nt-music', mode:'read'}); }catch(e){ return false; }
+    this.revoke();
+    this.dir=dir; this.name=dir.name; this.needsGrant=false;
+    localStorage.setItem('fs_dir_name', dir.name);
+    await metaPut('fsdir', dir);
+    this.tracks=await this.resolve(dir);
+    await LIB.load(); return true;
+  },
+  async restore(){                       // boot: remember the folder but don't prompt
+    if(!FS_SUPPORTED) return;
+    const dir=await metaGet('fsdir'); if(!dir) return;
+    this.dir=dir;
+    try{
+      const perm=await dir.queryPermission({mode:'read'});
+      if(perm==='granted'){ this.tracks=await this.resolve(dir); this.needsGrant=false; await LIB.load(); }
+      else this.needsGrant=true;
+    }catch(e){ this.needsGrant=true; }
+  },
+  async reconnect(){                     // needs a user gesture
+    if(!this.dir) return false;
+    try{ const p=await this.dir.requestPermission({mode:'read'});
+      if(p!=='granted') return false;
+      this.revoke(); this.tracks=await this.resolve(this.dir); this.needsGrant=false; await LIB.load(); return true;
+    }catch(e){ return false; }
+  },
+  async rescan(){ if(!this.dir) return 0; this.revoke(); this.tracks=await this.resolve(this.dir); await LIB.load(); return this.tracks.length; },
+  async unlink(){ this.revoke(); this.dir=null; this.name=''; this.needsGrant=false;
+    localStorage.removeItem('fs_dir_name'); await metaDel('fsdir'); await LIB.load(); }
+};
+/* Ask the browser to make our storage durable (not evicted under disk pressure).
+   Works on Android too — unlike the folder linking above. */
+async function requestPersist(){
+  if(!navigator.storage||!navigator.storage.persist) return 'unsupported';
+  try{ if(await navigator.storage.persisted()) return 'already';
+    return (await navigator.storage.persist()) ? 'granted' : 'denied'; }catch(e){ return 'denied'; }
+}
 
 function libShuffle(){ return localStorage.getItem('lib_shuffle')==='1'; }
 function libRepeat(){ return localStorage.getItem('lib_repeat')||'off'; }       // off | all | one
@@ -4620,11 +4813,18 @@ const LIB={
     this.fadeT=setInterval(()=>{ s++; const f=s/steps; try{ from.volume=Math.max(0,+(V*(1-f)).toFixed(3)); to.volume=Math.min(V,+(V*f).toFixed(3)); }catch(e){}
       if(s>=steps){ clearInterval(this.fadeT); this.fadeT=null; from.pause(); from.volume=V; this.curEl=toK; this.fading=false; const ct=this.cur(); if(ct) updateNpChip(ct.name+' · MY FILES'); refreshLib(); } }, every); },
   stopFade(){ if(this.fadeT){ clearInterval(this.fadeT); this.fadeT=null; } this.fading=false; const o=this.els[1-this.curEl]; if(o){ o.pause(); o.volume=this.vol(); } if(this.els[this.curEl]) this.els[this.curEl].volume=this.vol(); },
-  async load(){ const recs=await idbAll(); this.tracks=recs.map(r=>({id:r.id,name:r.name,url:URL.createObjectURL(r.blob)})); },
-  async add(files){ const AX=/\.(mp3|wav|ogg|oga|opus|flac|m4a|m4b|mp4|aac|aif|aiff|alac|wma|mka|weba|webm|3gp|amr|caf|ape|wv|mid|midi|ac3|dts|au|ra)$/i;
+  async load(){ const recs=await idbAll();
+    this.tracks=recs.map(r=>({id:r.id,name:r.name,url:URL.createObjectURL(r.blob)}));
+    if(FSLIB.tracks.length) this.tracks=this.tracks.concat(FSLIB.tracks);   // linked folder, not copied
+  },
+  async add(files){ let failed=0; const AX=LIB_AX;
     for(const f of files){ if(!((f.type||'').startsWith('audio') || (f.type||'').startsWith('video') || AX.test(f.name))) continue;
       const rec={id:Date.now()+'-'+Math.random().toString(36).slice(2,7), name:f.name.replace(/\.[^.]+$/,''), blob:f};
-      await idbPut(rec); this.tracks.push({id:rec.id,name:rec.name,url:URL.createObjectURL(f)}); } },
+      const ok=await idbPut(rec);
+      if(ok) this.tracks.push({id:rec.id,name:rec.name,url:URL.createObjectURL(f)});
+      else failed++; }
+    if(failed) toast(failed+' TRACK'+(failed===1?'':'S')+" DIDN'T SAVE — STORAGE FULL");
+    return failed; },
   async remove(id){ const i=this.tracks.findIndex(t=>t.id===id); if(i>=0){ try{URL.revokeObjectURL(this.tracks[i].url);}catch(e){} this.tracks.splice(i,1); } await idbDel(id);
     const p=playlists(); p.forEach(pl=>pl.trackIds=pl.trackIds.filter(t=>t!==id)); savePlaylists(p); if(this.curId===id) this.curId=null; if(this.idx>=this.queue.length) this.idx=0; }
 };
@@ -4668,14 +4868,56 @@ async function paintStorageMeter(){
   } else {
     html += `<div class="sm-sub">This browser doesn't report a storage quota; the browser manages the limit for you.</div>`;
   }
+  if(FSLIB.tracks.length) html += `<div class="sm-line"><span class="label">LINKED FOLDER</span><span class="sm-val">${FSLIB.tracks.length} TRACK${FSLIB.tracks.length===1?'':'S'} · 0 MB</span></div>
+    <div class="sm-sub">Played straight from disk — these cost nothing against the quota.</div>`;
+  let persisted=false; try{ persisted = navigator.storage&&navigator.storage.persisted ? await navigator.storage.persisted() : false; }catch(e){}
+  html += persisted
+    ? `<div class="sm-sub ok">✓ Storage is protected — the browser won't evict your library.</div>`
+    : `<div class="sm-persist"><span class="sm-sub">Storage is <b>best-effort</b>: the browser may clear it if the device runs low.</span>
+       <button class="btn-line" id="sm-persist-btn">PROTECT LIBRARY</button></div>`;
   el.innerHTML=html;
+  const pb=document.getElementById('sm-persist-btn');
+  if(pb) pb.onclick=async()=>{
+    const r=await requestPersist();
+    toast(r==='granted'||r==='already' ? 'STORAGE PROTECTED' : r==='unsupported' ? 'NOT SUPPORTED IN THIS BROWSER' : 'BROWSER DECLINED — TRY INSTALLING THE APP');
+    paintStorageMeter();
+  };
+}
+/* Linked-folder controls. Hidden entirely where the API doesn't exist (i.e. phones). */
+function fsRowHTML(){
+  if(!FS_SUPPORTED) return '';
+  if(FSLIB.needsGrant) return `<div class="sp-row fs-row">
+      <span class="fs-name"><i data-ic="cloud"></i> ${esc(FSLIB.name||'Linked folder')}</span>
+      <button class="btn-line" id="fs-reconnect">RECONNECT</button>
+      <button class="btn-line danger" id="fs-unlink">UNLINK</button>
+    </div><p class="sp-note">Your browser needs permission again before it can read this folder.</p>`;
+  if(FSLIB.tracks.length) return `<div class="sp-row fs-row">
+      <span class="fs-name"><i data-ic="cloud"></i> ${esc(FSLIB.name)} · ${FSLIB.tracks.length} TRACKS</span>
+      <button class="btn-line" id="fs-rescan">RESCAN</button>
+      <button class="btn-line danger" id="fs-unlink">UNLINK</button>
+    </div><p class="sp-note">Played from disk, not copied — costs nothing against your storage quota. Your files are never modified or deleted.</p>`;
+  return `<div class="sp-row fs-row"><button class="btn-line" id="fs-link"><i data-ic="plus"></i> Link a folder (no copy)</button></div>
+    <p class="sp-note">Point the app at a music folder and it plays straight from disk instead of copying it in. Desktop Chrome/Edge only.</p>`;
+}
+function bindFsRow(){
+  const rl=document.getElementById('fs-link');
+  if(rl) rl.onclick=async()=>{ if(await FSLIB.pick()){ renderLibrary(); toast(FSLIB.tracks.length+' TRACKS LINKED'); } };
+  const rc=document.getElementById('fs-reconnect');
+  if(rc) rc.onclick=async()=>{ if(await FSLIB.reconnect()){ renderLibrary(); toast(FSLIB.tracks.length+' TRACKS LINKED'); } else toast('PERMISSION DENIED'); };
+  const rs=document.getElementById('fs-rescan');
+  if(rs) rs.onclick=async()=>{ const n=await FSLIB.rescan(); renderLibrary(); toast(n+' TRACKS FOUND'); };
+  const ru=document.getElementById('fs-unlink');
+  if(ru) ru.onclick=()=>customConfirm('Unlink this folder? Your files stay exactly where they are — only the link is removed.',
+    async()=>{ await FSLIB.unlink(); renderLibrary(); toast('FOLDER UNLINKED'); }, {confirmLabel:'Unlink'});
 }
 function renderLibrary(){
   const el=document.getElementById('prov-panel'); if(!el) return;
   const pls=playlists();
   let plObj=null;
   if(libView!=='all'){ plObj=pls.find(p=>p.id===libView); if(!plObj) libView='all'; }
-  const list = libView==='all' ? LIB.tracks : plObj.trackIds.map(id=>LIB.tracks.find(t=>t.id===id)).filter(Boolean);
+  const base = libView==='all' ? LIB.tracks : plObj.trackIds.map(id=>LIB.tracks.find(t=>t.id===id)).filter(Boolean);
+  const q=libSearch.trim().toLowerCase();
+  const list = q ? base.filter(t=>t.name.toLowerCase().includes(q)) : base;
   LIB.setQueue(list);
   const playing=LIB.playing(), cur=LIB.cur();
 
@@ -4691,16 +4933,25 @@ function renderLibrary(){
       <label class="btn-line" for="lib-file"><i data-ic="plus"></i> Add music files</label><input id="lib-file" type="file" accept="${LIB_ACCEPT}" multiple hidden />
       <label class="btn-line" for="lib-folder"><i data-ic="plus"></i> Add a folder</label><input id="lib-folder" type="file" webkitdirectory multiple hidden />
     </div><p class="sp-note">No tracks yet — add some files to build your library.</p>
-    <p class="sp-note">Folder import grabs every audio file inside it (including subfolders) in one go — handy for an album or a whole music folder. Works in Chrome and Edge; on browsers without folder-picker support, add files individually instead.</p>`;
+    <p class="sp-note">Folder import grabs every audio file inside it (including subfolders) in one go — handy for an album or a whole music folder. Works in Chrome and Edge; on browsers without folder-picker support, add files individually instead.</p>
+    ${fsRowHTML()}`;   // must also be offered on an EMPTY library — that's when you'd most want it
   } else {
     const tools=`<div class="sp-row">
       <label class="btn-line" for="lib-file"><i data-ic="plus"></i> Add files</label>
       <input id="lib-file" type="file" accept="${LIB_ACCEPT}" multiple hidden />
       <label class="btn-line" for="lib-folder"><i data-ic="plus"></i> Add a folder</label>
       <input id="lib-folder" type="file" webkitdirectory multiple hidden />
-      ${libView!=='all'?`<button class="btn-line" id="pl-edit">${libEdit?'Done':'＋ Add tracks'}</button><button class="btn-line danger" id="pl-del">Delete list</button>`:''}
-      <span class="fm-now">${list.length} TRACK${list.length===1?'':'S'}</span>
-    </div>`;
+      ${libView!=='all'?`<button class="btn-line" id="pl-edit">${libEdit?'Done':'＋ Add tracks'}</button>
+        <button class="btn-line" id="pl-rename"><i data-ic="edit"></i> Rename</button>
+        <button class="btn-line" id="pl-dupe"><i data-ic="copy"></i> Duplicate</button>
+        <button class="btn-line danger" id="pl-del">Delete list</button>`:''}
+      <span class="fm-now">${list.length}${q?' / '+base.length:''} TRACK${list.length===1?'':'S'}</span>
+    </div>
+    <div class="sp-row lib-searchrow">
+      <input type="text" class="sp-input lib-search" id="lib-search" placeholder="SEARCH YOUR MUSIC…" value="${esc(libSearch)}" autocomplete="off" aria-label="Search tracks" />
+      ${q?`<button class="btn-line" id="lib-search-clear" aria-label="Clear search"><i data-ic="ban"></i></button>`:''}
+    </div>
+    ${fsRowHTML()}`;
     const rep=libRepeat();
     const transport=`<div class="now-track">${cur?esc(cur.name):'—'}</div>
     <div class="sp-transport">
@@ -4718,11 +4969,13 @@ function renderLibrary(){
         return `<div class="lib-track"><button class="sub-check ${inn?'on':''}" onclick="plToggle('${t.id}')" aria-label="Toggle"></button><span class="lib-name">${esc(t.name)}</span></div>`; }).join('')}</div>
         <p class="sp-note">Tick tracks to include them in this playlist.</p>`;
     } else if(!list.length){
-      listHtml='<p class="sp-note">This playlist is empty — tap “＋ Add tracks”.</p>';
+      listHtml=q ? `<p class="sp-note">Nothing matches “${esc(libSearch)}”.</p>`
+                 : '<p class="sp-note">This playlist is empty — tap “＋ Add tracks”.</p>';
     } else {
       listHtml=`<div class="lib-list">${list.map((t,i)=>`<div class="lib-track ${i===LIB.idx&&playing?'on':''}">
         <button class="lib-play" onclick="libPlay(${i})" aria-label="Play"><i data-ic="${(i===LIB.idx&&playing)?'pause':'play'}"></i></button>
         <span class="lib-name">${esc(t.name)}</span>
+        <button class="sub-del lib-addpl" onclick="trackToPlaylist('${t.id}')" title="Add to a playlist" aria-label="Add to a playlist"><i data-ic="plus"></i></button>
         <button class="sub-del" onclick="libRemove('${t.id}')" title="${libView==='all'?'Delete from library':'Remove from playlist'}" aria-label="Remove"><i data-ic="trash"></i></button></div>`).join('')}</div>`;
     }
     const vol=`<div class="sp-row"><span class="label">VOLUME</span><input type="range" min="0" max="1" step="0.01" value="${LIB.vol()}" id="lib-vol" class="fm-vol" aria-label="Volume"></div>
@@ -4747,6 +5000,14 @@ function renderLibrary(){
   const fo=document.getElementById('lib-folder'); if(fo) fo.onchange=async()=>{ if(fo.files&&fo.files.length){ await LIB.add(fo.files); renderLibrary(); } };
   const pe=document.getElementById('pl-edit'); if(pe) pe.onclick=()=>{ libEdit=!libEdit; renderLibrary(); };
   const pd=document.getElementById('pl-del'); if(pd) pd.onclick=()=>{ customConfirm('Delete this playlist? Your audio files stay in the library.', ()=>{ delPlaylist(libView); renderLibrary(); }); };
+  const pdu=document.getElementById('pl-dupe'); if(pdu) pdu.onclick=()=>{ const id=plDuplicate(libView); if(id){ libView=id; libEdit=false; renderLibrary(); toast('PLAYLIST DUPLICATED'); } };
+  const prn=document.getElementById('pl-rename'); if(prn) prn.onclick=()=>openPlRename(libView);
+  // search: keep focus + caret while filtering, so typing isn't interrupted by the re-render
+  const sr=document.getElementById('lib-search');
+  if(sr) sr.oninput=()=>{ const v=sr.value, pos=sr.selectionStart; libSearch=v; renderLibrary();
+    const n=document.getElementById('lib-search'); if(n){ n.focus(); try{ n.setSelectionRange(pos,pos); }catch(_){} } };
+  const sc=document.getElementById('lib-search-clear'); if(sc) sc.onclick=()=>{ libSearch=''; renderLibrary(); };
+  bindFsRow();
   const tg=document.getElementById('lib-toggle'); if(tg) tg.onclick=()=>{ LIB.toggle(); setTimeout(renderLibrary,150); };
   const pv=document.getElementById('lib-prev'); if(pv) pv.onclick=()=>{ LIB.prev(); setTimeout(renderLibrary,150); };
   const nx=document.getElementById('lib-next'); if(nx) nx.onclick=()=>{ LIB.next(); setTimeout(renderLibrary,150); };
@@ -4761,6 +5022,50 @@ function renderLibrary(){
   document.getElementById('lib-auto').onclick=(e)=>{ const on=!SP.autoplay(); SP.setAutoplay(on); e.target.classList.toggle('on',on); e.target.setAttribute('aria-checked',on); };
   if(document.getElementById('lib-viz')) startViz('lib-viz', ()=>LIB.analyser);
 }
+/* Add one track to any playlist (or spin up a new one around it). */
+function trackToPlaylist(trackId){
+  const t=LIB.tracks.find(x=>x.id===trackId); if(!t) return;
+  openWkModal(`<div id="tpl-root"></div>`);
+  (function paint(){
+    const el=document.getElementById('tpl-root'); if(!el) return;
+    const pls=playlists();
+    el.innerHTML=`
+      <div class="tm-head"><h3>Add to playlist</h3><button class="iconbtn" data-wkclose aria-label="Close">✕</button></div>
+      <p class="s-p">${esc(t.name)}</p>
+      <div class="goals-list">${pls.length?pls.map(p=>{
+        const inn=p.trackIds.includes(trackId);
+        return `<div class="goal ${inn?'':'done'}">
+          <button type="button" class="sub-check ${inn?'on':''}" data-tpl="${p.id}" aria-label="Toggle"></button>
+          <div class="goal-body"><div class="goal-text">${esc(p.name)}</div>
+            <div class="goal-why">${p.trackIds.length} TRACK${p.trackIds.length===1?'':'S'}${inn?' · IN THIS LIST':''}</div></div>
+        </div>`; }).join('') : '<p class="s-p dhint">No playlists yet — make one below.</p>'}</div>
+      <form id="tpl-form" class="wk-form">
+        <input type="text" class="sp-input" id="tpl-name" placeholder="NEW PLAYLIST NAME…" maxlength="24" autocomplete="off"/>
+        <button type="submit" class="pbtn-main">CREATE &amp; ADD</button>
+      </form>`;
+    paintIcons(el);
+    el.querySelector('[data-wkclose]').onclick=closeWkModal;
+    el.querySelectorAll('[data-tpl]').forEach(b=>b.onclick=()=>{ plToggleTrack(b.dataset.tpl, trackId); paint(); renderLibrary(); });
+    el.querySelector('#tpl-form').onsubmit=(e)=>{ e.preventDefault();
+      const nm=el.querySelector('#tpl-name').value.trim(); if(!nm){ toast('NAME THE PLAYLIST FIRST'); return; }
+      plCreate(nm,[trackId]); paint(); renderLibrary(); toast('PLAYLIST CREATED'); };
+  })();
+}
+window.trackToPlaylist=trackToPlaylist;
+function openPlRename(plId){
+  const pl=playlists().find(p=>p.id===plId); if(!pl) return;
+  const el=openWkModal(`
+    <div class="tm-head"><h3>Rename playlist</h3><button class="iconbtn" data-wkclose aria-label="Close">✕</button></div>
+    <div class="wk-form">
+      <input type="text" class="sp-input" id="plr-name" maxlength="24" value="${esc(pl.name)}" autocomplete="off"/>
+      <button type="button" class="pbtn-main" id="plr-save">SAVE</button>
+    </div>`);
+  const inp=el.querySelector('#plr-name'); inp.focus(); inp.select();
+  const go=()=>{ const v=inp.value.trim(); if(!v){ toast('NAME CAN’T BE EMPTY'); return; }
+    plRename(plId,v); closeWkModal(); renderLibrary(); };
+  el.querySelector('#plr-save').onclick=go;
+  inp.onkeydown=(e)=>{ if(e.key==='Enter') go(); };
+}
 function showNewPlaylist(){
   const row=document.querySelector('.pl-row'); if(!row) return;
   row.innerHTML=`<form id="pl-form" class="catform"><input id="pl-name" class="catname" placeholder="PLAYLIST NAME…" maxlength="24" autocomplete="off" /><button class="catchip on" type="submit">ADD</button><button type="button" class="catchip" id="pl-cancel">✕</button></form>`;
@@ -4769,7 +5074,10 @@ function showNewPlaylist(){
   document.getElementById('pl-name').focus();
 }
 window.libPlay=(i)=>{ if(LIB.idx===i && LIB.playing()) LIB.pause(); else LIB.play(i); setTimeout(renderLibrary,150); };
-window.libRemove=async(id)=>{ if(libView==='all'){ await LIB.remove(id); } else { plRemoveTrack(libView,id); } renderLibrary(); };
+window.libRemove=async(id)=>{
+  if(libView!=='all'){ plRemoveTrack(libView,id); renderLibrary(); return; }
+  if(String(id).startsWith('fs:')){ toast('LINKED FILE — UNLINK THE FOLDER INSTEAD'); return; }   // never delete off disk
+  await LIB.remove(id); renderLibrary(); };
 window.plToggle=(id)=>{ plToggleTrack(libView,id); renderLibrary(); };
 function renderFree(){
   const el=document.getElementById('prov-panel'); if(!el) return;
@@ -4899,6 +5207,7 @@ migrateWorkoutsToSchedule();
 takeDailySnapshot();
 applyTheme(); paintIcons(document);
 renderAddCatOptions(); renderCatbar(); renderGlyph(); render(); updateLive(); setInterval(updateLive,1000); setOffline();
+if(FS_SUPPORTED) FSLIB.restore().then(()=>{ if(musicProvider()==='files'&&document.getElementById('prov-panel')) renderLibrary(); });
 LIB.load();
 
   </script>
